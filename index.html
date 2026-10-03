@@ -519,17 +519,30 @@ function toggleVoiceListen() {
 const T={en:{n1:"Company Login",n2:"Job Seeker Login",n3:"Jobs",n4:"Complain",n5:"Help & Q/A",n6:"Admin Login",n7:"AI Scanner",h1:"Find verified work. Hire trusted talent.",hp:"AI matches workers to nearby jobs with a transparent Fit Score, checks employers for trust, and works even with low internet.",b1:"🔎 Find Work",b2:"Hire Talent",b3:"🤖 Skill-Gap Scanner"},
 hi:{n1:"कंपनी लॉगिन",n2:"जॉब सीकर लॉगिन",n3:"नौकरियां",n4:"शिकायत",n5:"सहायता / प्रश्न",n6:"एडमिन लॉगिन",n7:"AI स्कैनर",h1:"सत्यापित काम खोजें। भरोसेमंद लोग रखें।",hp:"AI आपको पास की नौकरियों से Fit Score के साथ मिलाता है, कंपनियों की जांच करता है और कम इंटरनेट पर भी चलता है।",b1:"🔎 काम खोजें",b2:"कर्मचारी रखें",b3:"🤖 कौशल-अंतर स्कैनर"}};
 let lg="en";$("#lang").onclick=()=>{lg=lg=="en"?"hi":"en";document.documentElement.lang=lg;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=T[lg][e.dataset.t]);$("#lang").textContent=lg=="en"?"हिन्दी":"English"};
+
+let currentModalRole = "company";
+
 function openM(t,l){
   $("#mt").textContent=t;
   $("#ml").textContent=l;
   $("#merr").textContent="";
 
+  if (t.toLowerCase().includes("company") || t.includes("कंपनी")) {
+    currentModalRole = "company";
+  } else if (t.toLowerCase().includes("seeker") || t.includes("सीकर")) {
+    currentModalRole = "seeker";
+  } else if (t.toLowerCase().includes("admin") || t.includes("एडमिन")) {
+    currentModalRole = "admin";
+  } else {
+    currentModalRole = "company";
+  }
+
   let dummyU = "", dummyP = "123456";
-  if (t === 'Company Login') {
+  if (currentModalRole === 'company') {
     dummyU = "hr@shreepower.com";
-  } else if (t === 'Job Seeker Login') {
+  } else if (currentModalRole === 'seeker') {
     dummyU = "9876543210";
-  } else if (t === 'Admin Login') {
+  } else if (currentModalRole === 'admin') {
     dummyU = "admin@kaamsetu.gov.in";
     dummyP = "admin123";
   }
@@ -858,14 +871,52 @@ const SK=[
 const CMP=[["QuickJobs Agency","Asked for a registration fee","Open (Gemini 94%)"],["FastHire Co.","Fake offer letter","Under review"],["Unknown Recruiter","Salary not paid","Resolved"]];
 const ch=s=>`<span class="chip ${/Verified|Active|Hired|Resolved/.test(s)?"y":/Flagged|Open/.test(s)?"n":"m"}">${esc(s)}</span>`;
 let prof={name:"",role:"Electrician",qual:"10th pass",exp:0,skills:[]},applied=new Set(["Electrician"]),mine=[],sl=new Set(),tab="co";
-const cands=[["Ramesh Kumar","Electrician",3,91],["Aman Patel","CNC Operator",2,87],["Priya Verma","Software Tester",2,84],["Mohan Lal","Delivery Partner",4,79]];
 $("#pr").innerHTML=Object.keys(R).map(r=>`<option>${r}</option>`).join("");
 function home(k){showPage('home')}
-function show(r){const T={seeker:"👷 Job Seeker Dashboard",company:"🏢 Company Dashboard",admin:"🔒 Admin Control Panel"};
-$("#top").hidden=true;$("#page-jobs").hidden=true;$("#page-vacancies").hidden=true;$("#page-complain").hidden=true;$("#page-ai").hidden=true;$("footer").hidden=true;$("#app").hidden=false;["seeker","company","admin"].forEach(x=>$("#v-"+x).hidden=x!=r);
-$("#apt").textContent=T[r];$(".bar2").style.borderColor=r=="admin"?"#000":"";scrollTo(0,0);({seeker:rs,company:rc,admin:ra})[r]()}
-function login(){const u=$("#mu").value.trim(),p=$("#mp").value.trim();if(!u||!p){$("#merr").textContent="Please enter both fields.";return}
-const r={"Company Login":"company","Job Seeker Login":"seeker","Admin Login":"admin"}[$("#mt").textContent];closeM();show(r)}
+
+function show(r){
+  const roleMap = { seeker: 'seeker', company: 'company', admin: 'admin' };
+  const targetRole = roleMap[r] || 'seeker';
+  const T = { seeker: "👷 Job Seeker Dashboard", company: "🏢 Company Dashboard", admin: "🔒 Admin Control Panel" };
+
+  $("#top").hidden = true;
+  $("#page-jobs").hidden = true;
+  $("#page-vacancies").hidden = true;
+  $("#page-complain").hidden = true;
+  $("#page-ai").hidden = true;
+  $("footer").hidden = true;
+  $("#app").hidden = false;
+
+  ["seeker", "company", "admin"].forEach(x => {
+    const el = $("#v-" + x);
+    if (el) el.hidden = (x !== targetRole);
+  });
+
+  $("#apt").textContent = T[targetRole] || "Dashboard";
+  $(".bar2").style.borderColor = (targetRole === "admin") ? "#000" : "";
+  scrollTo(0, 0);
+
+  const fnMap = { seeker: rs, company: rc, admin: ra };
+  if (typeof fnMap[targetRole] === 'function') {
+    fnMap[targetRole]();
+  }
+}
+
+function login(){
+  let u = $("#mu").value.trim();
+  let p = $("#mp").value.trim();
+
+  if (!u || !p) {
+    if (currentModalRole === 'company') { u = "hr@shreepower.com"; p = "123456"; }
+    else if (currentModalRole === 'admin') { u = "admin@kaamsetu.gov.in"; p = "admin123"; }
+    else { u = "9876543210"; p = "123456"; }
+    $("#mu").value = u;
+    $("#mp").value = p;
+  }
+
+  closeM();
+  show(currentModalRole);
+}
 $(".logo").addEventListener("click",()=>home());
 
 // Seeker Dashboard & Alerts
