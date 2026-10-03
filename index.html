@@ -134,7 +134,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <button class="btn a" style="background:#059669;border-color:#059669" onclick="showPage('vacancies')">🔥 New Vacancies</button>
 <button class="btn o" onclick="openM('Company Login','Company email')" data-t="b2">Hire Talent</button>
 <button class="btn o" onclick="showPage('ai')" data-t="b3">🤖 Skill-Gap Scanner</button>
-<button class="btn o" onclick="speakText('Welcome to KaamSetu. Find verified work and hire trusted talent with Gemini AI verification.')">🔊 Listen</button>
+<button class="btn o" onclick="toggleSpeak(this, 'Welcome to KaamSetu. Find verified work and hire trusted talent with Gemini AI verification.')">🔊 Listen</button>
 </div></div>
 <div class="hc"><b>Live matches today</b>
 <div class="row"><span>Electrician – Indore</span><span class="pill">92% fit</span></div>
@@ -200,7 +200,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div class="wrap">
 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
 <button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
-<button class="btn sm o" onclick="speakText('Jobs near you page. Use location detector and filters to find AI matched jobs.')">🔊 Listen Page</button>
+<button class="btn sm o" onclick="toggleSpeak(this, 'Jobs near you page. Use location detector and filters to find AI matched jobs.')">🔊 Listen Page</button>
 </div>
 <section id="jobs" style="padding:10px 0"><div class="sec-h"><h2>Jobs near you</h2><p>Detect your location, filter, and see Gemini AI Fit Scores update instantly.</p></div>
 <div class="loc"><input id="loc" value="Indore, Madhya Pradesh" aria-label="Location"><button class="btn" id="gps">📍 Detect My Location</button></div>
@@ -215,7 +215,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div class="wrap">
 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
 <button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
-<button class="btn sm o" onclick="speakText('New vacancies page. Direct 1-click apply for fresh job openings.')">🔊 Listen Page</button>
+<button class="btn sm o" onclick="toggleSpeak(this, 'New vacancies page. Direct 1-click apply for fresh job openings.')">🔊 Listen Page</button>
 </div>
 <section style="padding:10px 0"><div class="sec-h"><h2>🔥 New Job Vacancies</h2><p>Explore the newest openings with Gemini AI trust badges. Apply directly with 1-click!</p></div>
 <div id="vacancies-list" class="grid g2"></div>
@@ -228,7 +228,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div class="wrap" style="max-width:800px">
 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
 <button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
-<button class="btn sm o" onclick="speakText('Report a scam or fake company page. Upload file or capture camera evidence for Gemini AI analysis.')">🔊 Listen Page</button>
+<button class="btn sm o" onclick="toggleSpeak(this, 'Report a scam or fake company page. Upload file or capture camera evidence for Gemini AI analysis.')">🔊 Listen Page</button>
 </div>
 <section style="padding:10px 0"><div class="sec-h"><h2>🚨 Report a Scam or Fraud</h2><p>Choose entity type, provide location &amp; details, attach files or capture camera evidence for <b>Gemini AI Confidence Analysis</b>.</p></div>
 <div class="card">
@@ -381,12 +381,57 @@ async function callGeminiAPI(prompt, base64Image) {
 }
 
 // Voice Assistance Infrastructure (Web Speech API)
-function speakText(text) {
+let currentSpeakBtn = null;
+
+function toggleSpeak(btn, text) {
   if (!('speechSynthesis' in window)) return;
+
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    if (currentSpeakBtn) {
+      resetSpeakBtn(currentSpeakBtn);
+    }
+    if (currentSpeakBtn === btn) {
+      currentSpeakBtn = null;
+      return;
+    }
+  }
+
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.rate = 0.95;
+
+  if (btn) {
+    currentSpeakBtn = btn;
+    if (!btn.dataset.originalHtml) btn.dataset.originalHtml = btn.innerHTML;
+    btn.innerHTML = "🛑 Stop";
+    btn.style.borderColor = "#dc2626";
+    btn.style.color = "#dc2626";
+  }
+
+  utterance.onend = () => {
+    if (btn) resetSpeakBtn(btn);
+    if (currentSpeakBtn === btn) currentSpeakBtn = null;
+  };
+
+  utterance.onerror = () => {
+    if (btn) resetSpeakBtn(btn);
+    if (currentSpeakBtn === btn) currentSpeakBtn = null;
+  };
+
   window.speechSynthesis.speak(utterance);
+}
+
+function resetSpeakBtn(btn) {
+  if (btn && btn.dataset.originalHtml) {
+    btn.innerHTML = btn.dataset.originalHtml;
+    btn.style.borderColor = "";
+    btn.style.color = "";
+  }
+}
+
+function speakText(text) {
+  toggleSpeak(null, text);
 }
 
 let voiceRecognizer = null;
@@ -464,7 +509,7 @@ const km=(a,b,c,d)=>{const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r
 function fit(j,exp){const d=km(me.lat,me.lng,j[4],j[5]);const ds=Math.max(0,100-d*2.5);const es=exp==99?80:Math.max(0,100-Math.abs(j[2]-exp)*12);return{d,s:Math.round(.4*ds+.3*es+.3*j[6])}}
 function render(){const q=$("#q").value.toLowerCase(),e=+$("#exp").value,s=+$("#sal").value;
 const L=J.filter(j=>j[0].toLowerCase().includes(q)&&j[2]<=e&&j[3]>=s).map(j=>({j,...fit(j,e)})).sort((a,b)=>b.s-a.s);
-$("#list").innerHTML=L.map(x=>`<div class="card job"><div><h3>${x.j[0]} <span class="tag">✔ ${x.j[8]}</span></h3><small>${x.j[1]} • ${x.j[7]} • ${x.d.toFixed(1)} km</small><div style="margin-top:6px"><span class="tag">${x.j[2]}+ yrs</span><span class="tag">₹${x.j[3].toLocaleString("en-IN")}/mo</span><span class="tag">Trust ${x.j[6]}</span></div></div><div style="text-align:right"><div class="fit">${x.s}%<i>Gemini Fit</i></div><button class="btn sm o" style="margin-top:6px" onclick="speakText('${x.j[0]} at ${x.j[1]} in ${x.j[7]}, salary ${x.j[3]} rupees per month, Gemini fit score ${x.s} percent.')">🔊 Read</button></div></div>`).join("")||"<p>No jobs match these filters.</p>";
+$("#list").innerHTML=L.map(x=>`<div class="card job"><div><h3>${x.j[0]} <span class="tag">✔ ${x.j[8]}</span></h3><small>${x.j[1]} • ${x.j[7]} • ${x.d.toFixed(1)} km</small><div style="margin-top:6px"><span class="tag">${x.j[2]}+ yrs</span><span class="tag">₹${x.j[3].toLocaleString("en-IN")}/mo</span><span class="tag">Trust ${x.j[6]}</span></div></div><div style="text-align:right"><div class="fit">${x.s}%<i>Gemini Fit</i></div><button class="btn sm o" style="margin-top:6px" onclick="toggleSpeak(this, '${x.j[0]} at ${x.j[1]} in ${x.j[7]}, salary ${x.j[3]} rupees per month, Gemini fit score ${x.s} percent.')">🔊 Read</button></div></div>`).join("")||"<p>No jobs match these filters.</p>";
 document.querySelectorAll(".pin").forEach(p=>p.remove());const m=$("#map");
 const pos=(la,ln)=>`left:${Math.min(95,Math.max(5,50+(ln-me.lng)*380))}%;top:${Math.min(92,Math.max(10,50-(la-me.lat)*380))}%`;
 m.insertAdjacentHTML("beforeend",`<div class="pin me" style="left:50%;top:50%">📍 You</div>`+L.map(x=>`<div class="pin" style="${pos(x.j[4],x.j[5])}">${x.j[0].split(" ")[0]} ${x.s}%</div>`).join(""))}
@@ -489,7 +534,7 @@ function renderVacancies() {
       </div>
       <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn a sm" onclick="applyVacancy('${j[0]}')">⚡ 1-Click Direct Apply</button>
-        <button class="btn o sm" onclick="speakText('New vacancy: ${j[0]} at ${j[1]}, location ${j[7]}, salary ${j[3]} rupees per month.')">🔊 Read</button>
+        <button class="btn o sm" onclick="toggleSpeak(this, 'New vacancy: ${j[0]} at ${j[1]}, location ${j[7]}, salary ${j[3]} rupees per month.')">🔊 Read</button>
       </div>
     </div>
   `).join("");
