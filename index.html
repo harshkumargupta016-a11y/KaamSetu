@@ -385,7 +385,15 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 </div>
 </div>
 <div id="v-admin" hidden><div class="grid g4" id="ast"></div>
-<div class="card" style="margin-top:18px"><div class="tabs"><button class="btn" data-tab="co">Companies</button><button class="btn o" data-tab="se">Job seekers</button><button class="btn o" data-tab="cp">Complaints</button></div><input id="aq" placeholder="Search records…" aria-label="Search records" style="margin:12px 0"><div style="overflow-x:auto" id="atab"></div><p style="font-size:.8rem;color:var(--mut)">Sample records for design preview.</p></div></div>
+<div class="card" style="margin-top:18px">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <div class="tabs"><button class="btn" data-tab="co">Companies</button><button class="btn o" data-tab="se">Job seekers</button><button class="btn o" data-tab="cp">Complaints</button></div>
+    <button class="btn sm a" onclick="exportAdminCSV()">📥 Export Data (CSV)</button>
+  </div>
+  <input id="aq" placeholder="Search records…" aria-label="Search records" style="margin:12px 0">
+  <div style="overflow-x:auto" id="atab"></div>
+  <p style="font-size:.8rem;color:var(--mut);margin-top:8px">Admin Control Panel – verify companies, resolve complaints, and export data reports.</p>
+</div></div>
 </div></div>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><h3 id="mt"></h3><label for="mu" id="ml"></label><input id="mu"><label for="mp">Password / OTP</label><input id="mp" type="password"><div style="background:#f1f5f9;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:12px;font-size:.82rem"><b style="color:var(--pri)">🔑 Prototype Quick Credentials:</b><div id="dummyCreds" style="margin-top:4px"></div></div><p id="merr" role="alert" style="color:#b91c1c;font-weight:600;margin:8px 0 0"></p><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" onclick="login()">Continue</button><button class="btn o" onclick="closeM()">Cancel</button></div><p style="font-size:.8rem;color:var(--mut);margin-top:8px">Demo login – click Continue or Auto Fill to open dashboard.</p></div></div>
@@ -1324,12 +1332,99 @@ function rc(){
   };
 }
 
-// Admin
-function ra(){const A={co:[["Company","City","Industry","Jobs","Trust","Status"],CO],se:[["Name","Skills","City","Exp (yrs)","Qualification","Status"],SK],cp:[["Against","Complaint","Status"],CMP]};
-$("#ast").innerHTML=[[CO.length,"Companies"],[SK.length,"Job seekers"],[J.length,"Active jobs"],[CMP.filter(c=>c[2].includes("Open")).length,"Open complaints"]].map(a=>`<div class="stat"><b>${a[0]}</b><span>${a[1]}</span></div>`).join("");
-document.querySelectorAll("[data-tab]").forEach(b=>b.className="btn"+(b.dataset.tab==tab?"":" o"));
-const q=$("#aq").value.toLowerCase(),cols=A[tab][0],rows=A[tab][1].filter(r=>r.join(" ").toLowerCase().includes(q));
-$("#atab").innerHTML=`<table><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>${rows.map(r=>`<tr>${cols.map((c,i)=>`<td>${c=="Status"?ch(r[i]):esc(r[i])}</td>`).join("")}</tr>`).join("")||`<tr><td colspan="${cols.length}">No records.</td></tr>`}</table>`}
+// Admin Portal Actions
+function adminVerifyCompany(idx) {
+  if (CO[idx]) {
+    CO[idx][5] = "Admin Verified";
+    const compName = CO[idx][0];
+    J.forEach(j => { if (j[1] === compName) j[8] = "Admin Verified"; });
+    mine.forEach(m => { if (m[1] === compName) m[8] = "Admin Verified"; });
+    ra();
+    if (typeof render === 'function') render();
+    speakText(`Company ${compName} has been verified by Admin.`);
+  }
+}
+
+function adminResolveComplaint(idx) {
+  if (CMP[idx]) {
+    CMP[idx][2] = "Resolved";
+    ra();
+    speakText(`Complaint against ${CMP[idx][0]} marked as Resolved.`);
+  }
+}
+
+function exportAdminCSV() {
+  const A = {
+    co: { name: "companies", cols: ["Company", "City", "Industry", "Jobs", "Trust", "Status"], data: CO },
+    se: { name: "jobseekers", cols: ["Name", "Skills", "City", "Exp (yrs)", "Qualification", "Status"], data: SK },
+    cp: { name: "complaints", cols: ["Against", "Complaint", "Status"], data: CMP }
+  };
+  const current = A[tab] || A.co;
+  let csvContent = "data:text/csv;charset=utf-8," + current.cols.map(c => `"${c}"`).join(",") + "\n";
+  current.data.forEach(row => {
+    csvContent += row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(",") + "\n";
+  });
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `kaamsetu_${current.name}_data.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  speakText(`Exported ${current.name} data to CSV.`);
+}
+
+function ra(){
+  const A={
+    co:[["Company","City","Industry","Jobs","Trust","Status","Actions"],CO],
+    se:[["Name","Skills","City","Exp (yrs)","Qualification","Status","Actions"],SK],
+    cp:[["Against","Complaint","Status","Actions"],CMP]
+  };
+
+  $("#ast").innerHTML=[
+    [CO.length,"Companies"],
+    [SK.length,"Job seekers"],
+    [J.length,"Active jobs"],
+    [CMP.filter(c=>c[2].includes("Open")).length,"Open complaints"]
+  ].map(a=>`<div class="stat"><b>${a[0]}</b><span>${a[1]}</span></div>`).join("");
+
+  document.querySelectorAll("[data-tab]").forEach(b=>b.className="btn"+(b.dataset.tab==tab?"":" o"));
+  
+  const q=$("#aq").value.toLowerCase();
+  const cols=A[tab][0];
+  const rawRows=A[tab][1];
+
+  let rowsHtml = "";
+  rawRows.forEach((r, idx) => {
+    if (r.join(" ").toLowerCase().includes(q)) {
+      let actionBtn = "";
+      if (tab === "co") {
+        actionBtn = r[5].includes("Admin Verified") 
+          ? `<span style="color:#16a34a;font-weight:bold">✔ Verified</span>`
+          : `<button class="btn sm a" style="padding:2px 8px;font-size:0.75rem" onclick="adminVerifyCompany(${idx})">✔ Verify Company</button>`;
+      } else if (tab === "cp") {
+        actionBtn = r[2] === "Resolved"
+          ? `<span style="color:#16a34a;font-weight:bold">✓ Resolved</span>`
+          : `<button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminResolveComplaint(${idx})">✅ Resolve</button>`;
+      } else {
+        actionBtn = `<span style="color:var(--mut);font-size:0.8rem">Active Seeker</span>`;
+      }
+
+      rowsHtml += `<tr>
+        ${r.map((val, cIdx) => {
+          if (cIdx === 0 && tab === "co" && r[5].includes("Admin Verified")) {
+            return `<td><b>${esc(val)}</b> <span style="color:#2563eb;font-weight:bold" title="Admin Verified Company">☑️</span></td>`;
+          }
+          if (cols[cIdx] === "Status") return `<td>${ch(val)}</td>`;
+          return `<td>${esc(val)}</td>`;
+        }).join("")}
+        <td>${actionBtn}</td>
+      </tr>`;
+    }
+  });
+
+  $("#atab").innerHTML=`<table><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>${rowsHtml || `<tr><td colspan="${cols.length}">No matching records.</td></tr>`}</table>`;
+}
 document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;ra()});
 $("#aq").oninput=ra;
 </script>
