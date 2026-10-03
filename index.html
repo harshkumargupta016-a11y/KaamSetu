@@ -369,7 +369,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div class="card" style="margin-top:18px"><div class="tabs"><button class="btn" data-tab="co">Companies</button><button class="btn o" data-tab="se">Job seekers</button><button class="btn o" data-tab="cp">Complaints</button></div><input id="aq" placeholder="Search records…" aria-label="Search records" style="margin:12px 0"><div style="overflow-x:auto" id="atab"></div><p style="font-size:.8rem;color:var(--mut)">Sample records for design preview.</p></div></div>
 </div></div>
 
-<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><h3 id="mt"></h3><label for="mu" id="ml"></label><input id="mu"><label for="mp">Password / OTP</label><input id="mp" type="password"><p id="merr" role="alert" style="color:#b91c1c;font-weight:600;margin:8px 0 0"></p><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" onclick="login()">Continue</button><button class="btn o" onclick="closeM()">Cancel</button></div><p style="font-size:.8rem;color:var(--mut)">Demo login – any details open the dashboard. No data is sent.</p></div></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><h3 id="mt"></h3><label for="mu" id="ml"></label><input id="mu"><label for="mp">Password / OTP</label><input id="mp" type="password"><div style="background:#f1f5f9;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:12px;font-size:.82rem"><b style="color:var(--pri)">🔑 Prototype Quick Credentials:</b><div id="dummyCreds" style="margin-top:4px"></div></div><p id="merr" role="alert" style="color:#b91c1c;font-weight:600;margin:8px 0 0"></p><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" onclick="login()">Continue</button><button class="btn o" onclick="closeM()">Cancel</button></div><p style="font-size:.8rem;color:var(--mut);margin-top:8px">Demo login – click Continue or Auto Fill to open dashboard.</p></div></div>
 
 <!-- Candidate CV / Resume Modal -->
 <div class="modal" id="cvModal" role="dialog" aria-modal="true">
@@ -519,7 +519,36 @@ function toggleVoiceListen() {
 const T={en:{n1:"Company Login",n2:"Job Seeker Login",n3:"Jobs",n4:"Complain",n5:"Help & Q/A",n6:"Admin Login",n7:"AI Scanner",h1:"Find verified work. Hire trusted talent.",hp:"AI matches workers to nearby jobs with a transparent Fit Score, checks employers for trust, and works even with low internet.",b1:"🔎 Find Work",b2:"Hire Talent",b3:"🤖 Skill-Gap Scanner"},
 hi:{n1:"कंपनी लॉगिन",n2:"जॉब सीकर लॉगिन",n3:"नौकरियां",n4:"शिकायत",n5:"सहायता / प्रश्न",n6:"एडमिन लॉगिन",n7:"AI स्कैनर",h1:"सत्यापित काम खोजें। भरोसेमंद लोग रखें।",hp:"AI आपको पास की नौकरियों से Fit Score के साथ मिलाता है, कंपनियों की जांच करता है और कम इंटरनेट पर भी चलता है।",b1:"🔎 काम खोजें",b2:"कर्मचारी रखें",b3:"🤖 कौशल-अंतर स्कैनर"}};
 let lg="en";$("#lang").onclick=()=>{lg=lg=="en"?"hi":"en";document.documentElement.lang=lg;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=T[lg][e.dataset.t]);$("#lang").textContent=lg=="en"?"हिन्दी":"English"};
-function openM(t,l){$("#mu").value="";$("#mp").value="";$("#merr").textContent="";$("#mt").textContent=t;$("#ml").textContent=l;$("#mu").setAttribute("for","");$("#modal").classList.add("on");$("#mu").focus()}
+function openM(t,l){
+  $("#mt").textContent=t;
+  $("#ml").textContent=l;
+  $("#merr").textContent="";
+
+  let dummyU = "", dummyP = "123456";
+  if (t === 'Company Login') {
+    dummyU = "hr@shreepower.com";
+  } else if (t === 'Job Seeker Login') {
+    dummyU = "9876543210";
+  } else if (t === 'Admin Login') {
+    dummyU = "admin@kaamsetu.gov.in";
+    dummyP = "admin123";
+  }
+
+  $("#mu").value = dummyU;
+  $("#mp").value = dummyP;
+
+  const credEl = $("#dummyCreds");
+  if (credEl) {
+    credEl.innerHTML = `
+      <div><b>User ID / Email / Phone:</b> <code style="background:#fff;padding:2px 6px;border-radius:4px">${dummyU}</code></div>
+      <div><b>Password / OTP:</b> <code style="background:#fff;padding:2px 6px;border-radius:4px">${dummyP}</code></div>
+      <button type="button" class="btn sm o" style="margin-top:6px;min-height:28px;padding:0 10px;font-size:.78rem" onclick="$('#mu').value='${dummyU}';$('#mp').value='${dummyP}'">⚡ Auto Fill Credentials</button>
+    `;
+  }
+
+  $("#modal").classList.add("on");
+  $("#mu").focus();
+}
 function closeM(){$("#modal").classList.remove("on")}
 addEventListener("keydown",e=>{if(e.key=="Escape")closeM()});
 
