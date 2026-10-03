@@ -116,7 +116,6 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <a class="logo" onclick="showPage('home')">Kaam<span>Setu</span> ✦</a>
 <button class="n" onclick="openM('Company Login','Company email')">🏢 <span data-t="n1">Company Login</span></button>
 <button class="n" onclick="openM('Job Seeker Login','Mobile number')">👷 <span data-t="n2">Job Seeker Login</span></button>
-<button class="n" onclick="showPage('jobs')">🔎 <span data-t="n3">Jobs</span></button>
 <button class="n" onclick="showPage('vacancies')">🔥 <span>Vacancies</span></button>
 <button class="n" onclick="showPage('ai')">🤖 <span data-t="n7">AI Scanner</span></button>
 <button class="n" onclick="showPage('complain')">🚨 <span data-t="n4">Complain</span></button>
@@ -132,8 +131,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <h1 data-t="h1">Find verified work. Hire trusted talent.</h1>
 <p data-t="hp">AI matches workers to nearby jobs with a transparent Fit Score, checks employers for trust, and works even with low internet.</p>
 <div class="btns">
-<button class="btn a" onclick="showPage('jobs')" data-t="b1">🔎 Find Work</button>
-<button class="btn a" style="background:#059669;border-color:#059669" onclick="showPage('vacancies')">🔥 New Vacancies</button>
+<button class="btn a" onclick="showPage('vacancies')" data-t="b1">🔥 Job Vacancies</button>
 <button class="btn o" onclick="openM('Company Login','Company email')" data-t="b2">Hire Talent</button>
 <button class="btn o" onclick="showPage('ai')" data-t="b3">🤖 Skill-Gap Scanner</button>
 <button class="btn o" onclick="toggleSpeak(this, 'Welcome to KaamSetu. Find verified work and hire trusted talent with Gemini AI verification.')">🔊 Listen</button>
@@ -170,8 +168,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 
 <section style="background:var(--card)"><div class="wrap"><div class="sec-h"><h2>Everything in easy reach</h2><p>Every component is one tap away from the top bar and this grid.</p></div>
 <div class="grid g4">
-<div class="card" onclick="showPage('jobs')" style="cursor:pointer"><div class="ic">🔎</div><h3>Jobs Portal</h3><p>Filter by role, experience, salary and distance.</p></div>
-<div class="card" onclick="showPage('vacancies')" style="cursor:pointer"><div class="ic">🔥</div><h3>New Vacancies</h3><p>Direct 1-click apply for fresh job openings.</p></div>
+<div class="card" onclick="showPage('vacancies')" style="cursor:pointer"><div class="ic">🔥</div><h3>Job Vacancies Portal</h3><p>Filter by role, salary, distance, interactive map &amp; 1-click apply.</p></div>
 <div class="card" onclick="showPage('ai')" style="cursor:pointer"><div class="ic">🤖</div><h3>AI Profile Scanner</h3><p>Resume parsing, skill gaps, PDF report.</p></div>
 <div class="card" onclick="showPage('complain')" style="cursor:pointer"><div class="ic">🚨</div><h3>Report a Scam</h3><p>Dedicated complaint portal with camera evidence &amp; AI analysis.</p></div>
 <div class="card"><div class="ic">📴</div><h3>Offline capable</h3><p>Apply by SMS or saved forms when signal is weak.</p></div>
@@ -197,30 +194,38 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <details><summary>Is my data safe?</summary><p>We follow the Digital Personal Data Protection Act principles: consent, minimal data, and deletion on request.</p></details></div></section>
 </main>
 
-<!-- Dedicated Jobs Page -->
-<div id="page-jobs" class="page-view" hidden>
-<div class="wrap">
-<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
-<button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
-<button class="btn sm o" onclick="toggleSpeak(this, 'Jobs near you page. Use location detector and filters to find AI matched jobs.')">🔊 Listen Page</button>
-</div>
-<section id="jobs" style="padding:10px 0"><div class="sec-h"><h2>Jobs near you</h2><p>Detect your location, filter, and see Gemini AI Fit Scores update instantly.</p></div>
-<div class="loc"><input id="loc" value="Indore, Madhya Pradesh" aria-label="Location"><button class="btn" id="gps">📍 Detect My Location</button></div>
-<div class="filters"><input id="q" placeholder="Search role e.g. electrician" aria-label="Role"><select id="exp" aria-label="Experience"><option value="99">Any experience</option><option value="0">Fresher</option><option value="2">Up to 2 yrs</option><option value="5">Up to 5 yrs</option></select><select id="sal" aria-label="Salary"><option value="0">Any salary</option><option value="15000">₹15,000+</option><option value="25000">₹25,000+</option><option value="40000">₹40,000+</option></select><button class="btn o" id="reset">Reset</button></div>
-<div class="jobs-layout"><div id="list"></div><div><div class="map" id="map" style="height:400px;border-radius:16px;z-index:1"></div>
-<p style="font-size:.85rem;color:var(--mut);margin-top:6px">Interactive OpenStreetMap powered by Leaflet.js. <a id="osm" target="_blank" rel="noopener" href="https://www.openstreetmap.org/#map=11/22.72/75.86">Open full OpenStreetMap ↗</a></p></div></div></section>
-</div>
-</div>
-
-<!-- Dedicated New Vacancies Page -->
+<!-- Dedicated Unified Vacancies Page -->
 <div id="page-vacancies" class="page-view" hidden>
 <div class="wrap">
 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
 <button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
-<button class="btn sm o" onclick="toggleSpeak(this, 'New vacancies page. Direct 1-click apply for fresh job openings.')">🔊 Listen Page</button>
+<button class="btn sm o" onclick="toggleSpeak(this, 'Job Vacancies page. Explore job openings with interactive OpenStreetMap, location search, and 1-click apply.')">🔊 Listen Page</button>
 </div>
-<section style="padding:10px 0"><div class="sec-h"><h2>🔥 New Job Vacancies</h2><p>Explore the newest openings with Gemini AI trust badges. Apply directly with 1-click!</p></div>
-<div id="vacancies-list" class="grid g2"></div>
+<section id="vacancies" style="padding:10px 0">
+<div class="sec-h"><h2>🔥 Job Vacancies &amp; Opportunities Near You</h2><p>Detect your location, filter roles, view interactive map, and apply directly with 1-click!</p></div>
+
+<div class="loc"><input id="loc" value="Indore, Madhya Pradesh" aria-label="Location"><button class="btn" id="gps">📍 Detect My Location</button></div>
+<div class="filters"><input id="q" placeholder="Search role e.g. electrician" aria-label="Role"><select id="exp" aria-label="Experience"><option value="99">Any experience</option><option value="0">Fresher</option><option value="2">Up to 2 yrs</option><option value="5">Up to 5 yrs</option></select><select id="sal" aria-label="Salary"><option value="0">Any salary</option><option value="15000">₹15,000+</option><option value="25000">₹25,000+</option><option value="40000">₹40,000+</option></select><button class="btn o" id="reset">Reset</button></div>
+
+<div style="margin-bottom:20px">
+  <div class="map" id="map" style="height:380px;border-radius:16px;z-index:1"></div>
+  <p style="font-size:.85rem;color:var(--mut);margin-top:6px">Interactive OpenStreetMap powered by Leaflet.js. <a id="osm" target="_blank" rel="noopener" href="https://www.openstreetmap.org/#map=11/22.72/75.86">Open full OpenStreetMap ↗</a></p>
+</div>
+
+<div style="margin-top:24px">
+  <div class="tabs" style="margin-bottom:16px">
+    <button class="btn" id="tabVacanciesBtn" onclick="switchVacTab('grid')">🔥 Direct 1-Click Apply Vacancies</button>
+    <button class="btn o" id="tabJobsBtn" onclick="switchVacTab('list')">🔎 AI Matched Jobs &amp; Fit Scores</button>
+  </div>
+
+  <div id="vacancies-grid-view">
+    <div id="vacancies-list" class="grid g2"></div>
+  </div>
+
+  <div id="vacancies-list-view" hidden>
+    <div id="list"></div>
+  </div>
+</div>
 </section>
 </div>
 </div>
@@ -579,20 +584,36 @@ function closeM(){$("#modal").classList.remove("on")}
 addEventListener("keydown",e=>{if(e.key=="Escape")closeM()});
 
 // navigation
+function switchVacTab(view) {
+  const g = $("#vacancies-grid-view");
+  const l = $("#vacancies-list-view");
+  const bG = $("#tabVacanciesBtn");
+  const bL = $("#tabJobsBtn");
+  if (g && l) {
+    g.hidden = (view !== 'grid');
+    l.hidden = (view !== 'list');
+  }
+  if (bG && bL) {
+    bG.className = (view === 'grid') ? "btn" : "btn o";
+    bL.className = (view === 'list') ? "btn" : "btn o";
+  }
+}
+
 function showPage(p){
+  const isVacancies = (p === 'jobs' || p === 'vacancies');
   $("#top").hidden = (p !== 'home');
-  $("#page-jobs").hidden = (p !== 'jobs');
-  $("#page-vacancies").hidden = (p !== 'vacancies');
+  $("#page-vacancies").hidden = !isVacancies;
   $("#page-complain").hidden = (p !== 'complain');
   $("#page-ai").hidden = (p !== 'ai');
   $("#app").hidden = true;
   $("footer").hidden = false;
   scrollTo(0,0);
-  if(p === 'jobs') {
+
+  if(isVacancies) {
     render();
+    renderVacancies();
     setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 200);
   }
-  if(p === 'vacancies') renderVacancies();
   if(p === 'home') renderCharts();
 }
 function goToHomeSec(id){
