@@ -15,7 +15,7 @@ a{color:var(--pri)}h1,h2,h3{line-height:1.2;margin:0 0 .5em}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 header{position:sticky;top:0;z-index:50;background:var(--card);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
 .nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 20px;max-width:1180px;margin:auto}
-.logo{font-weight:800;font-size:1.3rem;color:var(--pri);text-decoration:none;margin-right:auto}.logo span{color:var(--acc)}
+.logo{font-weight:800;font-size:1.3rem;color:var(--pri);text-decoration:none;margin-right:auto;cursor:pointer}.logo span{color:var(--acc)}
 .nav a.n,.nav button.n{min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;font-size:.92rem}
 .nav .n:hover{border-color:var(--pri);color:var(--pri)}.nav .adm{background:var(--pri);border-color:var(--pri);color:#fff!important}
 .hero{background:#fff;color:var(--ink);padding:72px 0;border-bottom:4px solid var(--pri)}
@@ -53,7 +53,7 @@ input,select,textarea{width:100%;min-height:48px;border:2px solid var(--line);bo
 .pin.me{background:#dc2626}
 .scan{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .drop{border:3px dashed var(--pri);border-radius:16px;padding:22px;text-align:center;color:var(--mut);margin-bottom:12px;cursor:pointer}
-.bar{height:10px;background:var(--line);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .8s}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .8s}
 .chip{display:inline-block;margin:3px;padding:3px 10px;border-radius:99px;font-size:.82rem;font-weight:600}.chip.y{background:rgba(22,163,74,.14);color:var(--ok)}.chip.n{background:rgba(220,38,38,.12);color:#b91c1c}
 .rev .stars{color:#f59e0b;letter-spacing:2px}.rev p{font-style:italic}.rev b{display:block;margin-top:8px}
 details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0 18px;margin-bottom:10px}
@@ -62,12 +62,33 @@ summary{cursor:pointer;font-weight:700;min-height:52px;display:flex;align-items:
 .modal .box{background:var(--card);border-radius:18px;padding:26px;max-width:400px;width:100%}.modal label{display:block;margin:10px 0 4px;font-weight:600}
 footer{background:#fff;color:var(--ink);border-top:4px solid var(--pri);padding:48px 0 24px;margin-top:40px}
 footer .cols{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}footer h4{color:var(--pri);margin:0 0 10px}
-footer a{color:#1d4ed8;display:block;padding:4px 0;text-decoration:none;font-size:.92rem}footer a:hover{text-decoration:underline}
+footer a{color:#1d4ed8;display:block;padding:4px 0;text-decoration:none;font-size:.92rem;cursor:pointer}footer a:hover{text-decoration:underline}
 .help{background:#fff7ed;border:2px solid var(--acc);border-radius:10px;padding:10px;margin-bottom:8px;font-size:.92rem}.help b{color:#c2410c;font-size:1.3rem}
 .copy{border-top:1px solid var(--line);margin-top:28px;padding-top:16px;font-size:.85rem;text-align:center}
 #report{display:none}
+.page-view{padding:20px 0;min-height:60vh}
+.page-back{margin-bottom:16px;display:inline-flex;align-items:center;gap:6px}
+/* Chatbot Widget styles */
+.chat-widget{position:fixed;bottom:20px;left:20px;z-index:999;display:flex;flex-direction:column;align-items:flex-start}
+.chat-btn{width:56px;height:56px;border-radius:50%;background:var(--pri);color:#fff;border:none;box-shadow:0 6px 20px rgba(37,99,235,.35);cursor:pointer;display:grid;place-items:center;font-size:1.6rem;transition:transform .2s}
+.chat-btn:hover{transform:scale(1.08)}
+.chat-box{display:none;width:340px;height:440px;background:var(--card);border:2px solid var(--pri);border-radius:18px;box-shadow:0 12px 36px rgba(0,0,0,.18);flex-direction:column;overflow:hidden;margin-bottom:12px}
+.chat-box.on{display:flex}
+.chat-head{background:var(--pri);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.chat-head button{background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer}
+.chat-body{flex:1;padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;font-size:.9rem;background:#f8fafc}
+.chat-msg{max-width:82%;padding:8px 12px;border-radius:12px;line-height:1.4}
+.chat-msg.bot{background:#fff;border:1px solid var(--line);color:var(--ink);align-self:flex-start;border-bottom-left-radius:2px}
+.chat-msg.user{background:var(--pri);color:#fff;align-self:flex-end;border-bottom-right-radius:2px}
+.chat-chips{display:flex;gap:6px;flex-wrap:wrap;padding:4px 0}
+.chat-chip{background:#e2e8f0;border:none;border-radius:99px;padding:4px 10px;font-size:.78rem;cursor:pointer;color:var(--ink);font-weight:600}
+.chat-chip:hover{background:var(--pri);color:#fff}
+.chat-foot{padding:8px 12px;background:#fff;border-top:1px solid var(--line);display:flex;gap:6px}
+.chat-foot input{min-height:38px;font-size:.88rem}
+.chat-foot button{min-height:38px;padding:0 14px;font-size:.88rem}
+
 @media print{body>*:not(#report){display:none!important}#report{display:block!important;color:#000;background:#fff;padding:24px}}
-@media(max-width:900px){.hero .g,.jobs-layout,.scan,.two{grid-template-columns:1fr}.stats,.g4,footer .cols{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}.arr{display:none}.flow{gap:12px}}
+@media(max-width:900px){.hero .g,.jobs-layout,.scan,.two{grid-template-columns:1fr}.stats,.g4,footer .cols{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}.arr{display:none}.flow{gap:12px}.chat-box{width:calc(100vw - 40px)}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
 [hidden]{display:none!important}
 .nav button.n.adm{background:#000;border-color:#000;color:#fff!important}
@@ -83,12 +104,13 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 </head>
 <body>
 <header><div class="nav" role="navigation" aria-label="Main">
-<a class="logo" href="#top">Kaam<span>Setu</span> ✦</a>
+<a class="logo" onclick="showPage('home')">Kaam<span>Setu</span> ✦</a>
 <button class="n" onclick="openM('Company Login','Company email')">🏢 <span data-t="n1">Company Login</span></button>
 <button class="n" onclick="openM('Job Seeker Login','Mobile number')">👷 <span data-t="n2">Job Seeker Login</span></button>
-<a class="n" href="#jobs" data-t="n3">Jobs</a>
-<a class="n" href="#complain" data-t="n4">Complain</a>
-<a class="n" href="#help" data-t="n5">Help &amp; Q/A</a>
+<button class="n" onclick="showPage('jobs')">🔎 <span data-t="n3">Jobs</span></button>
+<button class="n" onclick="showPage('ai')">🤖 <span data-t="n7">AI Scanner</span></button>
+<button class="n" onclick="goToHomeSec('complain')">🚨 <span data-t="n4">Complain</span></button>
+<button class="n" onclick="goToHomeSec('help')">💬 <span data-t="n5">Help &amp; Q/A</span></button>
 <button class="n adm" onclick="openM('Admin Login','Admin ID')">🔒 <span data-t="n6">Admin Login</span></button>
 <button class="n" id="lang" aria-label="Switch language">हिन्दी</button>
 </div></header>
@@ -98,7 +120,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div><span class="pill">Trusted • Verified • Voice-ready</span>
 <h1 data-t="h1">Find verified work. Hire trusted talent.</h1>
 <p data-t="hp">AI matches workers to nearby jobs with a transparent Fit Score, checks employers for trust, and works even with low internet.</p>
-<div class="btns"><a class="btn a" href="#jobs" data-t="b1">🔎 Find Work</a><button class="btn o" onclick="openM('Company Login','Company email')" data-t="b2">Hire Talent</button><a class="btn o" href="#ai">🤖 Skill-Gap Scanner</a></div></div>
+<div class="btns"><button class="btn a" onclick="showPage('jobs')" data-t="b1">🔎 Find Work</button><button class="btn o" onclick="openM('Company Login','Company email')" data-t="b2">Hire Talent</button><button class="btn o" onclick="showPage('ai')" data-t="b3">🤖 Skill-Gap Scanner</button></div></div>
 <div class="hc"><b>Live matches today</b>
 <div class="row"><span>Electrician – Indore</span><span class="pill">92% fit</span></div>
 <div class="row"><span>Delivery Partner – Bhopal</span><span class="pill">88% fit</span></div>
@@ -124,27 +146,14 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 
 <section style="background:var(--card)"><div class="wrap"><div class="sec-h"><h2>Everything in easy reach</h2><p>Every component is one tap away from the top bar and this grid.</p></div>
 <div class="grid g4">
-<a class="card" href="#jobs" style="text-decoration:none;color:inherit"><div class="ic">🔎</div><h3>Jobs Portal</h3><p>Filter by role, experience, salary and distance.</p></a>
-<a class="card" href="#ai" style="text-decoration:none;color:inherit"><div class="ic">🤖</div><h3>AI Profile Scanner</h3><p>Resume parsing, skill gaps, PDF report.</p></a>
-<a class="card" href="#complain" style="text-decoration:none;color:inherit"><div class="ic">🚨</div><h3>Report a Scam</h3><p>Flag fake companies and fraud.</p></a>
-<a class="card" href="#help" style="text-decoration:none;color:inherit"><div class="ic">💬</div><h3>Help &amp; Q/A</h3><p>FAQs and assistant for both sides.</p></a>
+<div class="card" onclick="showPage('jobs')" style="cursor:pointer"><div class="ic">🔎</div><h3>Jobs Portal</h3><p>Filter by role, experience, salary and distance.</p></div>
+<div class="card" onclick="showPage('ai')" style="cursor:pointer"><div class="ic">🤖</div><h3>AI Profile Scanner</h3><p>Resume parsing, skill gaps, PDF report.</p></div>
+<div class="card" onclick="goToHomeSec('complain')" style="cursor:pointer"><div class="ic">🚨</div><h3>Report a Scam</h3><p>Flag fake companies and fraud.</p></div>
+<div class="card" onclick="goToHomeSec('help')" style="cursor:pointer"><div class="ic">💬</div><h3>Help &amp; Q/A</h3><p>FAQs and assistant for both sides.</p></div>
 <div class="card"><div class="ic">📴</div><h3>Offline capable</h3><p>Apply by SMS or saved forms when signal is weak.</p></div>
 <div class="card"><div class="ic">🎙️</div><h3>Voice search</h3><p>Speak skills in Hindi or English.</p></div>
 <div class="card"><div class="ic">🛡️</div><h3>Trust markers</h3><p>Verified badges, wage checks, review scores.</p></div>
 <div class="card"><div class="ic">♿</div><h3>Accessible</h3><p>High contrast, large targets, WCAG 2.2 aims.</p></div></div></div></section>
-
-<section id="jobs"><div class="wrap"><div class="sec-h"><h2>Jobs near you</h2><p>Detect your location, filter, and see Fit Scores update instantly.</p></div>
-<div class="loc"><input id="loc" value="Indore, Madhya Pradesh" aria-label="Location"><button class="btn" id="gps">📍 Detect My Location</button></div>
-<div class="filters"><input id="q" placeholder="Search role e.g. electrician" aria-label="Role"><select id="exp" aria-label="Experience"><option value="99">Any experience</option><option value="0">Fresher</option><option value="2">Up to 2 yrs</option><option value="5">Up to 5 yrs</option></select><select id="sal" aria-label="Salary"><option value="0">Any salary</option><option value="15000">₹15,000+</option><option value="25000">₹25,000+</option><option value="40000">₹40,000+</option></select><button class="btn o" id="reset">Reset</button></div>
-<div class="jobs-layout"><div id="list"></div><div><div class="map" id="map"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="currentColor" opacity=".18" fill="none" stroke-width=".4"><path d="M0 30 L100 55"/><path d="M20 0 L55 100"/><path d="M0 80 L100 20"/><path d="M70 0 L40 100"/><circle cx="50" cy="50" r="18"/><circle cx="50" cy="50" r="36"/></g></svg></div>
-<p style="font-size:.85rem;color:var(--mut)">Schematic job map. <a id="osm" target="_blank" rel="noopener" href="https://www.openstreetmap.org/#map=11/22.72/75.86">Open full OpenStreetMap ↗</a></p></div></div></div></section>
-
-<section id="ai" style="background:var(--card)"><div class="wrap"><div class="sec-h"><h2>AI Profile Scanner &amp; Skill-Gap Plan</h2><p>Paste resume text or upload a file name, pick a target role, and get a step-by-step plan. (Demo runs in your browser; the production build calls the Gemini API.)</p></div>
-<div class="scan"><div><div class="drop" id="drop" tabindex="0">📄 Drag &amp; drop resume (PDF/Doc) here<br><small id="fn">or click to choose</small><input type="file" id="file" accept=".pdf,.doc,.docx,.txt" hidden></div>
-<label for="rt"><b>Resume / skills text</b></label><textarea id="rt" rows="5" placeholder="e.g. 3 years electrician, wiring, MCB panels, safety, Hindi"></textarea>
-<label for="role" style="display:block;margin-top:10px"><b>Desired role</b></label><select id="role"></select>
-<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="scanb">⚡ Analyze Profile</button><button class="btn o" id="pdfb">⬇ Download PDF Report</button></div></div>
-<div class="card" id="out"><h3>Results</h3><p>Run the scanner to see extracted skills, match %, gaps and your improvement plan.</p></div></div></div></section>
 
 <section><div class="wrap"><div class="sec-h"><h2>Reviews from our community</h2><p>Average rating 4.7 / 5 from 12,400+ verified reviews.</p></div>
 <div class="grid g3">
@@ -168,11 +177,36 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <details><summary>I was asked to pay a fee for a job. What now?</summary><p>Stop, do not pay, use the Complain form, and call 1930 or the Ministry of Labour helpline 14434.</p></details></div></section>
 </main>
 
+<!-- Dedicated Jobs Page -->
+<div id="page-jobs" class="page-view" hidden>
+<div class="wrap">
+<button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
+<section id="jobs" style="padding:20px 0"><div class="sec-h"><h2>Jobs near you</h2><p>Detect your location, filter, and see Fit Scores update instantly.</p></div>
+<div class="loc"><input id="loc" value="Indore, Madhya Pradesh" aria-label="Location"><button class="btn" id="gps">📍 Detect My Location</button></div>
+<div class="filters"><input id="q" placeholder="Search role e.g. electrician" aria-label="Role"><select id="exp" aria-label="Experience"><option value="99">Any experience</option><option value="0">Fresher</option><option value="2">Up to 2 yrs</option><option value="5">Up to 5 yrs</option></select><select id="sal" aria-label="Salary"><option value="0">Any salary</option><option value="15000">₹15,000+</option><option value="25000">₹25,000+</option><option value="40000">₹40,000+</option></select><button class="btn o" id="reset">Reset</button></div>
+<div class="jobs-layout"><div id="list"></div><div><div class="map" id="map"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="currentColor" opacity=".18" fill="none" stroke-width=".4"><path d="M0 30 L100 55"/><path d="M20 0 L55 100"/><path d="M0 80 L100 20"/><path d="M70 0 L40 100"/><circle cx="50" cy="50" r="18"/><circle cx="50" cy="50" r="36"/></g></svg></div>
+<p style="font-size:.85rem;color:var(--mut)">Schematic job map. <a id="osm" target="_blank" rel="noopener" href="https://www.openstreetmap.org/#map=11/22.72/75.86">Open full OpenStreetMap ↗</a></p></div></div></section>
+</div>
+</div>
+
+<!-- Dedicated AI Profile Scanner Page -->
+<div id="page-ai" class="page-view" hidden>
+<div class="wrap">
+<button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
+<section id="ai" style="padding:20px 0"><div class="sec-h"><h2>AI Profile Scanner &amp; Skill-Gap Plan</h2><p>Paste resume text or upload a file name, pick a target role, and get a step-by-step plan. (Demo runs in your browser; the production build calls the Gemini API.)</p></div>
+<div class="scan"><div><div class="drop" id="drop" tabindex="0">📄 Drag &amp; drop resume (PDF/Doc) here<br><small id="fn">or click to choose</small><input type="file" id="file" accept=".pdf,.doc,.docx,.txt" hidden></div>
+<label for="rt"><b>Resume / skills text</b></label><textarea id="rt" rows="5" placeholder="e.g. 3 years electrician, wiring, MCB panels, safety, Hindi"></textarea>
+<label for="role" style="display:block;margin-top:10px"><b>Desired role</b></label><select id="role"></select>
+<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="scanb">⚡ Analyze Profile</button><button class="btn o" id="pdfb">⬇ Download PDF Report</button></div></div>
+<div class="card" id="out"><h3>Results</h3><p>Run the scanner to see extracted skills, match %, gaps and your improvement plan.</p></div></div></section>
+</div>
+</div>
+
 <footer><div class="wrap"><div class="cols">
 <div><h4>Employment &amp; Social Security</h4><a href="https://epfindia.gov.in" target="_blank" rel="noopener">EPFO (epfindia.gov.in)</a><a href="https://esic.gov.in" target="_blank" rel="noopener">ESIC (esic.gov.in)</a><a href="https://ncs.gov.in" target="_blank" rel="noopener">National Career Service (ncs.gov.in)</a><a href="https://eshram.gov.in" target="_blank" rel="noopener">eShram (eshram.gov.in)</a><a href="https://skillindiadigital.gov.in" target="_blank" rel="noopener">Skill India Digital Hub (skillindiadigital.gov.in)</a></div>
 <div><h4>Data &amp; Compliance</h4><a href="https://labourbureau.gov.in" target="_blank" rel="noopener">Labour Bureau (labourbureau.gov.in)</a><a href="https://clc.gov.in" target="_blank" rel="noopener">Min. wages via CLC (clc.gov.in)</a><a href="https://mospi.gov.in" target="_blank" rel="noopener">PLFS by MoSPI (mospi.gov.in)</a><a href="https://udyamregistration.gov.in" target="_blank" rel="noopener">Udyam Registration (udyamregistration.gov.in)</a><a href="https://mca.gov.in" target="_blank" rel="noopener">MCA (mca.gov.in)</a><a href="https://data.gov.in" target="_blank" rel="noopener">Open Govt Data (data.gov.in)</a><a href="https://meity.gov.in" target="_blank" rel="noopener">DPDP Act info via MeitY (meity.gov.in)</a></div>
 <div><h4>Security &amp; Digital Services</h4><a href="https://cybercrime.gov.in" target="_blank" rel="noopener">Cyber Crime Portal (cybercrime.gov.in)</a><a href="https://digilocker.gov.in" target="_blank" rel="noopener">DigiLocker (digilocker.gov.in)</a><div class="help">National Cyber Crime Helpline <b>1930</b></div><div class="help">Ministry of Labour Helpline <b>14434</b></div></div>
-<div><h4>KaamSetu</h4><a href="#jobs">Jobs</a><a href="#ai">AI Scanner</a><a href="#complain">Complain</a><a href="#help">Help &amp; Q/A</a><a href="#how">How it works</a></div></div>
+<div><h4>KaamSetu</h4><a onclick="showPage('jobs')">Jobs</a><a onclick="showPage('ai')">AI Scanner</a><a onclick="goToHomeSec('complain')">Complain</a><a onclick="goToHomeSec('help')">Help &amp; Q/A</a><a onclick="goToHomeSec('how')">How it works</a></div></div>
 <div class="copy">© 2026 KaamSetu – Employer Discovery &amp; Hiring Intelligence. Independent platform; government links are for reference.</div></div></footer>
 
 <div id="app" class="app" hidden><div class="wrap" style="padding:28px 20px">
@@ -195,17 +229,58 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div id="v-admin" hidden><div class="grid g4" id="ast"></div>
 <div class="card" style="margin-top:18px"><div class="tabs"><button class="btn" data-tab="co">Companies</button><button class="btn o" data-tab="se">Job seekers</button><button class="btn o" data-tab="cp">Complaints</button></div><input id="aq" placeholder="Search records…" aria-label="Search records" style="margin:12px 0"><div style="overflow-x:auto" id="atab"></div><p style="font-size:.8rem;color:var(--mut)">Sample records for design preview.</p></div></div>
 </div></div>
+
 <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><h3 id="mt"></h3><label for="mu" id="ml"></label><input id="mu"><label for="mp">Password / OTP</label><input id="mp" type="password"><p id="merr" role="alert" style="color:#b91c1c;font-weight:600;margin:8px 0 0"></p><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" onclick="login()">Continue</button><button class="btn o" onclick="closeM()">Cancel</button></div><p style="font-size:.8rem;color:var(--mut)">Demo login – any details open the dashboard. No data is sent.</p></div></div>
+
+<!-- Chatbot Widget at Left Corner -->
+<div class="chat-widget">
+<div class="chat-box" id="chatbox">
+<div class="chat-head"><span>🤖 KaamSetu Assistant</span><button onclick="toggleChat()" aria-label="Close Chat">✕</button></div>
+<div class="chat-body" id="chatbody">
+<div class="chat-msg bot">Namaste! 👋 I am your KaamSetu AI Assistant. How can I help you today?</div>
+<div class="chat-chips">
+<button class="chat-chip" onclick="sendQuickMsg('How to find jobs?')">🔍 Find Jobs</button>
+<button class="chat-chip" onclick="sendQuickMsg('How to scan resume?')">🤖 AI Scanner</button>
+<button class="chat-chip" onclick="sendQuickMsg('How to report scam?')">🚨 Report Scam</button>
+</div>
+</div>
+<div class="chat-foot">
+<input id="chatinput" placeholder="Ask a question…" aria-label="Ask chatbot question" onkeydown="if(event.key==='Enter')sendChatMsg()">
+<button class="btn" onclick="sendChatMsg()">Send</button>
+</div>
+</div>
+<button class="chat-btn" onclick="toggleChat()" aria-label="Open Chatbot" title="KaamSetu AI Assistant">💬</button>
+</div>
+
 <div id="report"></div>
 
 <script>
 const $=s=>document.querySelector(s);
-const T={en:{n1:"Company Login",n2:"Job Seeker Login",n3:"Jobs",n4:"Complain",n5:"Help & Q/A",n6:"Admin Login",h1:"Find verified work. Hire trusted talent.",hp:"AI matches workers to nearby jobs with a transparent Fit Score, checks employers for trust, and works even with low internet.",b1:"🔎 Find Work",b2:"Hire Talent"},
-hi:{n1:"कंपनी लॉगिन",n2:"जॉब सीकर लॉगिन",n3:"नौकरियां",n4:"शिकायत",n5:"सहायता / प्रश्न",n6:"एडमिन लॉगिन",h1:"सत्यापित काम खोजें। भरोसेमंद लोग रखें।",hp:"AI आपको पास की नौकरियों से Fit Score के साथ मिलाता है, कंपनियों की जांच करता है और कम इंटरनेट पर भी चलता है।",b1:"🔎 काम खोजें",b2:"कर्मचारी रखें"}};
+const T={en:{n1:"Company Login",n2:"Job Seeker Login",n3:"Jobs",n4:"Complain",n5:"Help & Q/A",n6:"Admin Login",n7:"AI Scanner",h1:"Find verified work. Hire trusted talent.",hp:"AI matches workers to nearby jobs with a transparent Fit Score, checks employers for trust, and works even with low internet.",b1:"🔎 Find Work",b2:"Hire Talent",b3:"🤖 Skill-Gap Scanner"},
+hi:{n1:"कंपनी लॉगिन",n2:"जॉब सीकर लॉगिन",n3:"नौकरियां",n4:"शिकायत",n5:"सहायता / प्रश्न",n6:"एडमिन लॉगिन",n7:"AI स्कैनर",h1:"सत्यापित काम खोजें। भरोसेमंद लोग रखें।",hp:"AI आपको पास की नौकरियों से Fit Score के साथ मिलाता है, कंपनियों की जांच करता है और कम इंटरनेट पर भी चलता है।",b1:"🔎 काम खोजें",b2:"कर्मचारी रखें",b3:"🤖 कौशल-अंतर स्कैनर"}};
 let lg="en";$("#lang").onclick=()=>{lg=lg=="en"?"hi":"en";document.documentElement.lang=lg;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=T[lg][e.dataset.t]);$("#lang").textContent=lg=="en"?"हिन्दी":"English"};
 function openM(t,l){$("#mu").value="";$("#mp").value="";$("#merr").textContent="";$("#mt").textContent=t;$("#ml").textContent=l;$("#mu").setAttribute("for","");$("#modal").classList.add("on");$("#mu").focus()}
 function closeM(){$("#modal").classList.remove("on")}
 addEventListener("keydown",e=>{if(e.key=="Escape")closeM()});
+
+// navigation
+function showPage(p){
+  $("#top").hidden = (p !== 'home');
+  $("#page-jobs").hidden = (p !== 'jobs');
+  $("#page-ai").hidden = (p !== 'ai');
+  $("#app").hidden = true;
+  $("footer").hidden = false;
+  scrollTo(0,0);
+  if(p === 'jobs') render();
+}
+function goToHomeSec(id){
+  showPage('home');
+  setTimeout(()=>{
+    const el = document.getElementById(id);
+    if(el) el.scrollIntoView({behavior:'smooth'});
+  },50);
+}
+
 // counters + flow
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add("in");io.unobserve(e.target)}),{threshold:.3});io.observe($("#flow"));
 document.querySelectorAll("[data-n]").forEach(el=>{const n=+el.dataset.n;let c=0;const st=Math.ceil(n/60);const t=setInterval(()=>{c=Math.min(n,c+st);el.textContent=c.toLocaleString("en-IN");if(c>=n)clearInterval(t)},25)});
@@ -242,6 +317,48 @@ last={role,have,gap,pct,yrs,plan};
 $("#out").innerHTML=`<h3>Match for ${role}: ${pct}%</h3><div class="bar"><i style="width:${pct}%"></i></div><p><b>Experience found:</b> ${yrs} yrs</p><p><b>Skills found:</b> ${have.map(s=>`<span class="chip y">${s}</span>`).join("")||"none yet"}</p><p><b>Skill gaps:</b> ${gap.map(s=>`<span class="chip n">${s}</span>`).join("")||"none"}</p><h3>Improvement plan</h3><ol>${plan.map(p=>`<li>${p.replace(/^Step \d+: /,"")}</li>`).join("")}</ol>`}
 $("#pdfb").onclick=()=>{if(!last)$("#scanb").click();const d=last;$("#report").innerHTML=`<h1>Skill-Gap &amp; Improvement Report</h1><p>Target role: <b>${d.role}</b> • Match: <b>${d.pct}%</b> • Experience: ${d.yrs}</p><h3>Skills found</h3><p>${d.have.join(", ")||"none"}</p><h3>Skill gaps</h3><p>${d.gap.join(", ")||"none"}</p><h3>Plan</h3><ol>${d.plan.map(p=>`<li>${p}</li>`).join("")}</ol><p><small>Generated by KaamSetu. In the print dialog choose “Save as PDF”.</small></p>`;print()};
 $("#cs").onclick=()=>{if($("#ct").value.trim())CMP.unshift([$("#cn").value.trim()||"Unnamed",$("#ct").value.trim().slice(0,60),"Open"]);$("#cm").textContent=$("#ct").value.trim()?"Thank you. Your complaint has been recorded (demo).":"Please describe what happened.";};
+
+// Chatbot Logic
+function toggleChat(){
+  $("#chatbox").classList.toggle("on");
+  if($("#chatbox").classList.contains("on")) $("#chatinput").focus();
+}
+function addChatMsg(text, isUser){
+  const b = $("#chatbody");
+  const div = document.createElement("div");
+  div.className = "chat-msg " + (isUser ? "user" : "bot");
+  div.textContent = text;
+  b.appendChild(div);
+  b.scrollTop = b.scrollHeight;
+}
+function botReply(q){
+  const t = q.toLowerCase();
+  let reply = "I can help you find jobs, scan your profile for skill gaps, or guide you through company verification and scam reporting. What would you like to know?";
+  if(t.includes("job") || t.includes("work") || t.includes("find")){
+    reply = "You can browse and filter verified jobs on our dedicated Jobs page! Click 'Jobs' in the header or button on home to view jobs near you with Fit Scores.";
+  } else if(t.includes("scan") || t.includes("skill") || t.includes("resume") || t.includes("ai")){
+    reply = "Use our dedicated AI Profile Scanner page to analyze your resume, identify skill gaps, and generate a step-by-step improvement plan!";
+  } else if(t.includes("scam") || t.includes("fake") || t.includes("complain") || t.includes("fraud")){
+    reply = "Never pay money for a job offer! You can report suspicious employers using our Complain form on the home page or call helpline 1930.";
+  } else if(t.includes("login") || t.includes("seeker") || t.includes("company") || t.includes("admin")){
+    reply = "Click 'Company Login' or 'Job Seeker Login' in the top bar to access your personalized dashboard.";
+  } else if(t.includes("hi") || t.includes("hello") || t.includes("namaste")){
+    reply = "Namaste! 🙏 Welcome to KaamSetu. How can I assist your job search or hiring today?";
+  }
+  setTimeout(()=>addChatMsg(reply, false), 400);
+}
+function sendChatMsg(){
+  const input = $("#chatinput");
+  const val = input.value.trim();
+  if(!val) return;
+  addChatMsg(val, true);
+  input.value = "";
+  botReply(val);
+}
+function sendQuickMsg(msg){
+  addChatMsg(msg, true);
+  botReply(msg);
+}
 </script>
 <script>
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -252,14 +369,13 @@ const ch=s=>`<span class="chip ${/Verified|Active|Hired|Resolved/.test(s)?"y":/F
 let prof={name:"",role:"Electrician",qual:"10th pass",exp:0,skills:[]},applied=new Set(),mine=[],sl=new Set(),tab="co";
 const cands=[["Ramesh Kumar","Electrician",3,91],["Aman Patel","CNC Operator",2,87],["Priya Verma","Software Tester",2,84],["Mohan Lal","Delivery Partner",4,79]];
 $("#pr").innerHTML=Object.keys(R).map(r=>`<option>${r}</option>`).join("");
-function home(k){$("#app").hidden=true;$("main").hidden=false;$("footer").hidden=false;if(!k)scrollTo(0,0)}
+function home(k){showPage('home')}
 function show(r){const T={seeker:"👷 Job Seeker Dashboard",company:"🏢 Company Dashboard",admin:"🔒 Admin Control Panel"};
-$("main").hidden=true;$("footer").hidden=true;$("#app").hidden=false;["seeker","company","admin"].forEach(x=>$("#v-"+x).hidden=x!=r);
+$("#top").hidden=true;$("#page-jobs").hidden=true;$("#page-ai").hidden=true;$("footer").hidden=true;$("#app").hidden=false;["seeker","company","admin"].forEach(x=>$("#v-"+x).hidden=x!=r);
 $("#apt").textContent=T[r];$(".bar2").style.borderColor=r=="admin"?"#000":"";scrollTo(0,0);({seeker:rs,company:rc,admin:ra})[r]()}
 function login(){const u=$("#mu").value.trim(),p=$("#mp").value.trim();if(!u||!p){$("#merr").textContent="Please enter both fields.";return}
 const r={"Company Login":"company","Job Seeker Login":"seeker","Admin Login":"admin"}[$("#mt").textContent];closeM();show(r)}
 $(".logo").addEventListener("click",()=>home());
-document.querySelectorAll(".nav a.n").forEach(a=>a.addEventListener("click",()=>home(1)));
 // seeker
 function sync(){prof.name=$("#pn").value.trim();prof.role=$("#pr").value;prof.qual=$("#pq").value;prof.exp=Math.max(0,+$("#pe").value||0);rs()}
 function rmS(i){prof.skills.splice(i,1);rs()}
@@ -276,7 +392,7 @@ $("#psa").onclick=()=>{const v=$("#ps").value.trim();if(v&&!prof.skills.includes
 $("#ps").addEventListener("keydown",e=>{if(e.key=="Enter")$("#psa").click()});
 ["pn","pr","pq","pe"].forEach(i=>$("#"+i).addEventListener("input",sync));
 $("#psv").onclick=()=>{sync();$("#pmsg").textContent="Profile saved ✓"};
-$("#pscan").onclick=()=>{home();$("#rt").value=prof.skills.join(", ")+(prof.exp?`, ${prof.exp} years experience`:"");$("#role").value=prof.role;$("#ai").scrollIntoView()};
+$("#pscan").onclick=()=>{showPage('ai');$("#rt").value=prof.skills.join(", ")+(prof.exp?`, ${prof.exp} years experience`:"");$("#role").value=prof.role};
 // company
 function sh(n){sl.has(n)?sl.delete(n):sl.add(n);rc()}
 function rc(){$("#cand").innerHTML=cands.map(c=>`<div class="job" style="border-bottom:1px solid var(--line);padding:8px 0"><div><b>${c[0]}</b><br><small>${c[1]} • ${c[2]} yrs • ${c[3]}% fit</small></div><button class="btn ${sl.has(c[0])?"a":"o"}" style="min-height:40px" onclick="sh('${c[0]}')">${sl.has(c[0])?"Shortlisted ✓":"Shortlist"}</button></div>`).join("");
@@ -294,4 +410,3 @@ $("#aq").oninput=ra;
 </script>
 </body>
 </html>
-
