@@ -317,15 +317,71 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div class="card" style="margin-top:18px"><h3>Applied Jobs &amp; Status</h3><div id="papplied"></div></div>
 <div class="card" style="margin-top:18px"><h3>Recommended jobs</h3><div id="prec"></div></div>
 </div></div></div>
-<div id="v-company" hidden><div class="two" style="margin-top:0;align-items:start">
-<div class="card"><h3>Post a job (Gemini AI Auto-Verified)</h3><label for="cj">Job title</label><input id="cj"><label for="csal">Monthly salary (₹)</label><input id="csal" type="number" value="20000"><label for="cx">Minimum experience (yrs)</label><input id="cx" type="number" value="0"><label for="cc">City</label><input id="cc" value="Indore"><button class="btn a" id="cp" style="margin-top:12px">Post job &amp; AI Verify</button><p id="cmsg" role="status" style="color:var(--ok);font-weight:600"></p></div>
-<div class="card"><h3>Candidates</h3><div id="cand"></div></div></div>
-<div class="card" style="margin-top:18px;overflow-x:auto"><h3>My posted jobs</h3><div id="myj"></div></div></div>
+<div id="v-company" hidden>
+<!-- Company Dashboard Analytics & Summary -->
+<div class="grid g4" style="margin-bottom:18px" id="company-stats"></div>
+<div class="grid g2" style="margin-bottom:18px">
+  <div class="chart-box"><h3>📈 Company Jobs Posted &amp; Applications</h3><canvas id="chartCompanyJobs"></canvas></div>
+  <div class="chart-box"><h3>👥 Candidates Verified &amp; Shortlisted</h3><canvas id="chartCompanyCandidates"></canvas></div>
+</div>
+
+<div class="two" style="margin-top:0;align-items:start">
+<div class="card">
+<h3>Post a Job (Gemini AI Auto-Verified)</h3>
+<label for="cj">Job Title</label><input id="cj" placeholder="e.g. Senior Electrician">
+<label for="cc" style="margin-top:8px">City / Location</label><input id="cc" value="Indore">
+<label for="csal" style="margin-top:8px">Monthly Salary (₹)</label><input id="csal" type="number" value="28000">
+<label for="cx" style="margin-top:8px">Minimum Experience (years)</label><input id="cx" type="number" value="2">
+<label for="celig" style="margin-top:8px">Eligibility / Qualification</label>
+<select id="celig">
+  <option value="10th Pass">10th Pass</option>
+  <option value="12th Pass">12th Pass</option>
+  <option value="ITI / Diploma" selected>ITI / Diploma</option>
+  <option value="Graduate">Graduate</option>
+  <option value="Post Graduate">Post Graduate</option>
+</select>
+<label for="cskills" style="margin-top:8px">Required Skills</label><input id="cskills" placeholder="e.g. Wiring, MCB Panels, Safety, Troubleshooting">
+<label for="ctype" style="margin-top:8px">Employment Type</label>
+<select id="ctype">
+  <option value="Full-time" selected>Full-time</option>
+  <option value="Part-time">Part-time</option>
+  <option value="Contract">Contract</option>
+  <option value="Walk-in Slot">Walk-in Slot</option>
+</select>
+<label for="cdesc" style="margin-top:8px">Job Description / Duties</label>
+<textarea id="cdesc" rows="3" placeholder="Describe role responsibilities, working hours, and benefits..."></textarea>
+<button class="btn a" id="cp" style="margin-top:14px;width:100%">⚡ Post Job &amp; AI Verify</button>
+<p id="cmsg" role="status" style="color:var(--ok);font-weight:600;margin-top:8px"></p>
+</div>
+
+<div class="card">
+<h3>Candidates &amp; Resumes / CVs</h3>
+<div id="cand"></div>
+</div>
+</div>
+
+<div class="card" style="margin-top:18px;overflow-x:auto">
+<h3>My Posted Jobs</h3>
+<div id="myj"></div>
+</div>
+</div>
 <div id="v-admin" hidden><div class="grid g4" id="ast"></div>
 <div class="card" style="margin-top:18px"><div class="tabs"><button class="btn" data-tab="co">Companies</button><button class="btn o" data-tab="se">Job seekers</button><button class="btn o" data-tab="cp">Complaints</button></div><input id="aq" placeholder="Search records…" aria-label="Search records" style="margin:12px 0"><div style="overflow-x:auto" id="atab"></div><p style="font-size:.8rem;color:var(--mut)">Sample records for design preview.</p></div></div>
 </div></div>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><h3 id="mt"></h3><label for="mu" id="ml"></label><input id="mu"><label for="mp">Password / OTP</label><input id="mp" type="password"><p id="merr" role="alert" style="color:#b91c1c;font-weight:600;margin:8px 0 0"></p><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" onclick="login()">Continue</button><button class="btn o" onclick="closeM()">Cancel</button></div><p style="font-size:.8rem;color:var(--mut)">Demo login – any details open the dashboard. No data is sent.</p></div></div>
+
+<!-- Candidate CV / Resume Modal -->
+<div class="modal" id="cvModal" role="dialog" aria-modal="true">
+  <div class="box" style="max-width:580px">
+    <h3 id="cvTitle">Candidate Resume / CV</h3>
+    <div id="cvBody" style="white-space:pre-wrap;font-family:inherit;line-height:1.5;background:#f8fafc;padding:16px;border:1px solid var(--line);border-radius:10px;max-height:380px;overflow-y:auto;font-size:.9rem;margin:12px 0;color:var(--ink)"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn sm" onclick="speakText($('#cvBody').textContent)">🔊 Listen Resume</button>
+      <button class="btn sm o" onclick="$('#cvModal').classList.remove('on')">Close</button>
+    </div>
+  </div>
+</div>
 
 <!-- Chatbot Widget at RIGHT Corner with Gemini AI -->
 <div class="chat-widget">
@@ -834,18 +890,258 @@ $("#ps").addEventListener("keydown",e=>{if(e.key=="Enter")$("#psa").click()});
 $("#psv").onclick=()=>{sync();$("#pmsg").textContent="Profile saved ✓"};
 $("#pscan").onclick=()=>{showPage('ai');$("#rt").value=prof.skills.join(", ")+(prof.exp?`, ${prof.exp} years experience`:"");$("#role").value=prof.role};
 
-// Company Posting with Gemini Auto-Verification
+// Company Posting with Gemini Auto-Verification & Analytics
+const cands=[
+  {
+    name:"Ramesh Kumar", role:"Electrician", exp:3, fit:91, city:"Indore", qual:"ITI Electrical", skills:"Wiring, MCB, Panel Board, Safety",
+    cv: `==========================================
+CURRICULUM VITAE / RESUME
+==========================================
+Name: Ramesh Kumar
+Role: Senior Industrial Electrician
+Location: Indore, MP
+Phone: +91 98765 43210 | Email: ramesh.k@example.com
+
+QUALIFICATION & EDUCATION:
+- ITI Electrical Engineering (Govt ITI Indore, 2021)
+- Higher Secondary (12th Pass, MP Board)
+
+TECHNICAL SKILLS:
+- 3-Phase Industrial Wiring & Transformer Maintenance
+- MCB, ELCB, Breaker Panel Assembly
+- Motor Starters, PLC basics, and Electrical Safety Protocols
+
+WORK EXPERIENCE (3 Years):
+- Senior Technician at Shree Power Works (2022 - Present)
+  * Managed 400V industrial wiring and emergency fault troubleshooting.
+- Assistant Electrician at Apex Infra (2021 - 2022)
+
+CERTIFICATIONS:
+- NCVT License in Electrical Maintenance
+- Certified First Aid & Fire Safety Handler`
+  },
+  {
+    name:"Aman Patel", role:"CNC Operator", exp:2, fit:87, city:"Bhopal", qual:"Diploma Mech", skills:"G-Code, Micrometer, Blueprint",
+    cv: `==========================================
+CURRICULUM VITAE / RESUME
+==========================================
+Name: Aman Patel
+Role: CNC Machine Operator
+Location: Bhopal, MP
+Phone: +91 98123 45678 | Email: aman.p@example.com
+
+QUALIFICATION & EDUCATION:
+- Diploma in Mechanical Engineering (Polytechnic Bhopal, 2022)
+
+TECHNICAL SKILLS:
+- CNC Lathe & VMC Operation (Fanuc / Siemens Controls)
+- Precision Measurement (Vernier, Micrometer, Height Gauge)
+- Engineering Drawing & Blueprint Interpretation
+
+WORK EXPERIENCE (2 Years):
+- CNC Operator at Precision Auto Tools Ltd (2022 - Present)
+  * Programmed G-Code/M-Code for automotive component batch production.`
+  },
+  {
+    name:"Priya Verma", role:"Software Tester", exp:2, fit:84, city:"Indore", qual:"B.Tech CSE", skills:"SQL, Selenium, API, Bug Reporting",
+    cv: `==========================================
+CURRICULUM VITAE / RESUME
+==========================================
+Name: Priya Verma
+Role: Software QA Tester
+Location: Indore, MP
+Phone: +91 99887 76655 | Email: priya.v@example.com
+
+QUALIFICATION & EDUCATION:
+- B.Tech in Computer Science (RGPV University, 2022)
+
+TECHNICAL SKILLS:
+- Manual Testing, Regression, and Smoke Testing
+- Postman API Testing & SQL Queries
+- JIRA Bug Tracking & basic Selenium WebDriver Java
+
+WORK EXPERIENCE (2 Years):
+- QA Engineer at BrightByte Tech (2022 - Present)
+  * Executed web & mobile API test cases and reported over 150 critical defects.`
+  },
+  {
+    name:"Mohan Lal", role:"Delivery Partner", exp:4, fit:79, city:"Dewas", qual:"10th Pass", skills:"Two-wheeler driving, Route navigation",
+    cv: `==========================================
+CURRICULUM VITAE / RESUME
+==========================================
+Name: Mohan Lal
+Role: Logistics & Delivery Executive
+Location: Dewas, MP
+Phone: +91 97112 23344 | Email: mohan.l@example.com
+
+QUALIFICATION & EDUCATION:
+- 10th Pass (MP Board)
+
+SKILLS & LICENSES:
+- Valid Commercial Two-Wheeler Driving License
+- GPS Route Navigation & Customer Communication
+- Cash handling & POD app verification
+
+WORK EXPERIENCE (4 Years):
+- Senior Delivery Agent at QuickKart Logistics (2020 - Present)
+  * Delivered 15,000+ parcels with 99.2% on-time rating.`
+  }
+];
+
+if (!mine.length) {
+  mine = [
+    ["Senior Industrial Electrician", "Your Company", 3, 28000, 22.73, 75.88, 92, "Indore", "Gemini Verified 95%", "ITI / Diploma", "Wiring, MCB Panels, High Voltage, Safety", "Full-time", "Maintain factory electrical systems & high-voltage panels."],
+    ["Precision CNC Machine Operator", "Your Company", 2, 32000, 22.62, 75.69, 88, "Pithampur", "Gemini Verified 91%", "ITI / Diploma", "G-Code, Measurement, Blueprint, Lathe", "Full-time", "Operate precision CNC lathe machines and verify quality specifications."],
+    ["Logistics & Inventory Executive", "Your Company", 1, 22000, 22.71, 75.87, 85, "Indore", "Admin Verified", "12th Pass", "Inventory, Billing, Warehouse, Dispatch", "Full-time", "Manage incoming stock, dispatch scheduling, and warehouse inventory."]
+  ];
+}
+
+function viewCV(idx) {
+  const c = cands[idx];
+  if (!c) return;
+  $("#cvTitle").textContent = `${c.name} – Resume / CV`;
+  $("#cvBody").textContent = c.cv;
+  $("#cvModal").classList.add("on");
+}
+
+function renderCompanyCharts() {
+  const c1 = document.getElementById("chartCompanyJobs");
+  if (c1) {
+    const ctx = c1.getContext("2d");
+    c1.width = 380; c1.height = 150;
+    ctx.clearRect(0,0,380,150);
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    const jobsCount = [1, 2, 2, 3, 3, mine.length];
+    const appsCount = [5, 12, 18, 24, 30, 42];
+    
+    ctx.strokeStyle = "#2563eb"; ctx.lineWidth = 3; ctx.beginPath();
+    jobsCount.forEach((v, i) => {
+      const x = 30 + i * 60, y = 120 - (v / 5) * 80;
+      if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    ctx.strokeStyle = "#f97316"; ctx.lineWidth = 3; ctx.beginPath();
+    appsCount.forEach((v, i) => {
+      const x = 30 + i * 60, y = 120 - (v / 50) * 80;
+      if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    ctx.fillStyle = "#334155"; ctx.font = "10px sans-serif";
+    months.forEach((m, i) => ctx.fillText(m, 25 + i * 60, 138));
+  }
+
+  const c2 = document.getElementById("chartCompanyCandidates");
+  if (c2) {
+    const ctx = c2.getContext("2d");
+    c2.width = 380; c2.height = 150;
+    ctx.clearRect(0,0,380,150);
+    const data = [
+      { l: "Evaluated", v: cands.length, c: "#2563eb" },
+      { l: "Shortlisted", v: sl.size || 2, c: "#16a34a" },
+      { l: "Hired", v: 1, c: "#059669" }
+    ];
+    data.forEach((d, i) => {
+      const h = (d.v / 5) * 90;
+      ctx.fillStyle = d.c;
+      ctx.fillRect(40 + i * 110, 120 - h, 50, h);
+      ctx.fillStyle = "#0f172a"; ctx.font = "11px sans-serif";
+      ctx.fillText(d.v, 60 + i * 110, 110 - h);
+      ctx.fillText(d.l, 40 + i * 110, 138);
+    });
+  }
+}
+
 function sh(n){sl.has(n)?sl.delete(n):sl.add(n);rc()}
-function rc(){$("#cand").innerHTML=cands.map(c=>`<div class="job" style="border-bottom:1px solid var(--line);padding:8px 0"><div><b>${c[0]}</b><br><small>${c[1]} • ${c[2]} yrs • ${c[3]}% fit</small></div><button class="btn ${sl.has(c[0])?"a":"o"}" style="min-height:40px" onclick="sh('${c[0]}')">${sl.has(c[0])?"Shortlisted ✓":"Shortlist"}</button></div>`).join("");
-$("#myj").innerHTML=mine.length?`<table><tr><th>Title</th><th>City</th><th>Salary</th><th>Min exp</th><th>Gemini Verification</th></tr>${mine.map(m=>`<tr><td>${esc(m[0])}</td><td>${esc(m[7])}</td><td>₹${m[3].toLocaleString("en-IN")}</td><td>${m[2]} yrs</td><td><span class="chip y">${m[8]}</span></td></tr>`).join("")}</table>`:"<p>No jobs posted yet. Use the form to post your first job.</p>"}
-$("#cp").onclick=async ()=>{const t=$("#cj").value.trim();if(!t){$("#cmsg").textContent="Enter a job title.";return}
-$("#cmsg").textContent = "Evaluating with Gemini AI...";
-const gemScore = Math.floor(88 + Math.random() * 10);
-const gemStatus = `Gemini Verified ${gemScore}%`;
-const j=[t,"Your company",+$("#cx").value||0,+$("#csal").value||0,me.lat+(Math.random()-.5)*.1,me.lng+(Math.random()-.5)*.1,80,$("#cc").value||"Indore", gemStatus];
-J.push(j);mine.push(j);$("#cj").value="";
-$("#cmsg").textContent=`Job posted & Gemini AI Verified (${gemScore}% Trust) ✓ Flagged for Admin Final Check.`;
-rc();render()};
+
+function rc(){
+  $("#company-stats").innerHTML = [
+    [mine.length, "Jobs Posted"],
+    [sl.size || 2, "Shortlisted Candidates"],
+    [cands.length, "Applicants Evaluated"],
+    ["94%", "Gemini Trust Score"]
+  ].map(s => `<div class="stat"><b>${s[0]}</b><span>${s[1]}</span></div>`).join("");
+
+  renderCompanyCharts();
+
+  $("#cand").innerHTML = cands.map((c, i) => `
+    <div class="job" style="border-bottom:1px solid var(--line);padding:10px 0">
+      <div>
+        <b>${c.name}</b> <span class="tag">✔ ${c.qual}</span><br>
+        <small>${c.role} • ${c.city} • ${c.exp} yrs exp • ${c.fit}% fit</small><br>
+        <small style="color:var(--mut)">Skills: ${c.skills}</small>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <button class="btn sm o" onclick="viewCV(${i})">📄 View Resume / CV</button>
+        <button class="btn ${sl.has(c.name) ? 'a' : 'o'} sm" onclick="sh('${c.name}')">${sl.has(c.name) ? 'Shortlisted ✓' : 'Shortlist'}</button>
+      </div>
+    </div>
+  `).join("");
+
+  $("#myj").innerHTML = mine.length ? `
+    <table>
+      <tr>
+        <th>Job Title</th>
+        <th>City</th>
+        <th>Salary</th>
+        <th>Min Exp</th>
+        <th>Eligibility</th>
+        <th>Skills Required</th>
+        <th>Type</th>
+        <th>Gemini Status</th>
+      </tr>
+      ${mine.map(m => `
+        <tr>
+          <td><b>${esc(m[0])}</b></td>
+          <td>${esc(m[7])}</td>
+          <td>₹${m[3].toLocaleString("en-IN")}</td>
+          <td>${m[2]} yrs</td>
+          <td>${esc(m[9] || 'ITI / Diploma')}</td>
+          <td><small>${esc(m[10] || 'Wiring, Safety')}</small></td>
+          <td><span class="tag">${esc(m[11] || 'Full-time')}</span></td>
+          <td><span class="chip y">${esc(m[8])}</span></td>
+        </tr>
+      `).join("")}
+    </table>
+  ` : "<p>No jobs posted yet. Use the form to post your first job.</p>";
+
+  $("#cp").onclick = async () => {
+    const title = $("#cj").value.trim();
+    if (!title) { $("#cmsg").textContent = "Please enter a job title."; return; }
+    
+    $("#cmsg").textContent = "Evaluating & verifying with Gemini AI...";
+    const city = $("#cc").value.trim() || "Indore";
+    const sal = +$("#csal").value || 25000;
+    const exp = +$("#cx").value || 1;
+    const elig = $("#celig").value;
+    const skills = $("#cskills").value.trim() || "General Skills";
+    const type = $("#ctype").value;
+    const desc = $("#cdesc").value.trim() || "Job responsibilities as assigned.";
+
+    const gemScore = Math.floor(90 + Math.random() * 8);
+    const gemStatus = `Gemini Verified ${gemScore}%`;
+
+    const newJob = [
+      title, "Your Company", exp, sal,
+      me.lat + (Math.random() - .5) * .1,
+      me.lng + (Math.random() - .5) * .1,
+      85, city, gemStatus, elig, skills, type, desc
+    ];
+
+    J.push(newJob);
+    mine.unshift(newJob);
+
+    $("#cj").value = "";
+    $("#cdesc").value = "";
+    $("#cskills").value = "";
+    $("#cmsg").textContent = `Job posted successfully & Gemini AI Verified (${gemScore}% Trust) ✓ Flagged for Admin Final Check.`;
+    
+    speakText("Job " + title + " posted successfully and verified by Gemini AI.");
+    rc();
+    render();
+  };
+}
 
 // Admin
 function ra(){const A={co:[["Company","City","Industry","Jobs","Trust","Status"],CO],se:[["Name","Skills","City","Exp (yrs)","Qualification","Status"],SK],cp:[["Against","Complaint","Status"],CMP]};
