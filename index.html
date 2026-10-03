@@ -293,13 +293,24 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div class="bar2"><h2 id="apt"></h2><div><button class="btn o" onclick="home()">← Home</button> <button class="btn" onclick="home()">Logout</button></div></div>
 <div id="v-seeker" hidden><div class="two" style="margin-top:0;align-items:start">
 <div class="card"><h3>My profile</h3>
-<label for="pn">Full name</label><input id="pn">
-<label for="pr">Desired job role</label><select id="pr"></select>
-<label for="pq">Qualification</label><select id="pq"><option>10th pass</option><option>12th pass</option><option>ITI / Diploma</option><option>Graduate</option><option>Post graduate</option></select>
-<label for="pe">Experience (years)</label><input id="pe" type="number" min="0" max="40" value="0">
-<label for="ps">Add a skill</label><div class="loc"><input id="ps" placeholder="e.g. wiring"><button class="btn" id="psa">Add</button></div>
+<label for="pn">Full name</label><input id="pn" placeholder="e.g. Ramesh Kumar">
+<label for="ploc" style="display:block;margin-top:8px">Location / City</label><input id="ploc" value="Indore, MP">
+<label for="pr" style="display:block;margin-top:8px">Desired job role</label><select id="pr"></select>
+<label for="pq" style="display:block;margin-top:8px">Qualification</label><select id="pq"><option>10th pass</option><option>12th pass</option><option>ITI / Diploma</option><option>Graduate</option><option>Post graduate</option></select>
+<label for="pe" style="display:block;margin-top:8px">Experience (years)</label><input id="pe" type="number" min="0" max="40" value="0">
+
+<!-- Resume / CV Upload Section -->
+<div style="margin-top:12px;padding:12px;background:#f8fafc;border:1px solid var(--line);border-radius:10px">
+  <label for="pfile" style="display:block;font-weight:600">📄 Upload Resume / CV (PDF / Doc / Text)</label>
+  <input type="file" id="pfile" accept=".pdf,.doc,.docx,.txt" style="margin-top:4px;min-height:auto">
+  <small id="pfilename" style="display:block;color:var(--mut);margin-top:2px">No file uploaded yet</small>
+  <label for="presetext" style="display:block;margin-top:8px;font-weight:600">Or Paste Resume Text</label>
+  <textarea id="presetext" rows="2" placeholder="Paste your resume summary or work history..."></textarea>
+</div>
+
+<label for="ps" style="display:block;margin-top:10px">Add a skill</label><div class="loc"><input id="ps" placeholder="e.g. wiring"><button class="btn" id="psa">Add</button></div>
 <div id="ptags"></div>
-<button class="btn a" id="psv" style="margin-top:12px">Save profile</button><p id="pmsg" role="status" style="color:var(--ok);font-weight:600"></p></div>
+<button class="btn a" id="psv" style="margin-top:12px;width:100%">Save profile</button><p id="pmsg" role="status" style="color:var(--ok);font-weight:600;margin-top:6px"></p></div>
 <div>
 <div class="card"><h3>My dashboard &amp; Progress</h3>
 <div id="pst" class="grid g4" style="gap:10px"></div>
@@ -870,7 +881,7 @@ const SK=[
 ];
 const CMP=[["QuickJobs Agency","Asked for a registration fee","Open (Gemini 94%)"],["FastHire Co.","Fake offer letter","Under review"],["Unknown Recruiter","Salary not paid","Resolved"]];
 const ch=s=>`<span class="chip ${/Verified|Active|Hired|Resolved/.test(s)?"y":/Flagged|Open/.test(s)?"n":"m"}">${esc(s)}</span>`;
-let prof={name:"",role:"Electrician",qual:"10th pass",exp:0,skills:[]},applied=new Set(["Electrician"]),mine=[],sl=new Set(),tab="co";
+let prof={name:"",loc:"Indore, MP",role:"Electrician",qual:"10th pass",exp:0,skills:[],resume:"",fileName:""},applied=new Set(["Electrician"]),mine=[],sl=new Set(),tab="co";
 $("#pr").innerHTML=Object.keys(R).map(r=>`<option>${r}</option>`).join("");
 function home(k){showPage('home')}
 
@@ -920,15 +931,24 @@ function login(){
 $(".logo").addEventListener("click",()=>home());
 
 // Seeker Dashboard & Alerts
-function sync(){prof.name=$("#pn").value.trim();prof.role=$("#pr").value;prof.qual=$("#pq").value;prof.exp=Math.max(0,+$("#pe").value||0);rs()}
+function sync(){
+  prof.name=$("#pn").value.trim();
+  prof.loc=$("#ploc").value.trim() || "Indore, MP";
+  prof.role=$("#pr").value;
+  prof.qual=$("#pq").value;
+  prof.exp=Math.max(0,+$("#pe").value||0);
+  prof.resume=$("#presetext").value.trim();
+  rs();
+}
 function rmS(i){prof.skills.splice(i,1);rs()}
 function ap(t){applied.has(t)?applied.delete(t):applied.add(t);rs()}
-function rs(){$("#ptags").innerHTML=prof.skills.map((s,i)=>`<span class="chip y">${esc(s)} <a href="#" onclick="rmS(${i});return false" style="text-decoration:none;color:inherit">✕</a></span>`).join("")||"<small>No skills added yet.</small>";
-const sc=prof.skills.map(s=>s.toLowerCase());
-const rec=J.map(j=>{const f=fit(j,prof.exp),ov=(R[j[0]]||[]).filter(k=>sc.some(s=>s.includes(k)||k.includes(s))).length;return{j,d:f.d,s:Math.min(99,f.s+(j[0]==prof.role?10:0)+Math.min(10,ov*3))}}).sort((a,b)=>b.s-a.s).slice(0,5);
-const comp=(prof.name?25:0)+25+(prof.exp>0?10:0)+Math.min(4,prof.skills.length)*10;
-$("#pst").innerHTML=[[prof.skills.length,"Skills"],[prof.exp+" yrs","Experience"],[rec[0]?rec[0].s+"%":"–","Top match"],[applied.size,"Applied"]].map(a=>`<div class="mini"><b>${a[0]}</b>${a[1]}</div>`).join("");
-$("#pbar").style.width=comp+"%";$("#pcomp").textContent="Profile "+comp+"% complete";
+function rs(){
+  $("#ptags").innerHTML=prof.skills.map((s,i)=>`<span class="chip y">${esc(s)} <a href="#" onclick="rmS(${i});return false" style="text-decoration:none;color:inherit">✕</a></span>`).join("")||"<small>No skills added yet.</small>";
+  const sc=prof.skills.map(s=>s.toLowerCase());
+  const rec=J.map(j=>{const f=fit(j,prof.exp),ov=(R[j[0]]||[]).filter(k=>sc.some(s=>s.includes(k)||k.includes(s))).length;return{j,d:f.d,s:Math.min(99,f.s+(j[0]==prof.role?10:0)+Math.min(10,ov*3))}}).sort((a,b)=>b.s-a.s).slice(0,5);
+  const comp=(prof.name?20:0)+(prof.loc?15:0)+20+(prof.exp>0?10:0)+(prof.resume||prof.fileName?15:0)+Math.min(4,prof.skills.length)*5;
+  $("#pst").innerHTML=[[prof.skills.length,"Skills"],[prof.exp+" yrs","Experience"],[rec[0]?rec[0].s+"%":"–","Top match"],[applied.size,"Applied"]].map(a=>`<div class="mini"><b>${a[0]}</b>${a[1]}</div>`).join("");
+  $("#pbar").style.width=comp+"%";$("#pcomp").textContent="Profile "+comp+"% complete";
 
 // Applied Jobs status
 $("#papplied").innerHTML = Array.from(applied).map(t=>`
@@ -966,7 +986,22 @@ $("#prec").innerHTML=rec.map(x=>`<div class="job" style="border-bottom:1px solid
 }
 $("#psa").onclick=()=>{const v=$("#ps").value.trim();if(v&&!prof.skills.includes(v))prof.skills.push(v);$("#ps").value="";sync()};
 $("#ps").addEventListener("keydown",e=>{if(e.key=="Enter")$("#psa").click()});
-["pn","pr","pq","pe"].forEach(i=>$("#"+i).addEventListener("input",sync));
+["pn","ploc","pr","pq","pe","presetext"].forEach(i=>{
+  const el = $("#"+i);
+  if (el) el.addEventListener("input",sync);
+});
+$("#pfile").onchange=(e)=>{
+  const f = e.target.files[0];
+  if(f){
+    prof.fileName = f.name;
+    $("#pfilename").textContent = "Uploaded: " + f.name;
+    if(f.type.startsWith("text") || f.name.endsWith(".txt")){
+      f.text().then(t=>{ $("#presetext").value = t; sync(); });
+    } else {
+      sync();
+    }
+  }
+};
 $("#psv").onclick=()=>{sync();$("#pmsg").textContent="Profile saved ✓"};
 $("#pscan").onclick=()=>{showPage('ai');$("#rt").value=prof.skills.join(", ")+(prof.exp?`, ${prof.exp} years experience`:"");$("#role").value=prof.role};
 
