@@ -377,7 +377,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
     <h3 id="cvTitle">Candidate Resume / CV</h3>
     <div id="cvBody" style="white-space:pre-wrap;font-family:inherit;line-height:1.5;background:#f8fafc;padding:16px;border:1px solid var(--line);border-radius:10px;max-height:380px;overflow-y:auto;font-size:.9rem;margin:12px 0;color:var(--ink)"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn sm" onclick="speakText($('#cvBody').textContent)">🔊 Listen Resume</button>
+      <button class="btn sm" onclick="toggleSpeak(this, $('#cvBody').textContent)">🔊 Listen Resume</button>
       <button class="btn sm o" onclick="$('#cvModal').classList.remove('on')">Close</button>
     </div>
   </div>
@@ -974,9 +974,8 @@ $("#pscan").onclick=()=>{showPage('ai');$("#rt").value=prof.skills.join(", ")+(p
 const cands=[
   {
     name:"Ramesh Kumar", role:"Electrician", exp:3, fit:91, city:"Indore", qual:"ITI Electrical", skills:"Wiring, MCB, Panel Board, Safety",
-    cv: `==========================================
-CURRICULUM VITAE / RESUME
-==========================================
+    cv: `CURRICULUM VITAE / RESUME
+
 Name: Ramesh Kumar
 Role: Senior Industrial Electrician
 Location: Indore, MP
@@ -1002,9 +1001,8 @@ CERTIFICATIONS:
   },
   {
     name:"Aman Patel", role:"CNC Operator", exp:2, fit:87, city:"Bhopal", qual:"Diploma Mech", skills:"G-Code, Micrometer, Blueprint",
-    cv: `==========================================
-CURRICULUM VITAE / RESUME
-==========================================
+    cv: `CURRICULUM VITAE / RESUME
+
 Name: Aman Patel
 Role: CNC Machine Operator
 Location: Bhopal, MP
@@ -1024,9 +1022,8 @@ WORK EXPERIENCE (2 Years):
   },
   {
     name:"Priya Verma", role:"Software Tester", exp:2, fit:84, city:"Indore", qual:"B.Tech CSE", skills:"SQL, Selenium, API, Bug Reporting",
-    cv: `==========================================
-CURRICULUM VITAE / RESUME
-==========================================
+    cv: `CURRICULUM VITAE / RESUME
+
 Name: Priya Verma
 Role: Software QA Tester
 Location: Indore, MP
@@ -1046,9 +1043,8 @@ WORK EXPERIENCE (2 Years):
   },
   {
     name:"Mohan Lal", role:"Delivery Partner", exp:4, fit:79, city:"Dewas", qual:"10th Pass", skills:"Two-wheeler driving, Route navigation",
-    cv: `==========================================
-CURRICULUM VITAE / RESUME
-==========================================
+    cv: `CURRICULUM VITAE / RESUME
+
 Name: Mohan Lal
 Role: Logistics & Delivery Executive
 Location: Dewas, MP
@@ -1060,11 +1056,7 @@ QUALIFICATION & EDUCATION:
 SKILLS & LICENSES:
 - Valid Commercial Two-Wheeler Driving License
 - GPS Route Navigation & Customer Communication
-- Cash handling & POD app verification
-
-WORK EXPERIENCE (4 Years):
-- Senior Delivery Agent at QuickKart Logistics (2020 - Present)
-  * Delivered 15,000+ parcels with 99.2% on-time rating.`
+- Cash handling & POD app verification`
   }
 ];
 
