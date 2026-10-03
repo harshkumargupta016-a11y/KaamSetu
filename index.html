@@ -396,7 +396,12 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 </div></div>
 </div></div>
 
-<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><h3 id="mt"></h3><label for="mu" id="ml"></label><input id="mu" placeholder="Enter name, email, or phone"><label for="mp">Password / OTP</label><input id="mp" type="password" placeholder="Enter password or OTP"><p id="merr" role="alert" style="color:#b91c1c;font-weight:600;margin:8px 0 0"></p><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" onclick="login()">Continue</button><button class="btn o" onclick="closeM()">Cancel</button></div></div></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><h3 id="mt"></h3>
+<div id="m_field_name"><label for="mname" id="ml_name"><b>Full Name / Company Name</b></label><input id="mname" placeholder="e.g. Harsh Kumar"></div>
+<div id="m_field_phone" style="margin-top:10px"><label for="mphone" id="ml_phone"><b>Mobile Number / Email</b></label><input id="mphone" placeholder="e.g. 0123456789"></div>
+<div id="m_field_otp" style="margin-top:10px"><label for="motp" id="ml_otp"><b>OTP / Password</b></label><input id="motp" type="password" placeholder="e.g. 123456"></div>
+<div id="adminHint" style="margin-top:10px;padding:8px 12px;background:#f1f5f9;border:1px solid var(--line);border-radius:8px;font-size:.82rem" hidden><b style="color:var(--pri)">🔐 Admin Login Credentials:</b><br>Admin ID: <code style="background:#fff;padding:2px 6px;border-radius:4px">admin@kaamsetu.gov.in</code><br>Password: <code style="background:#fff;padding:2px 6px;border-radius:4px">admin123</code></div>
+<p id="merr" role="alert" style="color:#b91c1c;font-weight:600;margin:8px 0 0"></p><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" onclick="login()">Continue</button><button class="btn o" onclick="closeM()">Cancel</button></div></div></div>
 
 <!-- Candidate CV / Resume Modal -->
 <div class="modal" id="cvModal" role="dialog" aria-modal="true">
@@ -552,23 +557,47 @@ let loggedInUser = "";
 
 function openM(t,l){
   $("#mt").textContent=t;
-  $("#ml").textContent=l;
   $("#merr").textContent="";
-  $("#mu").value="";
-  $("#mp").value="";
+  $("#mname").value="";
+  $("#mphone").value="";
+  $("#motp").value="";
 
   if (t.toLowerCase().includes("company") || t.includes("कंपनी")) {
     currentModalRole = "company";
+    $("#m_field_name").hidden = false;
+    $("#ml_name").innerHTML = "<b>Company / Employer Name</b>";
+    $("#mname").placeholder = "e.g. Shree Power Works";
+    $("#ml_phone").innerHTML = "<b>Company Email / Phone</b>";
+    $("#mphone").placeholder = "e.g. hr@shreepower.com";
+    $("#ml_otp").innerHTML = "<b>OTP / Password</b>";
+    $("#motp").placeholder = "e.g. 123456";
+    $("#adminHint").hidden = true;
   } else if (t.toLowerCase().includes("seeker") || t.includes("सीकर")) {
     currentModalRole = "seeker";
+    $("#m_field_name").hidden = false;
+    $("#ml_name").innerHTML = "<b>Full Name</b>";
+    $("#mname").placeholder = "e.g. Harsh Kumar";
+    $("#ml_phone").innerHTML = "<b>Mobile Number</b>";
+    $("#mphone").placeholder = "e.g. 0123456789";
+    $("#ml_otp").innerHTML = "<b>OTP</b>";
+    $("#motp").placeholder = "e.g. 123456";
+    $("#adminHint").hidden = true;
   } else if (t.toLowerCase().includes("admin") || t.includes("एडमिन")) {
     currentModalRole = "admin";
-  } else {
-    currentModalRole = "company";
+    $("#m_field_name").hidden = true;
+    $("#ml_phone").innerHTML = "<b>Admin ID</b>";
+    $("#mphone").placeholder = "admin@kaamsetu.gov.in";
+    $("#ml_otp").innerHTML = "<b>Admin Password</b>";
+    $("#motp").placeholder = "admin123";
+    $("#adminHint").hidden = false;
   }
 
   $("#modal").classList.add("on");
-  $("#mu").focus();
+  if (currentModalRole === 'admin') {
+    $("#mphone").focus();
+  } else {
+    $("#mname").focus();
+  }
 }
 function closeM(){$("#modal").classList.remove("on")}
 addEventListener("keydown",e=>{if(e.key=="Escape")closeM()});
@@ -983,28 +1012,34 @@ function show(r, name){
 }
 
 function login(){
-  let u = $("#mu").value.trim();
-  let p = $("#mp").value.trim();
+  const nameVal = $("#mname").value.trim();
+  const phoneVal = $("#mphone").value.trim();
+  const otpVal = $("#motp").value.trim();
 
-  if (!u || !p) {
-    $("#merr").textContent = "Please enter both fields.";
+  if (currentModalRole === "admin") {
+    if (!phoneVal || !otpVal) {
+      $("#merr").textContent = "Please enter Admin ID and Password.";
+      return;
+    }
+    if ((phoneVal === "admin@kaamsetu.gov.in" || phoneVal === "admin") && otpVal === "admin123") {
+      closeM();
+      show('admin');
+    } else {
+      $("#merr").textContent = "Invalid Admin ID or Password. Check credentials hint above.";
+    }
     return;
   }
 
-  let displayName = u;
-  if (u.includes("@")) {
-    displayName = u.split("@")[0];
-    displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
-  } else if (/^\d+$/.test(u.replace(/[\s+-]/g, ''))) {
-    displayName = "User";
-  } else {
-    displayName = u.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  if (!nameVal || !phoneVal || !otpVal) {
+    $("#merr").textContent = "Please fill all 3 fields: Name, Phone/Email, and OTP.";
+    return;
   }
-  
+
+  let displayName = nameVal.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   loggedInUser = displayName;
 
   if (currentModalRole === 'seeker') {
-    if (prof && !prof.name && displayName !== "User") {
+    if (prof) {
       prof.name = displayName;
       const pnEl = $("#pn");
       if (pnEl) pnEl.value = displayName;
