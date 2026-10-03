@@ -330,7 +330,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <!-- Chatbot Widget at RIGHT Corner with Gemini AI -->
 <div class="chat-widget">
 <div class="chat-box" id="chatbox">
-<div class="chat-head"><span>🤖 Gemini KaamSetu Assistant</span><button onclick="toggleChat()" aria-label="Close Chat">✕</button></div>
+<div class="chat-head"><span>🤖 Gemini KaamSetu Assistant</span><div style="display:flex;gap:6px;align-items:center"><button id="chatStopVoice" onclick="stopChatVoice()" title="Stop Voice Speech" style="display:none;background:#dc2626;color:#fff;border-radius:6px;padding:3px 8px;font-size:0.75rem;font-weight:bold;cursor:pointer;border:none">🛑 Stop Voice</button><button onclick="toggleChat()" aria-label="Close Chat">✕</button></div></div>
 <div class="chat-body" id="chatbody">
 <div class="chat-msg bot">Namaste! 👋 I am your Gemini-powered KaamSetu AI Assistant. Ask me anything about jobs, skills, scam complaints, or employer verification!</div>
 <div class="chat-chips">
@@ -636,6 +636,33 @@ function addChatMsg(text, isUser){
   b.appendChild(div);
   b.scrollTop = b.scrollHeight;
 }
+function stopChatVoice() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  const stopBtn = $("#chatStopVoice");
+  if (stopBtn) stopBtn.style.display = "none";
+}
+
+function speakChatReply(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.95;
+
+  const stopBtn = $("#chatStopVoice");
+  if (stopBtn) stopBtn.style.display = "inline-block";
+
+  utterance.onend = () => {
+    if (stopBtn) stopBtn.style.display = "none";
+  };
+  utterance.onerror = () => {
+    if (stopBtn) stopBtn.style.display = "none";
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
 async function botReply(q){
   const t = q.toLowerCase();
   addChatMsg("Thinking with Gemini AI...", false);
@@ -655,7 +682,7 @@ async function botReply(q){
     }
   }
   addChatMsg(reply, false);
-  speakText(reply);
+  speakChatReply(reply);
 }
 function sendChatMsg(){
   const input = $("#chatinput");
