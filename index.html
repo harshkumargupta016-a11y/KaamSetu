@@ -960,21 +960,25 @@ function show(r){
   const targetRole = roleMap[r] || 'seeker';
   const T = { seeker: "👷 Job Seeker Dashboard", company: "🏢 Company Dashboard", admin: "🔒 Admin Control Panel" };
 
-  $("#top").hidden = true;
-  $("#page-jobs").hidden = true;
-  $("#page-vacancies").hidden = true;
-  $("#page-complain").hidden = true;
-  $("#page-ai").hidden = true;
-  $("footer").hidden = true;
-  $("#app").hidden = false;
+  ["top", "page-vacancies", "page-complain", "page-ai"].forEach(id => {
+    const el = $("#" + id);
+    if (el) el.hidden = true;
+  });
+  const ft = $("footer");
+  if (ft) ft.hidden = true;
+  
+  const app = $("#app");
+  if (app) app.hidden = false;
 
   ["seeker", "company", "admin"].forEach(x => {
     const el = $("#v-" + x);
     if (el) el.hidden = (x !== targetRole);
   });
 
-  $("#apt").textContent = T[targetRole] || "Dashboard";
-  $(".bar2").style.borderColor = (targetRole === "admin") ? "#000" : "";
+  const apt = $("#apt");
+  if (apt) apt.textContent = T[targetRole] || "Dashboard";
+  const bar2 = $(".bar2");
+  if (bar2) bar2.style.borderColor = (targetRole === "admin") ? "#000" : "";
   scrollTo(0, 0);
 
   const fnMap = { seeker: rs, company: rc, admin: ra };
