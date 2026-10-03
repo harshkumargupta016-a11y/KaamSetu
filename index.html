@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>KaamSetu – Employer Discovery &amp; Hiring Intelligence</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
 :root{color-scheme:light;--bg:#ffffff;--card:#ffffff;--ink:#0f172a;--mut:#334155;--pri:#2563eb;--pri2:#0891b2;--acc:#f97316;--ok:#15803d;--line:#cbd5e1;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:calc(88px + env(safe-area-inset-top,0px))}
@@ -205,8 +207,8 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <section id="jobs" style="padding:10px 0"><div class="sec-h"><h2>Jobs near you</h2><p>Detect your location, filter, and see Gemini AI Fit Scores update instantly.</p></div>
 <div class="loc"><input id="loc" value="Indore, Madhya Pradesh" aria-label="Location"><button class="btn" id="gps">📍 Detect My Location</button></div>
 <div class="filters"><input id="q" placeholder="Search role e.g. electrician" aria-label="Role"><select id="exp" aria-label="Experience"><option value="99">Any experience</option><option value="0">Fresher</option><option value="2">Up to 2 yrs</option><option value="5">Up to 5 yrs</option></select><select id="sal" aria-label="Salary"><option value="0">Any salary</option><option value="15000">₹15,000+</option><option value="25000">₹25,000+</option><option value="40000">₹40,000+</option></select><button class="btn o" id="reset">Reset</button></div>
-<div class="jobs-layout"><div id="list"></div><div><div class="map" id="map"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="currentColor" opacity=".18" fill="none" stroke-width=".4"><path d="M0 30 L100 55"/><path d="M20 0 L55 100"/><path d="M0 80 L100 20"/><path d="M70 0 L40 100"/><circle cx="50" cy="50" r="18"/><circle cx="50" cy="50" r="36"/></g></svg></div>
-<p style="font-size:.85rem;color:var(--mut)">Schematic job map. <a id="osm" target="_blank" rel="noopener" href="https://www.openstreetmap.org/#map=11/22.72/75.86">Open full OpenStreetMap ↗</a></p></div></div></section>
+<div class="jobs-layout"><div id="list"></div><div><div class="map" id="map" style="height:400px;border-radius:16px;z-index:1"></div>
+<p style="font-size:.85rem;color:var(--mut);margin-top:6px">Interactive OpenStreetMap powered by Leaflet.js. <a id="osm" target="_blank" rel="noopener" href="https://www.openstreetmap.org/#map=11/22.72/75.86">Open full OpenStreetMap ↗</a></p></div></div></section>
 </div>
 </div>
 
@@ -586,7 +588,10 @@ function showPage(p){
   $("#app").hidden = true;
   $("footer").hidden = false;
   scrollTo(0,0);
-  if(p === 'jobs') render();
+  if(p === 'jobs') {
+    render();
+    setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 200);
+  }
   if(p === 'vacancies') renderVacancies();
   if(p === 'home') renderCharts();
 }
@@ -616,12 +621,55 @@ const J=[
 ];
 const km=(a,b,c,d)=>{const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 12742*Math.asin(Math.sqrt(h))};
 function fit(j,exp){const d=km(me.lat,me.lng,j[4],j[5]);const ds=Math.max(0,100-d*2.5);const es=exp==99?80:Math.max(0,100-Math.abs(j[2]-exp)*12);return{d,s:Math.round(.4*ds+.3*es+.3*j[6])}}
+let leafletMap = null;
+let leafletMarkers = [];
+
+function updateLeafletMap(filteredJobs) {
+  if (typeof L === 'undefined') return;
+  const mapEl = document.getElementById('map');
+  if (!mapEl) return;
+
+  if (!leafletMap) {
+    leafletMap = L.map('map').setView([me.lat, me.lng], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(leafletMap);
+  } else {
+    leafletMap.setView([me.lat, me.lng], 12);
+  }
+
+  leafletMarkers.forEach(m => leafletMap.removeLayer(m));
+  leafletMarkers = [];
+
+  const userIcon = L.divIcon({
+    className: 'custom-user-marker',
+    html: '<div style="background:#dc2626;color:#fff;border-radius:99px;padding:3px 8px;font-size:0.75rem;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3)">📍 You</div>',
+    iconSize: [60, 30],
+    iconAnchor: [30, 15]
+  });
+  const uMarker = L.marker([me.lat, me.lng], { icon: userIcon }).addTo(leafletMap);
+  uMarker.bindPopup("<b>📍 Your Current Location</b><br>Indore, MP");
+  leafletMarkers.push(uMarker);
+
+  filteredJobs.forEach(x => {
+    const j = x.j;
+    const jobIcon = L.divIcon({
+      className: 'custom-job-marker',
+      html: `<div style="background:#2563eb;color:#fff;border-radius:99px;padding:2px 8px;font-size:0.75rem;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);white-space:nowrap">${j[0].split(" ")[0]} ${x.s}%</div>`,
+      iconSize: [80, 26],
+      iconAnchor: [40, 13]
+    });
+    const jMarker = L.marker([j[4], j[5]], { icon: jobIcon }).addTo(leafletMap);
+    jMarker.bindPopup(`<b>${j[0]}</b><br>${j[1]} • ${j[7]}<br><b>Fit Score:</b> ${x.s}%<br><b>Salary:</b> ₹${j[3].toLocaleString("en-IN")}/mo`);
+    leafletMarkers.push(jMarker);
+  });
+}
+
 function render(){const q=$("#q").value.toLowerCase(),e=+$("#exp").value,s=+$("#sal").value;
-const L=J.filter(j=>j[0].toLowerCase().includes(q)&&j[2]<=e&&j[3]>=s).map(j=>({j,...fit(j,e)})).sort((a,b)=>b.s-a.s);
-$("#list").innerHTML=L.map(x=>`<div class="card job"><div><h3>${x.j[0]} <span class="tag">✔ ${x.j[8]}</span></h3><small>${x.j[1]} • ${x.j[7]} • ${x.d.toFixed(1)} km</small><div style="margin-top:6px"><span class="tag">${x.j[2]}+ yrs</span><span class="tag">₹${x.j[3].toLocaleString("en-IN")}/mo</span><span class="tag">Trust ${x.j[6]}</span></div></div><div style="text-align:right"><div class="fit">${x.s}%<i>Gemini Fit</i></div><button class="btn sm o" style="margin-top:6px" onclick="toggleSpeak(this, '${x.j[0]} at ${x.j[1]} in ${x.j[7]}, salary ${x.j[3]} rupees per month, Gemini fit score ${x.s} percent.')">🔊 Read</button></div></div>`).join("")||"<p>No jobs match these filters.</p>";
-document.querySelectorAll(".pin").forEach(p=>p.remove());const m=$("#map");
-const pos=(la,ln)=>`left:${Math.min(95,Math.max(5,50+(ln-me.lng)*380))}%;top:${Math.min(92,Math.max(10,50-(la-me.lat)*380))}%`;
-m.insertAdjacentHTML("beforeend",`<div class="pin me" style="left:50%;top:50%">📍 You</div>`+L.map(x=>`<div class="pin" style="${pos(x.j[4],x.j[5])}">${x.j[0].split(" ")[0]} ${x.s}%</div>`).join(""))}
+const L_jobs=J.filter(j=>j[0].toLowerCase().includes(q)&&j[2]<=e&&j[3]>=s).map(j=>({j,...fit(j,e)})).sort((a,b)=>b.s-a.s);
+$("#list").innerHTML=L_jobs.map(x=>`<div class="card job"><div><h3>${x.j[0]} <span class="tag">✔ ${x.j[8]}</span></h3><small>${x.j[1]} • ${x.j[7]} • ${x.d.toFixed(1)} km</small><div style="margin-top:6px"><span class="tag">${x.j[2]}+ yrs</span><span class="tag">₹${x.j[3].toLocaleString("en-IN")}/mo</span><span class="tag">Trust ${x.j[6]}</span></div></div><div style="text-align:right"><div class="fit">${x.s}%<i>Gemini Fit</i></div><button class="btn sm o" style="margin-top:6px" onclick="toggleSpeak(this, '${x.j[0]} at ${x.j[1]} in ${x.j[7]}, salary ${x.j[3]} rupees per month, Gemini fit score ${x.s} percent.')">🔊 Read</button></div></div>`).join("")||"<p>No jobs match these filters.</p>";
+updateLeafletMap(L_jobs);}
 ["q","exp","sal"].forEach(i=>$("#"+i).addEventListener("input",render));
 $("#reset").onclick=()=>{$("#q").value="";$("#exp").value=99;$("#sal").value=0;render()};
 $("#gps").onclick=()=>{if(!navigator.geolocation){$("#loc").value="Geolocation not supported";return}$("#loc").value="Detecting…";
