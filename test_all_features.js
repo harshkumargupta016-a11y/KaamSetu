@@ -24,7 +24,8 @@ if (!scriptMatches || scriptMatches.length === 0) {
 // 2. Check essential DOM IDs for all requested modules
 const requiredIds = [
   'modal', 'v-company', 'v-seeker', 'v-admin',
-  'page-vacancies', 'vacancies-grid-view', 'map',
+  'page-vacancies', 'vacancies-grid-view', 'map', 'verification-directory',
+  'verificationAccess', 'verificationEmployerView', 'verifCandidatesGrid',
   'page-schemes', 'schemesGrid', 'schemeDetailModal',
   'page-ai', 'drop', 'file', 'rt', 'role', 'scanb', 'out',
   'page-help', 'chatbox', 'chatinput', 'voicewidget'
@@ -35,6 +36,26 @@ requiredIds.forEach(id => {
     errors.push(`Missing DOM ID: ${id}`);
   }
 });
+
+if (html.includes('id="page-verification"')) {
+  errors.push('EPFO/ESIC verification should be embedded in the vacancies page, not a separate page');
+}
+
+const vacanciesPageStart = html.indexOf('id="page-vacancies"');
+const verificationSectionStart = html.indexOf('id="verification-directory"');
+const nextPageStart = html.indexOf('id="page-complain"');
+if (verificationSectionStart < vacanciesPageStart || verificationSectionStart > nextPageStart) {
+  errors.push('Verification directory should be inside the vacancies page');
+}
+
+['verification-directory', 'verificationAccess', 'verificationEmployerView', 'verif_q', 'verif_loc', 'chk_epfo', 'chk_esic', 'chk_avail', 'verif_exp', 'verifCandidatesGrid'].forEach(id => {
+  const count = (html.match(new RegExp(`id="${id}"`, 'g')) || []).length;
+  if (count !== 1) errors.push(`Expected one ${id} element, found ${count}`);
+});
+
+if (!html.includes("const isVerificationRequest = p === 'verification'") || !html.includes("p = 'vacancies'")) {
+  errors.push('Verification shortcuts should open the combined vacancies page');
+}
 
 // 3. Check essential JS functions
 const requiredFunctions = [
