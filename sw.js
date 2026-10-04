@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kaamsetu-v13';
+const CACHE_NAME = 'kaamsetu-v14';
 const ASSETS = [
   './',
   './index.html',
