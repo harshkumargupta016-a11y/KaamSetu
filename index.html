@@ -70,6 +70,7 @@ footer a{color:#1d4ed8;display:block;padding:4px 0;text-decoration:none;font-siz
 @media(max-width:900px){.hero .g,.jobs-layout,.scan,.two{grid-template-columns:1fr}.stats,.g4,footer .cols{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}.arr{display:none}.flow{gap:12px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
 [hidden]{display:none!important}
+#syncStatus{position:fixed;z-index:120;bottom:16px;left:50%;transform:translateX(-50%);width:min(90vw,680px);padding:12px 16px;border:2px solid var(--pri);border-radius:12px;background:#fff;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:650}
 .nav button.n.adm{background:#000;border-color:#000;color:#fff!important}
 .nav button.n.adm:hover{background:#222;border-color:#000}
 .app label{display:block;margin:10px 0 4px;font-weight:600}
@@ -193,13 +194,44 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div class="card"><h3>Candidates</h3><div id="cand"></div></div></div>
 <div class="card" style="margin-top:18px;overflow-x:auto"><h3>My posted jobs</h3><div id="myj"></div></div></div>
 <div id="v-admin" hidden><div class="grid g4" id="ast"></div>
-<div class="card" style="margin-top:18px"><div class="tabs"><button class="btn" data-tab="co">Companies</button><button class="btn o" data-tab="se">Job seekers</button><button class="btn o" data-tab="cp">Complaints</button></div><input id="aq" placeholder="Search records…" aria-label="Search records" style="margin:12px 0"><div style="overflow-x:auto" id="atab"></div><p style="font-size:.8rem;color:var(--mut)">Sample records for design preview.</p></div></div>
+<div class="card" style="margin-top:18px"><div class="tabs"><button class="btn" data-tab="co">Companies</button><button class="btn o" data-tab="se">Job seekers</button><button class="btn o" data-tab="cp">Complaints</button><button class="btn o" data-tab="records">Gemini reviews</button></div><div id="recordExport" hidden><button class="btn o" id="exportRecords">Download JSON export</button></div><input id="aq" placeholder="Search records…" aria-label="Search records" style="margin:12px 0"><div style="overflow-x:auto" id="atab"></div><p id="adminHint" style="font-size:.8rem;color:var(--mut)">Sample records for design preview.</p></div></div>
 </div></div>
-<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><h3 id="mt"></h3><label for="mu" id="ml"></label><input id="mu"><label for="mp">Password / OTP</label><input id="mp" type="password"><p id="merr" role="alert" style="color:#b91c1c;font-weight:600;margin:8px 0 0"></p><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" onclick="login()">Continue</button><button class="btn o" onclick="closeM()">Cancel</button></div><p style="font-size:.8rem;color:var(--mut)">Demo login – any details open the dashboard. No data is sent.</p></div></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><h3 id="mt"></h3><label for="mu" id="ml"></label><input id="mu"><label for="mp">Password / OTP</label><input id="mp" type="password"><p id="merr" role="alert" style="color:#b91c1c;font-weight:600;margin:8px 0 0"></p><div style="display:flex;gap:10px;margin-top:16px"><button class="btn" onclick="login()">Continue</button><button class="btn o" onclick="closeM()">Cancel</button></div><p id="loginHint" style="font-size:.8rem;color:var(--mut)">Company and job-seeker login are demo-only. Admin login uses the server credentials from .env.</p></div></div>
+<div id="syncStatus" role="status" aria-live="polite" hidden></div>
 <div id="report"></div>
 
 <script>
+const QUEUE_DB="kaamsetu-offline",QUEUE_STORE="submissions";
+let activeSync=null,toastTimer=null;
+function notifySync(message){const el=document.querySelector("#syncStatus");if(!el)return;el.textContent=message;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},9000)}
+function openQueueDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(QUEUE_DB,1);req.onupgradeneeded=()=>req.result.createObjectStore(QUEUE_STORE,{keyPath:"id"});req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+function queueRequest(request){return new Promise((resolve,reject)=>{request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error)})}
+async function drainQueue(){
+ if(activeSync)return activeSync;
+ activeSync=(async()=>{const db=await openQueueDB(),items=await queueRequest(db.transaction(QUEUE_STORE,"readonly").objectStore(QUEUE_STORE).getAll());let lastError="";
+ for(const item of items){try{const response=await fetch("/api/submissions",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(item)});const body=await response.json().catch(()=>({}));if(!response.ok)throw Error(body.error||`Server returned ${response.status}`);await queueRequest(db.transaction(QUEUE_STORE,"readwrite").objectStore(QUEUE_STORE).delete(item.id))}catch(error){lastError=error.message;break}}
+ const remaining=await queueRequest(db.transaction(QUEUE_STORE,"readonly").objectStore(QUEUE_STORE).count());db.close();return{remaining,lastError}})().finally(()=>{activeSync=null});
+ return activeSync
+}
+async function queueSubmission(type,payload){
+ const item={id:crypto.randomUUID(),type,payload,createdAt:new Date().toISOString()};
+ const db=await openQueueDB();await queueRequest(db.transaction(QUEUE_STORE,"readwrite").objectStore(QUEUE_STORE).add(item));db.close();
+ let result={remaining:1,lastError:""};
+ if(navigator.onLine)result=await drainQueue();
+ else{const pending=await openQueueDB();result.remaining=await queueRequest(pending.transaction(QUEUE_STORE,"readonly").objectStore(QUEUE_STORE).count());pending.close()}
+ if(result.remaining&&"serviceWorker"in navigator)navigator.serviceWorker.ready.then(reg=>reg.sync?.register("kaamsetu-submissions")).catch(()=>{});
+ if(result.lastError)notifySync(`Saved on this device (${result.remaining} pending). Sync failed: ${result.lastError}`);
+ else if(result.remaining)notifySync(`Saved on this device (${result.remaining} pending). It will sync when the connection is available.`);
+ else notifySync("Synced securely. The submission is awaiting admin review.");
+ return{...result,id:item.id}
+}
+addEventListener("online",()=>drainQueue().then(result=>{if(result.lastError)notifySync(`Sync is still pending: ${result.lastError}`);else if(!result.remaining)notifySync("All offline submissions have synced and are awaiting admin review.")}).catch(error=>notifySync(`Offline submissions remain saved on this device: ${error.message}`)));
+addEventListener("load",()=>{if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js").then(()=>drainQueue()).catch(error=>console.error("Offline support could not start:",error))});
+</script>
+
+<script>
 const $=s=>document.querySelector(s);
+const safeText=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const T={en:{n1:"Company Login",n2:"Job Seeker Login",n3:"Jobs",n4:"Complain",n5:"Help & Q/A",n6:"Admin Login",h1:"Find verified work. Hire trusted talent.",hp:"AI matches workers to nearby jobs with a transparent Fit Score, checks employers for trust, and works even with low internet.",b1:"🔎 Find Work",b2:"Hire Talent"},
 hi:{n1:"कंपनी लॉगिन",n2:"जॉब सीकर लॉगिन",n3:"नौकरियां",n4:"शिकायत",n5:"सहायता / प्रश्न",n6:"एडमिन लॉगिन",h1:"सत्यापित काम खोजें। भरोसेमंद लोग रखें।",hp:"AI आपको पास की नौकरियों से Fit Score के साथ मिलाता है, कंपनियों की जांच करता है और कम इंटरनेट पर भी चलता है।",b1:"🔎 काम खोजें",b2:"कर्मचारी रखें"}};
 let lg="en";$("#lang").onclick=()=>{lg=lg=="en"?"hi":"en";document.documentElement.lang=lg;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=T[lg][e.dataset.t]);$("#lang").textContent=lg=="en"?"हिन्दी":"English"};
@@ -216,10 +248,14 @@ const km=(a,b,c,d)=>{const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r
 function fit(j,exp){const d=km(me.lat,me.lng,j[4],j[5]);const ds=Math.max(0,100-d*2.5);const es=exp==99?80:Math.max(0,100-Math.abs(j[2]-exp)*12);return{d,s:Math.round(.4*ds+.3*es+.3*j[6])}}
 function render(){const q=$("#q").value.toLowerCase(),e=+$("#exp").value,s=+$("#sal").value;
 const L=J.filter(j=>j[0].toLowerCase().includes(q)&&j[2]<=e&&j[3]>=s).map(j=>({j,...fit(j,e)})).sort((a,b)=>b.s-a.s);
-$("#list").innerHTML=L.map(x=>`<div class="card job"><div><h3>${x.j[0]} <span class="tag">✔ Verified</span></h3><small>${x.j[1]} • ${x.j[7]} • ${x.d.toFixed(1)} km</small><div style="margin-top:6px"><span class="tag">${x.j[2]}+ yrs</span><span class="tag">₹${x.j[3].toLocaleString("en-IN")}/mo</span><span class="tag">Trust ${x.j[6]}</span></div></div><div class="fit">${x.s}%<i>Fit Score</i></div></div>`).join("")||"<p>No jobs match these filters.</p>";
+$("#list").innerHTML=L.map(x=>`<div class="card job"><div><h3>${safeText(x.j[0])} <span class="tag">✔ Verified</span></h3><small>${safeText(x.j[1])} • ${safeText(x.j[7])} • ${x.d.toFixed(1)} km</small><div style="margin-top:6px"><span class="tag">${x.j[2]}+ yrs</span><span class="tag">₹${x.j[3].toLocaleString("en-IN")}/mo</span><span class="tag">Trust ${x.j[6]}</span></div></div><div class="fit">${x.s}%<i>Fit Score</i></div></div>`).join("")||"<p>No jobs match these filters.</p>";
 document.querySelectorAll(".pin").forEach(p=>p.remove());const m=$("#map");
 const pos=(la,ln)=>`left:${Math.min(95,Math.max(5,50+(ln-me.lng)*380))}%;top:${Math.min(92,Math.max(10,50-(la-me.lat)*380))}%`;
-m.insertAdjacentHTML("beforeend",`<div class="pin me" style="left:50%;top:50%">📍 You</div>`+L.map(x=>`<div class="pin" style="${pos(x.j[4],x.j[5])}">${x.j[0].split(" ")[0]} ${x.s}%</div>`).join(""))}
+m.insertAdjacentHTML("beforeend",`<div class="pin me" style="left:50%;top:50%">📍 You</div>`+L.map(x=>`<div class="pin" style="${pos(x.j[4],x.j[5])}">${safeText(x.j[0].split(" ")[0])} ${x.s}%</div>`).join(""))}
+async function loadApprovedJobs(){try{const response=await fetch("/api/jobs");if(!response.ok)throw Error(`Server returned ${response.status}`);const jobs=await response.json();
+jobs.forEach(job=>{if(!J.some(item=>item[0]==job.title&&item[1]==job.company))J.push([job.title,job.company,job.minimumExperience,job.salary,me.lat,me.lng,80,job.city])});render()
+}catch(error){console.error("Approved jobs could not be loaded:",error);notifySync(`Could not load approved jobs from the server: ${error.message}`)}}
+loadApprovedJobs();
 ["q","exp","sal"].forEach(i=>$("#"+i).addEventListener("input",render));
 $("#reset").onclick=()=>{$("#q").value="";$("#exp").value=99;$("#sal").value=0;render()};
 $("#gps").onclick=()=>{if(!navigator.geolocation){$("#loc").value="Geolocation not supported";return}$("#loc").value="Detecting…";
@@ -233,15 +269,18 @@ const setF=f=>{if(f){$("#fn").textContent="Selected: "+f.name;if(f.type.startsWi
 $("#file").onchange=e=>setF(e.target.files[0]);
 $("#drop").ondragover=e=>e.preventDefault();$("#drop").ondrop=e=>{e.preventDefault();setF(e.dataTransfer.files[0])};
 let last=null;
-$("#scanb").onclick=()=>{const t=$("#rt").value.toLowerCase(),role=$("#role").value,req=R[role];
+$("#scanb").onclick=async()=>{const t=$("#rt").value.toLowerCase(),role=$("#role").value,req=R[role];
 const have=req.filter(s=>t.includes(s)),gap=req.filter(s=>!t.includes(s));const pct=Math.round(have.length/req.length*100);
 const yrs=(t.match(/(\d+)\s*(\+)?\s*(years|yrs|year)/)||[])[1]||"not found";
 const plan=gap.map((g,i)=>`Step ${i+1}: Learn "${g}" — take a short course on Skill India Digital Hub and practice on one real task this week.`);
 if(!plan.length)plan.push("Your profile covers the core skills. Apply now and add certificates via DigiLocker.");
 last={role,have,gap,pct,yrs,plan};
-$("#out").innerHTML=`<h3>Match for ${role}: ${pct}%</h3><div class="bar"><i style="width:${pct}%"></i></div><p><b>Experience found:</b> ${yrs} yrs</p><p><b>Skills found:</b> ${have.map(s=>`<span class="chip y">${s}</span>`).join("")||"none yet"}</p><p><b>Skill gaps:</b> ${gap.map(s=>`<span class="chip n">${s}</span>`).join("")||"none"}</p><h3>Improvement plan</h3><ol>${plan.map(p=>`<li>${p.replace(/^Step \d+: /,"")}</li>`).join("")}</ol>`}
+$("#out").innerHTML=`<h3>Match for ${role}: ${pct}%</h3><div class="bar"><i style="width:${pct}%"></i></div><p><b>Experience found:</b> ${yrs} yrs</p><p><b>Skills found:</b> ${have.map(s=>`<span class="chip y">${s}</span>`).join("")||"none yet"}</p><p><b>Skill gaps:</b> ${gap.map(s=>`<span class="chip n">${s}</span>`).join("")||"none"}</p><h3>Improvement plan</h3><ol>${plan.map(p=>`<li>${p.replace(/^Step \d+: /,"")}</li>`).join("")}</ol>`;
+try{await queueSubmission("scan",{role,matchPercent:pct,experienceYears:yrs,skills:have,gaps:gap,plan})}catch(error){notifySync(`Could not save profile scan offline: ${error.message}`)}}
 $("#pdfb").onclick=()=>{if(!last)$("#scanb").click();const d=last;$("#report").innerHTML=`<h1>Skill-Gap &amp; Improvement Report</h1><p>Target role: <b>${d.role}</b> • Match: <b>${d.pct}%</b> • Experience: ${d.yrs}</p><h3>Skills found</h3><p>${d.have.join(", ")||"none"}</p><h3>Skill gaps</h3><p>${d.gap.join(", ")||"none"}</p><h3>Plan</h3><ol>${d.plan.map(p=>`<li>${p}</li>`).join("")}</ol><p><small>Generated by KaamSetu. In the print dialog choose “Save as PDF”.</small></p>`;print()};
-$("#cs").onclick=()=>{if($("#ct").value.trim())CMP.unshift([$("#cn").value.trim()||"Unnamed",$("#ct").value.trim().slice(0,60),"Open"]);$("#cm").textContent=$("#ct").value.trim()?"Thank you. Your complaint has been recorded (demo).":"Please describe what happened.";};
+$("#cs").onclick=async()=>{const description=$("#ct").value.trim();if(!description){$("#cm").textContent="Please describe what happened.";return}
+const company=$("#cn").value.trim()||"Unnamed";CMP.unshift([company,description.slice(0,60),"Open"]);$("#cm").textContent="Saving complaint…";
+try{await queueSubmission("complaint",{company,description});$("#cm").textContent="Complaint saved. It will be reviewed by an administrator after Gemini risk screening."}catch(error){$("#cm").textContent=`Could not save complaint offline: ${error.message}`}};
 </script>
 <script>
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -250,20 +289,23 @@ const SK=[["Ramesh Kumar","Wiring, MCB, Safety","Indore",3,"ITI","Active"],["Ama
 const CMP=[["QuickJobs Agency","Asked for a registration fee","Open"],["FastHire Co.","Fake offer letter","Under review"],["Unknown Recruiter","Salary not paid","Resolved"]];
 const ch=s=>`<span class="chip ${/Verified|Active|Hired|Resolved/.test(s)?"y":/Flagged|Open/.test(s)?"n":"m"}">${esc(s)}</span>`;
 let prof={name:"",role:"Electrician",qual:"10th pass",exp:0,skills:[]},applied=new Set(),mine=[],sl=new Set(),tab="co";
+let adminToken="";
 const cands=[["Ramesh Kumar","Electrician",3,91],["Aman Patel","CNC Operator",2,87],["Priya Verma","Software Tester",2,84],["Mohan Lal","Delivery Partner",4,79]];
 $("#pr").innerHTML=Object.keys(R).map(r=>`<option>${r}</option>`).join("");
-function home(k){$("#app").hidden=true;$("main").hidden=false;$("footer").hidden=false;if(!k)scrollTo(0,0)}
+function home(k){adminToken="";$("#app").hidden=true;$("main").hidden=false;$("footer").hidden=false;if(!k)scrollTo(0,0)}
 function show(r){const T={seeker:"👷 Job Seeker Dashboard",company:"🏢 Company Dashboard",admin:"🔒 Admin Control Panel"};
 $("main").hidden=true;$("footer").hidden=true;$("#app").hidden=false;["seeker","company","admin"].forEach(x=>$("#v-"+x).hidden=x!=r);
 $("#apt").textContent=T[r];$(".bar2").style.borderColor=r=="admin"?"#000":"";scrollTo(0,0);({seeker:rs,company:rc,admin:ra})[r]()}
-function login(){const u=$("#mu").value.trim(),p=$("#mp").value.trim();if(!u||!p){$("#merr").textContent="Please enter both fields.";return}
-const r={"Company Login":"company","Job Seeker Login":"seeker","Admin Login":"admin"}[$("#mt").textContent];closeM();show(r)}
+async function login(){const u=$("#mu").value.trim(),p=$("#mp").value.trim();if(!u||!p){$("#merr").textContent="Please enter both fields.";return}
+const r={"Company Login":"company","Job Seeker Login":"seeker","Admin Login":"admin"}[$("#mt").textContent];
+if(r=="admin"){try{const response=await fetch("/api/admin/session",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:u,password:p})}),body=await response.json();if(!response.ok)throw Error(body.error||"Admin login failed.");adminToken=body.token}catch(error){$("#merr").textContent=error.message;return}}
+closeM();show(r)}
 $(".logo").addEventListener("click",()=>home());
 document.querySelectorAll(".nav a.n").forEach(a=>a.addEventListener("click",()=>home(1)));
 // seeker
 function sync(){prof.name=$("#pn").value.trim();prof.role=$("#pr").value;prof.qual=$("#pq").value;prof.exp=Math.max(0,+$("#pe").value||0);rs()}
 function rmS(i){prof.skills.splice(i,1);rs()}
-function ap(t){applied.has(t)?applied.delete(t):applied.add(t);rs()}
+function ap(t){if(applied.has(t)){applied.delete(t);rs();return}applied.add(t);rs();const job=J.find(j=>j[0]==t);queueSubmission("application",{jobTitle:t,company:job?.[1]||"Unknown",applicantName:prof.name||"Job seeker",role:prof.role}).catch(error=>notifySync(`Could not save application offline: ${error.message}`))}
 function rs(){$("#ptags").innerHTML=prof.skills.map((s,i)=>`<span class="chip y">${esc(s)} <a href="#" onclick="rmS(${i});return false" aria-label="Remove ${esc(s)}" style="text-decoration:none;color:inherit">✕</a></span>`).join("")||"<small>No skills added yet.</small>";
 const sc=prof.skills.map(s=>s.toLowerCase());
 const rec=J.map(j=>{const f=fit(j,prof.exp),ov=(R[j[0]]||[]).filter(k=>sc.some(s=>s.includes(k)||k.includes(s))).length;return{j,d:f.d,s:Math.min(99,f.s+(j[0]==prof.role?10:0)+Math.min(10,ov*3))}}).sort((a,b)=>b.s-a.s).slice(0,5);
@@ -275,23 +317,37 @@ const row=[prof.name||"New job seeker (you)",prof.skills.join(", ")||"–","Indo
 $("#psa").onclick=()=>{const v=$("#ps").value.trim();if(v&&!prof.skills.includes(v))prof.skills.push(v);$("#ps").value="";sync()};
 $("#ps").addEventListener("keydown",e=>{if(e.key=="Enter")$("#psa").click()});
 ["pn","pr","pq","pe"].forEach(i=>$("#"+i).addEventListener("input",sync));
-$("#psv").onclick=()=>{sync();$("#pmsg").textContent="Profile saved ✓"};
+$("#psv").onclick=async()=>{sync();if(!prof.name){$("#pmsg").textContent="Enter your name before saving.";return}$("#pmsg").textContent="Saving profile…";
+try{await queueSubmission("profile",{name:prof.name,role:prof.role,qualification:prof.qual,experienceYears:prof.exp,skills:prof.skills});$("#pmsg").textContent="Profile saved and queued for admin review."}catch(error){$("#pmsg").textContent=`Could not save profile offline: ${error.message}`}};
 $("#pscan").onclick=()=>{home();$("#rt").value=prof.skills.join(", ")+(prof.exp?`, ${prof.exp} years experience`:"");$("#role").value=prof.role;$("#ai").scrollIntoView()};
 // company
 function sh(n){sl.has(n)?sl.delete(n):sl.add(n);rc()}
 function rc(){$("#cand").innerHTML=cands.map(c=>`<div class="job" style="border-bottom:1px solid var(--line);padding:8px 0"><div><b>${c[0]}</b><br><small>${c[1]} • ${c[2]} yrs • ${c[3]}% fit</small></div><button class="btn ${sl.has(c[0])?"a":"o"}" style="min-height:40px" onclick="sh('${c[0]}')">${sl.has(c[0])?"Shortlisted ✓":"Shortlist"}</button></div>`).join("");
 $("#myj").innerHTML=mine.length?`<table><tr><th>Title</th><th>City</th><th>Salary</th><th>Min exp</th></tr>${mine.map(m=>`<tr><td>${esc(m[0])}</td><td>${esc(m[7])}</td><td>₹${m[3].toLocaleString("en-IN")}</td><td>${m[2]} yrs</td></tr>`).join("")}</table>`:"<p>No jobs posted yet. Use the form to post your first job.</p>"}
-$("#cp").onclick=()=>{const t=$("#cj").value.trim();if(!t){$("#cmsg").textContent="Enter a job title.";return}
-const j=[t,"Your company",+$("#cx").value||0,+$("#csal").value||0,me.lat+(Math.random()-.5)*.1,me.lng+(Math.random()-.5)*.1,80,$("#cc").value||"Indore"];J.push(j);mine.push(j);$("#cj").value="";$("#cmsg").textContent="Job posted ✓ It now appears on the Jobs page.";rc();render()};
+$("#cp").onclick=async()=>{const t=$("#cj").value.trim();if(!t){$("#cmsg").textContent="Enter a job title.";return}
+const city=$("#cc").value.trim()||"Indore",salary=+$("#csal").value||0,experience=+$("#cx").value||0;
+const j=[t,"Your company",experience,salary,me.lat,me.lng,80,city];mine.push(j);$("#cj").value="";$("#cmsg").textContent="Saving job…";rc();
+try{await queueSubmission("job",{title:t,city,salary,minimumExperience:experience,company:"Your company"});$("#cmsg").textContent="Job submitted for Gemini screening and admin review; it will be published only after approval."}catch(error){$("#cmsg").textContent=`Could not save job offline: ${error.message}`}};
 // admin
-function ra(){const A={co:[["Company","City","Industry","Jobs","Trust","Status"],CO],se:[["Name","Skills","City","Exp (yrs)","Qualification","Status"],SK],cp:[["Against","Complaint","Status"],CMP]};
+async function ra(){const A={co:[["Company","City","Industry","Jobs","Trust","Status"],CO],se:[["Name","Skills","City","Exp (yrs)","Qualification","Status"],SK],cp:[["Against","Complaint","Status"],CMP]};
 $("#ast").innerHTML=[[CO.length,"Companies"],[SK.length,"Job seekers"],[J.length,"Active jobs"],[CMP.filter(c=>c[2]=="Open").length,"Open complaints"]].map(a=>`<div class="stat"><b>${a[0]}</b><span>${a[1]}</span></div>`).join("");
 document.querySelectorAll("[data-tab]").forEach(b=>b.className="btn"+(b.dataset.tab==tab?"":" o"));
-const q=$("#aq").value.toLowerCase(),cols=A[tab][0],rows=A[tab][1].filter(r=>r.join(" ").toLowerCase().includes(q));
+$("#recordExport").hidden=tab!="records";$("#adminHint").textContent=tab=="records"?"Gemini risk screening is advisory; an administrator must make the final decision.":"Sample records for design preview.";
+const q=$("#aq").value.toLowerCase();
+if(tab=="records"){
+ try{const response=await fetch("/api/admin/submissions",{headers:{Authorization:`Bearer ${adminToken}`}}),records=await response.json();if(!response.ok)throw Error(records.error||"Could not load submissions.");
+ const rows=records.filter(r=>JSON.stringify(r).toLowerCase().includes(q));
+ $("#atab").innerHTML=`<table><tr><th>Received</th><th>Type</th><th>Gemini risk</th><th>Recommendation</th><th>Summary / flags</th><th>Submission JSON</th><th>Status / decision</th></tr>${rows.map(r=>`<tr><td>${esc(new Date(r.createdAt).toLocaleString())}</td><td>${esc(r.type)}</td><td>${esc(r.verification.riskLevel)}</td><td>${esc(r.verification.recommendedAction)}</td><td>${esc(r.verification.summary)}<br>${r.verification.flags.map(f=>`<span class="tag">${esc(f)}</span>`).join("")}</td><td><details><summary>View JSON</summary><pre>${esc(JSON.stringify(r.payload,null,2))}</pre></details></td><td>${esc(r.status)}${r.status=="awaiting_admin_review"?`<br><button class="btn" data-review="${r.id}" data-status="approved">Approve</button> <button class="btn o" data-review="${r.id}" data-status="rejected">Reject</button>`:`<br>${esc(r.decision?.note||"")}`}</td></tr>`).join("")||`<tr><td colspan="7">No submissions match.</td></tr>`}</table>`;
+ }catch(error){$("#atab").textContent=error.message}
+ return
+}
+const cols=A[tab][0],rows=A[tab][1].filter(r=>r.join(" ").toLowerCase().includes(q));
 $("#atab").innerHTML=`<table><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>${rows.map(r=>`<tr>${cols.map((c,i)=>`<td>${c=="Status"?ch(r[i]):esc(r[i])}</td>`).join("")}</tr>`).join("")||`<tr><td colspan="${cols.length}">No records.</td></tr>`}</table>`}
 document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;ra()});
 $("#aq").oninput=ra;
+$("#atab").addEventListener("click",async event=>{const button=event.target.closest("[data-review]");if(!button)return;const note=prompt("Optional admin review note:");if(note===null)return;
+try{const response=await fetch(`/api/admin/submissions/${button.dataset.review}`,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:`Bearer ${adminToken}`},body:JSON.stringify({status:button.dataset.status,note})}),body=await response.json();if(!response.ok)throw Error(body.error||"Could not save review.");notifySync(`Submission ${body.status}.`);if(body.type=="job"&&body.status=="approved")loadApprovedJobs();ra()}catch(error){notifySync(`Review failed: ${error.message}`)}});
+$("#exportRecords").onclick=async()=>{try{const response=await fetch("/api/admin/export.json",{headers:{Authorization:`Bearer ${adminToken}`}});if(!response.ok){const body=await response.json();throw Error(body.error||"Export failed.")}const url=URL.createObjectURL(await response.blob()),link=document.createElement("a");link.href=url;link.download="kaamsetu-submissions.json";link.click();URL.revokeObjectURL(url)}catch(error){notifySync(`JSON export failed: ${error.message}`)}};
 </script>
 </body>
 </html>
-
