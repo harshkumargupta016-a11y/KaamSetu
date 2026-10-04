@@ -915,7 +915,10 @@ function showPage(p){
     setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 200);
   }
   if(p === 'schemes') renderSchemes();
-  if(p === 'home') renderCharts();
+  if(p === 'home') {
+    renderCharts();
+    initFlowAndCounters();
+  }
 }
 function goToHomeSec(id){
   showPage('home');
@@ -929,14 +932,16 @@ function goToHomeSec(id){
 const initFlowAndCounters = () => {
   const flowEl = $("#flow");
   if (flowEl) {
-    const io = new IntersectionObserver(es => es.forEach(e => {
-      if (!e.isIntersecting) return;
-      e.target.classList.add("in");
-      io.unobserve(e.target);
-    }), { threshold: .1 });
-    io.observe(flowEl);
+    flowEl.classList.add("in");
+    document.querySelectorAll(".flow .fs").forEach(card => {
+      card.style.opacity = "1";
+      card.style.transform = "none";
+    });
   } else {
-    document.querySelectorAll(".flow").forEach(f => f.classList.add("in"));
+    document.querySelectorAll(".flow .fs").forEach(card => {
+      card.style.opacity = "1";
+      card.style.transform = "none";
+    });
   }
 
   document.querySelectorAll("[data-n]").forEach(el => {
@@ -1437,22 +1442,25 @@ function renderCharts() {
   const c1 = document.getElementById("chartCompanies");
   if (c1) {
     const ctx = c1.getContext("2d");
-    c1.width = 400; c1.height = 180;
-    ctx.clearRect(0, 0, 400, 180);
+    c1.width = c1.parentElement ? c1.parentElement.clientWidth - 32 : 400; 
+    if (c1.width < 300) c1.width = 380;
+    c1.height = 180;
+    ctx.clearRect(0, 0, c1.width, c1.height);
     const data = [
       { label: "Admin Verified", val: 5200, color: "#16a34a" },
       { label: "Gemini Verified", val: 2400, color: "#2563eb" },
       { label: "Pending Check", val: 600, color: "#f59e0b" },
       { label: "Flagged Scams", val: 200, color: "#dc2626" }
     ];
+    const spacing = (c1.width - 40) / data.length;
     data.forEach((d, i) => {
-      const barH = (d.val / 6000) * 120;
+      const barH = (d.val / 6000) * 110;
       ctx.fillStyle = d.color;
-      ctx.fillRect(40 + i * 85, 140 - barH, 50, barH);
+      ctx.fillRect(20 + i * spacing, 140 - barH, 45, barH);
       ctx.fillStyle = "#0f172a";
-      ctx.font = "11px sans-serif";
-      ctx.fillText(d.val, 45 + i * 85, 130 - barH);
-      ctx.fillText(d.label.split(" ")[0], 40 + i * 85, 160);
+      ctx.font = "bold 11px sans-serif";
+      ctx.fillText(d.val.toLocaleString("en-IN"), 20 + i * spacing, 130 - barH);
+      ctx.fillText(d.label.split(" ")[0], 20 + i * spacing, 160);
     });
   }
 
@@ -1460,20 +1468,23 @@ function renderCharts() {
   const c2 = document.getElementById("chartJobs");
   if (c2) {
     const ctx = c2.getContext("2d");
-    c2.width = 400; c2.height = 180;
-    ctx.clearRect(0, 0, 400, 180);
+    c2.width = c2.parentElement ? c2.parentElement.clientWidth - 32 : 400;
+    if (c2.width < 300) c2.width = 380;
+    c2.height = 180;
+    ctx.clearRect(0, 0, c2.width, c2.height);
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
     const vals = [3200, 4500, 5100, 6800, 7900, 9200];
+    const spacing = (c2.width - 50) / (months.length - 1);
     ctx.beginPath();
     ctx.strokeStyle = "#2563eb"; ctx.lineWidth = 3;
     vals.forEach((v, i) => {
-      const x = 30 + i * 65;
+      const x = 25 + i * spacing;
       const y = 140 - (v / 10000) * 110;
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     });
     ctx.stroke();
     vals.forEach((v, i) => {
-      const x = 30 + i * 65;
+      const x = 25 + i * spacing;
       const y = 140 - (v / 10000) * 110;
       ctx.fillStyle = "#f97316";
       ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
@@ -1482,7 +1493,8 @@ function renderCharts() {
     });
   }
 }
-setTimeout(renderCharts, 300);
+setTimeout(renderCharts, 100);
+window.addEventListener("resize", renderCharts);
 </script>
 
 <script>

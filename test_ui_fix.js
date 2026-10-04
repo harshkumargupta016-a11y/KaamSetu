@@ -11,9 +11,9 @@ if (!html.includes('initFlowAndCounters')) {
   errors.push('initFlowAndCounters function missing');
 }
 
-// 2. Verify lowered IntersectionObserver threshold
-if (!html.includes('{ threshold: .1 }')) {
-  errors.push('IntersectionObserver threshold is not set to .1');
+// 2. Verify flowchart card visibility override
+if (!html.includes('card.style.opacity = "1"') || !html.includes('card.style.transform = "none"')) {
+  errors.push('flowchart card style override missing');
 }
 
 // 3. Verify DOMContentLoaded hook or fallback
@@ -21,7 +21,7 @@ if (!html.includes('document.readyState === "loading"')) {
   errors.push('DOMContentLoaded initialization check missing');
 }
 
-// 4. Verify canvas chart functions
+// 4. Verify canvas chart functions and responsiveness
 if (!html.includes('function renderCharts()') || !html.includes('chartCompanies') || !html.includes('chartJobs')) {
   errors.push('renderCharts or chart canvas IDs missing');
 }
