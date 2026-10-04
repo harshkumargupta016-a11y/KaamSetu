@@ -1235,7 +1235,7 @@ function updateLeafletMap(filteredJobs) {
 
 function render(){const q=$("#q").value.toLowerCase(),e=+$("#exp").value,s=+$("#sal").value;
 const L_jobs=J.filter(j=>j[0].toLowerCase().includes(q)&&j[2]<=e&&j[3]>=s).map(j=>({j,...fit(j,e)})).sort((a,b)=>b.s-a.s);
-$("#list").innerHTML=L_jobs.map(x=>`<div class="card job"><div><h3>${x.j[0]} <span class="tag">✔ ${x.j[8]}</span></h3><small>${x.j[1]} • ${x.j[7]} • ${x.d.toFixed(1)} km</small><div style="margin-top:6px"><span class="tag">${x.j[2]}+ yrs</span><span class="tag">₹${x.j[3].toLocaleString("en-IN")}/mo</span><span class="tag">Trust ${x.j[6]}</span></div></div><div style="text-align:right"><div class="fit">${x.s}%<i>Gemini Fit</i></div><button class="btn sm o" style="margin-top:6px" onclick="toggleSpeak(this, '${x.j[0]} at ${x.j[1]} in ${x.j[7]}, salary ${x.j[3]} rupees per month, Gemini fit score ${x.s} percent.')">🔊 Read</button></div></div>`).join("")||"<p>No jobs match these filters.</p>";
+$("#list").innerHTML=L_jobs.map(x=>`<div class="card job"><div><h3>${x.j[0]} <span class="tag">✔ ${x.j[8]}</span></h3><small>${x.j[1]} • ${x.j[7]} • ${x.d.toFixed(1)} km</small><div style="margin-top:6px"><span class="tag">${x.j[2]}+ yrs</span><span class="tag">₹${x.j[3].toLocaleString("en-IN")}/mo</span><span class="tag">Trust ${x.j[6]}</span></div></div><div style="text-align:right"><div class="fit">${x.s}%<i>Gemini Fit</i></div><div style="display:flex;gap:6px;justify-content:flex-end;margin-top:6px"><button class="btn sm ${applied.has(x.j[0])?"a":"a"}" onclick="applyVacancy('${x.j[0]}')">${applied.has(x.j[0])?"Applied ✓":"⚡ Apply"}</button><button class="btn sm o" onclick="toggleSpeak(this, '${x.j[0]} at ${x.j[1]} in ${x.j[7]}, salary ${x.j[3]} rupees per month, Gemini fit score ${x.s} percent.')">🔊 Read</button></div></div></div>`).join("")||"<p>No jobs match these filters.</p>";
 updateLeafletMap(L_jobs);}
 ["q","exp","sal"].forEach(i=>$("#"+i).addEventListener("input",render));
 $("#reset").onclick=()=>{$("#q").value="";$("#exp").value=99;$("#sal").value=0;render()};
@@ -2269,7 +2269,7 @@ function sync(){
   rs();
 }
 function rmS(i){prof.skills.splice(i,1);rs()}
-function ap(t){applied.has(t)?applied.delete(t):applied.add(t);rs()}
+function ap(t){ applyVacancy(t); }
 function rs(){
   $("#ptags").innerHTML=prof.skills.map((s,i)=>`<span class="chip y">${esc(s)} <a href="#" onclick="rmS(${i});return false" style="text-decoration:none;color:inherit">✕</a></span>`).join("")||"<small>No skills added yet.</small>";
   const sc=prof.skills.map(s=>s.toLowerCase());
@@ -2310,7 +2310,7 @@ $("#seeker-alerts").innerHTML = `
   </div>
 `;
 
-$("#prec").innerHTML=rec.map(x=>`<div class="job" style="border-bottom:1px solid var(--line);padding:8px 0"><div><b>${x.j[0]}</b><br><small>${x.j[1]} • ${x.d.toFixed(1)} km • ₹${x.j[3].toLocaleString("en-IN")}</small></div><div style="text-align:right"><div class="fit">${x.s}%<i>Fit</i></div><button class="btn ${applied.has(x.j[0])?"a":"o"}" style="min-height:40px;margin-top:6px" onclick="ap('${x.j[0]}')">${applied.has(x.j[0])?"Applied ✓":"Apply"}</button></div></div>`).join("");
+$("#prec").innerHTML=rec.map(x=>`<div class="job" style="border-bottom:1px solid var(--line);padding:8px 0"><div><b>${x.j[0]}</b><br><small>${x.j[1]} • ${x.d.toFixed(1)} km • ₹${x.j[3].toLocaleString("en-IN")}</small></div><div style="text-align:right"><div class="fit">${x.s}%<i>Fit</i></div><button class="btn ${applied.has(x.j[0])?"a":"a"}" style="min-height:40px;margin-top:6px" onclick="applyVacancy('${x.j[0]}')">${applied.has(x.j[0])?"Applied ✓":"Apply"}</button></div></div>`).join("");
 }
 $("#psa").onclick=()=>{const v=$("#ps").value.trim();if(v&&!prof.skills.includes(v))prof.skills.push(v);$("#ps").value="";sync()};
 $("#ps").addEventListener("keydown",e=>{if(e.key=="Enter")$("#psa").click()});
