@@ -122,7 +122,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <button class="n" onclick="showPage('vacancies')">🔥 <span>Vacancies</span></button>
 <button class="n" onclick="showPage('ai')">🤖 <span data-t="n7">AI Scanner</span></button>
 <button class="n" onclick="showPage('complain')">🚨 <span data-t="n4">Complain</span></button>
-<button class="n" onclick="goToHomeSec('help')">💬 <span data-t="n5">Help &amp; Q/A</span></button>
+<button class="n" onclick="showPage('help')">💬 <span>Help &amp; FAQs</span></button>
 <button class="n" onclick="toggleVoiceListen()" title="Voice Assistance" id="voicewidget">🎙️ <span>Voice Nav</span></button>
 <button class="n adm" onclick="openM('Admin Login','Admin ID')">🔒 <span data-t="n6">Admin Login</span></button>
 <button class="n" id="lang" aria-label="Switch language">हिन्दी</button>
@@ -279,6 +279,102 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 </div>
 </div>
 
+<!-- Dedicated Help & FAQs Page -->
+<div id="page-help" class="page-view" hidden>
+<div class="wrap" style="max-width:960px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+  <button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
+  <button class="btn sm o" onclick="toggleSpeak(this, 'Help Centre and Frequently Asked Questions page. Find answers about job search, employer verification, AI scanner, and voice assistance.')">🔊 Listen Page</button>
+</div>
+
+<div class="sec-h" style="text-align:left;margin-bottom:24px">
+  <span class="pill" style="background:#dc2626;color:#fff;font-size:.9rem;padding:4px 12px">SOS</span>
+  <h2 style="font-size:2.2rem;display:inline;margin-left:8px;vertical-align:middle;color:var(--pri)">Help Centre &amp; Frequently Asked Questions</h2>
+  <p style="font-size:1.05rem;color:var(--mut);margin-top:8px">Find answers to common questions about KaamSetu, employer trust verification, AI skill-gap scanning, offline mode, and scam complaints.</p>
+</div>
+
+<!-- Top Assist Cards Row (Reference from Shram Sanchar) -->
+<div class="grid g2" style="margin-bottom:28px;gap:20px">
+  <div class="card" style="background:#f0f9ff;border:2px solid var(--pri)">
+    <h3 style="display:flex;align-items:center;gap:8px;color:var(--pri)">🎙️ KaamSetu Sahayak (AI Voice Assistant)</h3>
+    <p style="color:var(--mut);margin-bottom:14px">Ask questions or navigate in Hindi or English. Speak or type to get instant answers about job openings, trust badges, or worker rights.</p>
+    <button class="btn sm" onclick="toggleVoiceListen()">🎙️ Start Voice Sahayak</button>
+  </div>
+  <div class="card" style="background:#fff7ed;border:2px solid var(--acc)">
+    <h3 style="display:flex;align-items:center;gap:8px;color:#c2410c">🤝 Need Assisted Help?</h3>
+    <p style="color:var(--mut);margin-bottom:14px">If you need help at a CSC center, NGO camp, or reporting a job fraud, call official government helplines or contact a local representative.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn sm a" href="tel:14434" style="text-decoration:none">📞 Call Labour Helpline 14434</a>
+      <a class="btn sm" href="tel:1930" style="background:#dc2626;border-color:#dc2626;color:#fff;text-decoration:none">🚨 Cyber Crime 1930</a>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ List with Voice Readouts -->
+<div class="card" style="padding:26px">
+  <h3 style="font-size:1.4rem;margin-bottom:20px;border-bottom:2px solid var(--line);padding-bottom:10px;color:var(--ink)">Frequently Asked Questions (FAQs)</h3>
+
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: What is KaamSetu and how does it work?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'What is KaamSetu and how does it work? KaamSetu connects job seekers with verified local employers using AI matching, trust verification scores, and 1-click apply.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">KaamSetu is an AI-powered employer discovery and hiring platform. It matches job seekers to nearby vacancies with a transparent Fit Score, verifies employer trust via Gemini AI &amp; Admin checks, and operates seamlessly even in low-bandwidth regions.</p>
+    </div>
+
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: Is KaamSetu free for job seekers?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'Is KaamSetu free for job seekers? Yes, searching jobs, applying, and receiving AI skill-gap reports are completely free for all workers.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">Yes! Searching for jobs, 1-click applying, voice navigation, and using the AI Profile Scanner &amp; Skill-Gap report are 100% free for all job seekers.</p>
+    </div>
+
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: How is the Gemini Fit Score calculated?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'How is the Gemini Fit Score calculated? The score factors in 40% distance proximity, 30% skill and experience match, and 30% employer trust verification.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">The Gemini Fit Score combines <b>40% proximity distance</b>, <b>30% skill &amp; experience overlap</b>, and <b>30% company trust rating</b> to ensure workers get matched to safe, nearby jobs.</p>
+    </div>
+
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: How does KaamSetu verify new companies &amp; block scams?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'How does KaamSetu verify new companies and block scams? Gemini AI cross-verifies company credentials, salary ranges, and fraud reports. Admin officers perform final verification.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">When a company registers or posts a job, Gemini AI evaluates Udyam/MCA credentials, wage levels, and fraud report history to assign a Trust Score. Admin control officers conduct final manual verification, badging verified employers with ☑️.</p>
+    </div>
+
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: Can I use KaamSetu without internet or with weak signal?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'Can I use KaamSetu without internet or with weak signal? Yes, KaamSetu supports PWA offline caching, walk-in slot booking, and offline SMS job applications.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">Yes. KaamSetu is built with PWA Service Worker offline caching. You can view saved jobs offline, book walk-in interview slots, or submit applications via offline SMS sync when your connection returns.</p>
+    </div>
+
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: How do I report a fake job offer or fraudulent company?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'How do I report a fake job offer or fraudulent company? Click Complain in the top bar, upload screenshots or camera evidence, and Gemini AI will analyze and alert the Admin.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">Go to the <b>🚨 Complain</b> page in the main navigation. You can upload fraud screenshots or capture camera evidence. Gemini AI will run instant fraud confidence analysis and alert the Admin portal for immediate action &amp; helpline 1930 reporting.</p>
+    </div>
+
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: Is my personal data and location tracked continuously?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'Is my personal data and location tracked continuously? No, KaamSetu never tracks background location. Location is accessed strictly on-demand.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">NO. KaamSetu strictly respects the Digital Personal Data Protection (DPDP) principles. Your location is accessed only ONCE when you click "Detect My Location" on the jobs map. We do not store GPS movement trails or share private data.</p>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
 <!-- Dedicated AI Profile Scanner Page -->
 <div id="page-ai" class="page-view" hidden>
 <div class="wrap">
@@ -296,7 +392,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div><h4>Employment &amp; Social Security</h4><a href="https://epfindia.gov.in" target="_blank" rel="noopener">EPFO (epfindia.gov.in)</a><a href="https://esic.gov.in" target="_blank" rel="noopener">ESIC (esic.gov.in)</a><a href="https://ncs.gov.in" target="_blank" rel="noopener">National Career Service (ncs.gov.in)</a><a href="https://eshram.gov.in" target="_blank" rel="noopener">eShram (eshram.gov.in)</a><a href="https://skillindiadigital.gov.in" target="_blank" rel="noopener">Skill India Digital Hub (skillindiadigital.gov.in)</a></div>
 <div><h4>Data &amp; Compliance</h4><a href="https://labourbureau.gov.in" target="_blank" rel="noopener">Labour Bureau (labourbureau.gov.in)</a><a href="https://clc.gov.in" target="_blank" rel="noopener">Min. wages via CLC (clc.gov.in)</a><a href="https://mospi.gov.in" target="_blank" rel="noopener">PLFS by MoSPI (mospi.gov.in)</a><a href="https://udyamregistration.gov.in" target="_blank" rel="noopener">Udyam Registration (udyamregistration.gov.in)</a><a href="https://mca.gov.in" target="_blank" rel="noopener">MCA (mca.gov.in)</a><a href="https://data.gov.in" target="_blank" rel="noopener">Open Govt Data (data.gov.in)</a><a href="https://meity.gov.in" target="_blank" rel="noopener">DPDP Act info via MeitY (meity.gov.in)</a></div>
 <div><h4>Security &amp; Digital Services</h4><a href="https://cybercrime.gov.in" target="_blank" rel="noopener">Cyber Crime Portal (cybercrime.gov.in)</a><a href="https://digilocker.gov.in" target="_blank" rel="noopener">DigiLocker (digilocker.gov.in)</a><div class="help">National Cyber Crime Helpline <b>1930</b></div><div class="help">Ministry of Labour Helpline <b>14434</b></div></div>
-<div><h4>KaamSetu</h4><a onclick="showPage('jobs')">Jobs</a><a onclick="showPage('vacancies')">Vacancies</a><a onclick="showPage('ai')">AI Scanner</a><a onclick="showPage('complain')">Complain</a><a onclick="goToHomeSec('help')">Help &amp; Q/A</a><a onclick="goToHomeSec('how')">How it works</a></div></div>
+<div><h4>KaamSetu</h4><a onclick="showPage('jobs')">Jobs</a><a onclick="showPage('vacancies')">Vacancies</a><a onclick="showPage('ai')">AI Scanner</a><a onclick="showPage('complain')">Complain</a><a onclick="showPage('help')">Help &amp; FAQs</a><a onclick="goToHomeSec('how')">How it works</a></div></div>
 <div class="copy">© 2026 KaamSetu – Employer Discovery &amp; Hiring Intelligence. Independent platform; government links are for reference.</div></div></footer>
 
 <div id="app" class="app" hidden><div class="wrap" style="padding:28px 20px">
@@ -560,6 +656,7 @@ function toggleVoiceListen() {
       else if (transcript.includes("vacancy") || transcript.includes("vacancies")) showPage('vacancies');
       else if (transcript.includes("complain") || transcript.includes("scam")) showPage('complain');
       else if (transcript.includes("scanner") || transcript.includes("ai")) showPage('ai');
+      else if (transcript.includes("help") || transcript.includes("faq")) showPage('help');
       else if (transcript.includes("home")) showPage('home');
       else if (transcript.includes("chat")) toggleChat();
     };
@@ -681,6 +778,7 @@ function showPage(p){
   $("#page-vacancies").hidden = !isVacancies;
   $("#page-complain").hidden = (p !== 'complain');
   $("#page-ai").hidden = (p !== 'ai');
+  $("#page-help").hidden = (p !== 'help');
   $("#app").hidden = true;
   $("footer").hidden = false;
   scrollTo(0,0);
@@ -1074,7 +1172,7 @@ function show(r, name){
     admin: `🔒 Admin Control Panel` 
   };
 
-  ["top", "page-vacancies", "page-complain", "page-ai"].forEach(id => {
+  ["top", "page-vacancies", "page-complain", "page-ai", "page-help"].forEach(id => {
     const el = $("#" + id);
     if (el) el.hidden = true;
   });
