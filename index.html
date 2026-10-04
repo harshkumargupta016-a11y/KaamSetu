@@ -790,11 +790,13 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div class="chat-box" id="chatbox">
 <div class="chat-head"><span>🤖 Gemini KaamSetu Assistant</span><div style="display:flex;gap:6px;align-items:center"><button id="chatStopVoice" onclick="stopChatVoice()" title="Stop Voice Speech" style="display:none;background:#dc2626;color:#fff;border-radius:6px;padding:3px 8px;font-size:0.75rem;font-weight:bold;cursor:pointer;border:none">🛑 Stop Voice</button><button onclick="toggleChat()" aria-label="Close Chat">✕</button></div></div>
 <div class="chat-body" id="chatbody">
-<div class="chat-msg bot">Namaste! 👋 I am your Gemini-powered KaamSetu AI Assistant. Ask me anything about jobs, skills, scam complaints, or employer verification!</div>
+<div class="chat-msg bot">Namaste! 👋 I am your Gemini-powered KaamSetu AI Assistant. Ask me anything about eShram cards, KaamSetu jobs, welfare schemes, scam complaints, or employer verification!</div>
 <div class="chat-chips">
-<button class="chat-chip" onclick="sendQuickMsg('How to find jobs in Indore?')">🔍 Find Jobs</button>
+<button class="chat-chip" onclick="sendQuickMsg('How to find jobs on KaamSetu?')">🔍 Find Jobs</button>
+<button class="chat-chip" onclick="sendQuickMsg('What are eShram benefits and UAN card?')">📜 eShram Benefits</button>
 <button class="chat-chip" onclick="sendQuickMsg('Scan my electrician resume')">🤖 AI Scanner</button>
 <button class="chat-chip" onclick="sendQuickMsg('How to report a scam?')">🚨 Report Scam</button>
+<button class="chat-chip" onclick="sendQuickMsg('What government schemes are available?')">🏛️ Welfare Schemes</button>
 </div>
 </div>
 <div class="chat-foot">
@@ -1837,19 +1839,38 @@ function speakChatReply(text) {
 async function botReply(q){
   const t = q.toLowerCase();
   addChatMsg("Thinking with Gemini AI...", false);
-  const prompt = `You are KaamSetu AI Assistant, a helpful guide for a job platform in India matching blue-collar and skilled workers with verified employers. Answer concisely: "${q}"`;
+  const prompt = `You are KaamSetu AI Assistant, an expert guide for the KaamSetu platform and Indian Ministry of Labour unorganised worker initiatives, especially eShram (UAN card, ₹2 Lakh accidental cover under PMSBY, pension benefits, registration process), EPFO/ESIC verification, job matching, scam reporting, and government social security schemes.
+Answer the following user question clearly, accurately, and concisely (2 to 4 sentences max):
+"${q}"`;
+
   let reply = await callGeminiAPI(prompt);
   const b = $("#chatbody");
   if (b.lastChild && b.lastChild.textContent.includes("Thinking with Gemini AI")) {
     b.removeChild(b.lastChild);
   }
   if (!reply) {
-    if(t.includes("job") || t.includes("work")){
-      reply = "You can browse verified jobs on our dedicated Jobs page or check 🔥 New Vacancies for 1-click apply!";
-    } else if(t.includes("scam") || t.includes("complain")){
-      reply = "Report scams on our dedicated Complain page. Upload photos or use live camera evidence for Gemini AI analysis.";
+    if (t.includes("eshram") || t.includes("e-shram") || t.includes("shram card") || t.includes("uan")) {
+      if (t.includes("benefit") || t.includes("insurance") || t.includes("cover") || t.includes("advantage")) {
+        reply = "eShram Card provides unorganised workers with a 12-digit UAN Card, free ₹2 Lakh accidental insurance cover (PMSBY), disability cover up to ₹1 Lakh, and direct enrollment into social security schemes like PM-SYM pension.";
+      } else if (t.includes("register") || t.includes("apply") || t.includes("how to get") || t.includes("create")) {
+        reply = "You can register for eShram for free on eshram.gov.in or at your nearest CSC center. Required documents: Aadhaar card, Aadhaar-linked mobile number, and bank account details.";
+      } else {
+        reply = "eShram is the Ministry of Labour's national portal for unorganised workers. Registering gives you a UAN Card, free ₹2 Lakh accidental insurance, and seamless access to government welfare schemes.";
+      }
+    } else if (t.includes("kaamsetu") || t.includes("kaam setu") || t.includes("platform") || t.includes("website")) {
+      reply = "KaamSetu is an AI-driven platform for blue-collar and skilled workers to find verified local jobs, check EPFO/ESIC employment trust badges, scan skill gaps, and apply with 1-click or walk-in interview slots.";
+    } else if (t.includes("epfo") || t.includes("esic") || t.includes("verification") || t.includes("signal")) {
+      reply = "KaamSetu checks candidate and employer EPFO & ESIC subscription history using consent-based boolean signals without storing or exposing private UAN/Aadhaar numbers.";
+    } else if (t.includes("scheme") || t.includes("pension") || t.includes("pm-sym") || t.includes("welfare")) {
+      reply = "Explore key government schemes on our Schemes page: PM-SYM (₹3,000 monthly pension after 60), Ayushman Bharat (₹5 Lakh health cover), eShram insurance, and PMKVY skill development.";
+    } else if (t.includes("job") || t.includes("work") || t.includes("vacancy") || t.includes("apply")) {
+      reply = "You can browse verified jobs on our Vacancies page or Job Seeker dashboard, view map locations, and click '⚡ 1-Click Apply' to book your interview slot!";
+    } else if (t.includes("scam") || t.includes("complain") || t.includes("fraud") || t.includes("fake")) {
+      reply = "Report suspicious agencies on our Complain page. Upload screenshots or use live camera capture for instant Gemini AI fraud likelihood analysis and admin alert.";
+    } else if (t.includes("scanner") || t.includes("resume") || t.includes("skill")) {
+      reply = "Use our AI Scanner page to paste your resume or skills, pick your target role, and get an instant Gemini fit percentage with a step-by-step improvement plan.";
     } else {
-      reply = "Namaste! I am your Gemini KaamSetu Assistant. I can help you find jobs, analyze resumes, report fraud, or check trust scores.";
+      reply = "Namaste! I am your Gemini KaamSetu Assistant. Ask me anything about eShram cards, KaamSetu jobs, EPFO/ESIC verification, government schemes, or scam complaints!";
     }
   }
   addChatMsg(reply, false);
