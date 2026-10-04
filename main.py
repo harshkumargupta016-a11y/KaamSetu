@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import json
@@ -16,7 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DB_FILE = "kaamsetu_db.json"
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.environ.get("DATA_DIR", APP_DIR)
+DB_FILE = os.path.join(DATA_DIR, "kaamsetu_db.json")
 
 DEFAULT_DB = {
     "users": {},
@@ -72,6 +75,7 @@ def load_db() -> Dict[str, Any]:
     return DEFAULT_DB
 
 def save_db(data: Dict[str, Any]):
+    os.makedirs(DATA_DIR, exist_ok=True)
     with open(DB_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
@@ -97,7 +101,21 @@ class OfflineSyncRequest(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"status": "ok", "service": "KaamSetu FastAPI Backend", "version": "1.0"}
+    return FileResponse(os.path.join(APP_DIR, "index.html"))
+
+@app.get("/manifest.json", include_in_schema=False)
+def get_manifest():
+    return FileResponse(
+        os.path.join(APP_DIR, "manifest.json"),
+        media_type="application/manifest+json"
+    )
+
+@app.get("/sw.js", include_in_schema=False)
+def get_service_worker():
+    return FileResponse(
+        os.path.join(APP_DIR, "sw.js"),
+        media_type="application/javascript"
+    )
 
 @app.get("/api/data")
 def get_global_data():
@@ -333,4 +351,5 @@ def process_offline_sync(req: OfflineSyncRequest):
     }
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.environ.get("PORT", "8000"))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)

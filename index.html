@@ -113,6 +113,83 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 #v-admin .btn{background:#000;border-color:#000;color:#fff}#v-admin .btn.o{background:#fff;color:#000}#v-admin .stat{border-color:#000}#v-admin .stat b{color:#000}
 .tabs{display:flex;gap:8px;flex-wrap:wrap}
 </style>
+
+<style>
+/* --- Helpline & Gov Links Footer --- */
+.site-footer {
+  background-color: #0f274a;
+  color: #ffffff;
+  padding: 48px 24px;
+  font-family: inherit;
+}
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.footer-heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #ffffff;
+}
+.helpline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.helpline-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 3px solid #ea580c;
+  border-radius: 6px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.helpline-card .phone-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-decoration: none;
+}
+.helpline-card .label {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px 32px;
+}
+.link-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+}
+.link-item .title {
+  color: #f8fafc;
+  font-weight: 500;
+  padding-right: 12px;
+}
+.link-item .domain {
+  color: #64748b;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.link-item:hover .title {
+  color: #38bdf8;
+}
+.link-item:hover .domain {
+  color: #94a3b8;
+}
+</style>
+
 </head>
 <body>
 <header><div class="nav" role="navigation" aria-label="Main">
@@ -595,12 +672,39 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 </div>
 </div>
 
-<footer><div class="wrap"><div class="cols">
-<div><h4>Employment &amp; Social Security</h4><a href="https://epfindia.gov.in" target="_blank" rel="noopener">EPFO (epfindia.gov.in)</a><a href="https://esic.gov.in" target="_blank" rel="noopener">ESIC (esic.gov.in)</a><a href="https://ncs.gov.in" target="_blank" rel="noopener">National Career Service (ncs.gov.in)</a><a href="https://eshram.gov.in" target="_blank" rel="noopener">eShram (eshram.gov.in)</a><a href="https://skillindiadigital.gov.in" target="_blank" rel="noopener">Skill India Digital Hub (skillindiadigital.gov.in)</a></div>
-<div><h4>Data &amp; Compliance</h4><a href="https://labourbureau.gov.in" target="_blank" rel="noopener">Labour Bureau (labourbureau.gov.in)</a><a href="https://clc.gov.in" target="_blank" rel="noopener">Min. wages via CLC (clc.gov.in)</a><a href="https://mospi.gov.in" target="_blank" rel="noopener">PLFS by MoSPI (mospi.gov.in)</a><a href="https://udyamregistration.gov.in" target="_blank" rel="noopener">Udyam Registration (udyamregistration.gov.in)</a><a href="https://mca.gov.in" target="_blank" rel="noopener">MCA (mca.gov.in)</a><a href="https://data.gov.in" target="_blank" rel="noopener">Open Govt Data (data.gov.in)</a><a href="https://meity.gov.in" target="_blank" rel="noopener">DPDP Act info via MeitY (meity.gov.in)</a></div>
-<div><h4>Security &amp; Digital Services</h4><a href="https://cybercrime.gov.in" target="_blank" rel="noopener">Cyber Crime Portal (cybercrime.gov.in)</a><a href="https://digilocker.gov.in" target="_blank" rel="noopener">DigiLocker (digilocker.gov.in)</a><div class="help">National Cyber Crime Helpline <b>1930</b></div><div class="help">Ministry of Labour Helpline <b>14434</b></div></div>
-<div><h4>KaamSetu</h4><a onclick="showPage('jobs')">Jobs</a><a onclick="showPage('vacancies')">Vacancies</a><a onclick="showPage('verification')">EPFO/ESIC Verification</a><a onclick="showPage('schemes')">Government Schemes</a><a onclick="showPage('ai')">AI Scanner</a><a onclick="showPage('complain')">Complain</a><a onclick="showPage('help')">Help &amp; FAQs</a><a onclick="goToHomeSec('how')">How it works</a></div></div>
-<div class="copy">© 2026 KaamSetu – Employer Discovery &amp; Hiring Intelligence. Independent platform; government links are for reference.</div></div></footer>
+<footer class="site-footer">
+  <div class="footer-container">
+    <h3 class="footer-heading">Helplines — free, government-run</h3>
+    <div class="helpline-grid">
+      <div class="helpline-card"><a href="tel:14434" class="phone-number">14434</a><span class="label">e-Shram helpline</span></div>
+      <div class="helpline-card"><a href="tel:112" class="phone-number">112</a><span class="label">Emergency — police, fire, ambulance</span></div>
+      <div class="helpline-card"><a href="tel:108" class="phone-number">108</a><span class="label">Ambulance</span></div>
+      <div class="helpline-card"><a href="tel:181" class="phone-number">181</a><span class="label">Women helpline</span></div>
+      <div class="helpline-card"><a href="tel:1098" class="phone-number">1098</a><span class="label">Childline</span></div>
+      <div class="helpline-card"><a href="tel:1930" class="phone-number">1930</a><span class="label">Cyber crime helpline</span></div>
+      <div class="helpline-card"><a href="tel:15100" class="phone-number">15100</a><span class="label">NALSA free legal aid</span></div>
+      <div class="helpline-card"><a href="tel:14555" class="phone-number">14555</a><span class="label">Ayushman Bharat (PM-JAY)</span></div>
+      <div class="helpline-card"><a href="tel:1947" class="phone-number">1947</a><span class="label">UIDAI Aadhaar helpline</span></div>
+    </div>
+    <h3 class="footer-heading">Official government links</h3>
+    <div class="links-grid">
+      <a href="https://eshram.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">e-Shram portal</span><span class="domain">eshram.gov.in</span></a>
+      <a href="https://labour.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">Ministry of Labour &amp; Employment</span><span class="domain">labour.gov.in</span></a>
+      <a href="https://shramsuvidha.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">Shram Suvidha portal</span><span class="domain">shramsuvidha.gov.in</span></a>
+      <a href="https://bhashini.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">BHASHINI (MeitY)</span><span class="domain">bhashini.gov.in</span></a>
+      <a href="https://uidai.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">UIDAI — Aadhaar</span><span class="domain">uidai.gov.in</span></a>
+      <a href="https://pmjay.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">Ayushman Bharat PM-JAY</span><span class="domain">pmjay.gov.in</span></a>
+      <a href="https://epfindia.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">EPFO</span><span class="domain">epfindia.gov.in</span></a>
+      <a href="https://esic.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">ESIC</span><span class="domain">esic.gov.in</span></a>
+      <a href="https://pgportal.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">CPGRAMS — public grievances</span><span class="domain">pgportal.gov.in</span></a>
+      <a href="https://mygov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">MyGov</span><span class="domain">mygov.in</span></a>
+      <a href="https://nalsa.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">NALSA — legal services</span><span class="domain">nalsa.gov.in</span></a>
+      <a href="https://india.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">National Portal of India</span><span class="domain">india.gov.in</span></a>
+      <a href="https://umang.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">UMANG app</span><span class="domain">umang.gov.in</span></a>
+      <a href="https://meity.gov.in" target="_blank" rel="noopener noreferrer" class="link-item"><span class="title">MeitY — DPDP Act, 2023</span><span class="domain">meity.gov.in</span></a>
+    </div>
+  </div>
+</footer>
 
 <div id="app" class="app" hidden><div class="wrap" style="padding:28px 20px">
 <div class="bar2"><h2 id="apt"></h2><div><button class="btn o" onclick="home()">← Home</button> <button class="btn" onclick="logoutUser()">Logout</button></div></div>
@@ -2207,7 +2311,7 @@ window.addEventListener("resize", renderCharts);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 // FastAPI Backend Integration Base URL
-const API_URL = "http://localhost:8000/api";
+const API_URL = "/api";
 
 // Simulated Network Connection Toggle State
 let isSimulatedOffline = localStorage.getItem('kaamsetu_simulated_offline') === 'true';

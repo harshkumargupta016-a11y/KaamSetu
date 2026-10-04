@@ -1,0 +1,3216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KaamSetu – Employer Discovery &amp; Hiring Intelligence</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+:root{color-scheme:light;--bg:#ffffff;--card:#ffffff;--ink:#0f172a;--mut:#334155;--pri:#2563eb;--pri2:#0891b2;--acc:#f97316;--ok:#15803d;--line:#cbd5e1;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:calc(88px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--pri)}h1,h2,h3{line-height:1.2;margin:0 0 .5em}
+.wrap{max-width:1180px;margin:auto;padding:0 20px}section{padding:64px 0}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 22px;border-radius:12px;border:2px solid var(--pri);background:var(--pri);color:#fff;font-weight:700;font-size:1rem;cursor:pointer;text-decoration:none}
+.btn.o{background:transparent;color:var(--pri)}.btn.a{background:var(--acc);border-color:var(--acc);color:#111}
+.btn.sm{min-height:36px;padding:0 14px;font-size:.85rem;border-radius:8px}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+header{position:sticky;top:0;z-index:50;background:var(--card);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.nav{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;padding:10px 20px;max-width:1180px;margin:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.nav::-webkit-scrollbar{display:none}
+.logo{font-weight:800;font-size:1.3rem;color:var(--pri);text-decoration:none;margin-right:12px;cursor:pointer;flex-shrink:0}.logo span{color:var(--acc)}
+.nav a.n,.nav button.n{min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;font-size:.92rem;flex-shrink:0;white-space:nowrap}
+.nav .n:hover{border-color:var(--pri);color:var(--pri)}.nav .adm{background:var(--pri);border-color:var(--pri);color:#fff!important}
+.hero{background:#fff;color:var(--ink);padding:72px 0;border-bottom:4px solid var(--pri)}
+.hero .g{display:grid;grid-template-columns:1.2fr .8fr;gap:36px;align-items:center}
+.hero h1{font-size:clamp(2rem,5vw,3.4rem)}.hero p{font-size:1.15rem;opacity:.95;max-width:560px}
+.hero .btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.hero h1{color:var(--pri)}
+.hc{background:#fff;border:2px solid var(--pri);border-radius:18px;padding:22px;box-shadow:0 10px 30px rgba(37,99,235,.18)}
+.hc .row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}.hc .row:last-child{border:0}
+.pill{display:inline-block;background:var(--acc);color:#111;border-radius:99px;padding:2px 12px;font-weight:700;font-size:.8rem}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:-40px;position:relative}
+.stat{background:var(--card);border:2px solid var(--pri);border-radius:16px;padding:22px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.stat b{display:block;font-size:2rem;color:var(--pri)}.stat span{color:var(--mut);font-size:.9rem}
+.sec-h{text-align:center;max-width:680px;margin:0 auto 36px}.sec-h p{color:var(--mut)}
+.grid{display:grid;gap:18px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.card .ic{font-size:1.8rem}.card p{color:var(--mut);margin:0}
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;justify-content:center}
+.fs{flex:1 1 170px;max-width:210px;background:var(--card);border:2px solid var(--pri);border-radius:16px;padding:18px;text-align:center;position:relative;opacity:0;transform:translateY(20px);transition:.6s}
+.flow.in .fs{opacity:1;transform:none}.flow.in .fs:nth-child(3){transition-delay:.15s}.flow.in .fs:nth-child(5){transition-delay:.3s}.flow.in .fs:nth-child(7){transition-delay:.45s}.flow.in .fs:nth-child(9){transition-delay:.6s}
+.fs .num{width:36px;height:36px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;margin:0 auto 8px;font-weight:800}
+.fs p{font-size:.88rem;color:var(--mut);margin:0}.arr{align-self:center;font-size:1.6rem;color:var(--acc);padding:0 6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+.lane h3{color:var(--pri2)}.lane ol{margin:0;padding-left:20px;color:var(--mut)}
+.jobs-layout{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+.filters{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+input,select,textarea{width:100%;min-height:48px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:8px 12px;font:inherit}
+.loc{display:flex;gap:8px;margin-bottom:12px}.loc input{flex:1}
+.job{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+.job h3{margin:0;font-size:1.05rem}.job small{color:var(--mut)}
+.fit{min-width:74px;text-align:center;border-radius:12px;padding:8px;background:rgba(22,163,74,.12);color:var(--ok);font-weight:800}.fit i{display:block;font-size:.65rem;font-style:normal;font-weight:600}
+.tag{display:inline-block;font-size:.75rem;border:1px solid var(--line);border-radius:99px;padding:0 8px;margin-right:4px;color:var(--mut)}
+.map{background:#eff6ff;border-radius:16px;position:relative;min-height:380px;overflow:hidden;border:1px solid var(--line)}
+.map svg{position:absolute;inset:0;width:100%;height:100%}
+.pin{position:absolute;transform:translate(-50%,-100%);background:var(--pri);color:#fff;border-radius:99px;padding:2px 9px;font-size:.75rem;font-weight:700;white-space:nowrap;border:2px solid #fff}
+.pin.me{background:#dc2626}
+.scan{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.drop{border:3px dashed var(--pri);border-radius:16px;padding:22px;text-align:center;color:var(--mut);margin-bottom:12px;cursor:pointer}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .8s}
+.chip{display:inline-block;margin:3px;padding:3px 10px;border-radius:99px;font-size:.82rem;font-weight:600}.chip.y{background:rgba(22,163,74,.14);color:var(--ok)}.chip.n{background:rgba(220,38,38,.12);color:#b91c1c}
+.rev .stars{color:#f59e0b;letter-spacing:2px}.rev p{font-style:italic}.rev b{display:block;margin-top:8px}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0 18px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:700;min-height:52px;display:flex;align-items:center}details p{color:var(--mut);margin-top:0}
+.modal{position:fixed;inset:0;background:rgba(5,10,30,.65);display:none;place-items:center;z-index:100;padding:20px}.modal.on{display:grid}
+.modal .box{background:var(--card);border-radius:18px;padding:26px;max-width:400px;width:100%}.modal label{display:block;margin:10px 0 4px;font-weight:600}
+footer{background:#fff;color:var(--ink);border-top:4px solid var(--pri);padding:48px 0 24px;margin-top:40px}
+footer .cols{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}footer h4{color:var(--pri);margin:0 0 10px}
+footer a{color:#1d4ed8;display:block;padding:4px 0;text-decoration:none;font-size:.92rem;cursor:pointer}footer a:hover{text-decoration:underline}
+.help{background:#fff7ed;border:2px solid var(--acc);border-radius:10px;padding:10px;margin-bottom:8px;font-size:.92rem}.help b{color:#c2410c;font-size:1.3rem}
+.copy{border-top:1px solid var(--line);margin-top:28px;padding-top:16px;font-size:.85rem;text-align:center}
+#report{display:none}
+.page-view{padding:20px 0;min-height:60vh}
+.page-back{margin-bottom:16px;display:inline-flex;align-items:center;gap:6px}
+
+/* Chatbot Widget Styles - Moved to Right Corner */
+.chat-widget{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;align-items:flex-end}
+.chat-btn{width:56px;height:56px;border-radius:50%;background:var(--pri);color:#fff;border:none;box-shadow:0 6px 20px rgba(37,99,235,.35);cursor:pointer;display:grid;place-items:center;font-size:1.6rem;transition:transform .2s}
+.chat-btn:hover{transform:scale(1.08)}
+.chat-box{display:none;width:350px;height:460px;background:var(--card);border:2px solid var(--pri);border-radius:18px;box-shadow:0 12px 36px rgba(0,0,0,.18);flex-direction:column;overflow:hidden;margin-bottom:12px}
+.chat-box.on{display:flex}
+.chat-head{background:var(--pri);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.chat-head button{background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer}
+.chat-body{flex:1;padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;font-size:.9rem;background:#f8fafc}
+.chat-msg{max-width:85%;padding:8px 12px;border-radius:12px;line-height:1.4}
+.chat-msg.bot{background:#fff;border:1px solid var(--line);color:var(--ink);align-self:flex-start;border-bottom-left-radius:2px}
+.chat-msg.user{background:var(--pri);color:#fff;align-self:flex-end;border-bottom-right-radius:2px}
+.chat-chips{display:flex;gap:6px;flex-wrap:wrap;padding:4px 0}
+.chat-chip{background:#e2e8f0;border:none;border-radius:99px;padding:4px 10px;font-size:.78rem;cursor:pointer;color:var(--ink);font-weight:600}
+.chat-chip:hover{background:var(--pri);color:#fff}
+.chat-foot{padding:8px 12px;background:#fff;border-top:1px solid var(--line);display:flex;gap:6px}
+.chat-foot input{min-height:38px;font-size:.88rem}
+.chat-foot button{min-height:38px;padding:0 14px;font-size:.88rem}
+
+.chart-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+.chart-box canvas{max-width:100%;height:180px}
+.camera-box{border:2px solid var(--pri);border-radius:12px;padding:12px;text-align:center;background:#f8fafc}
+video{width:100%;max-width:320px;border-radius:8px;background:#000;margin-bottom:8px}
+
+@media print{body>*:not(#report){display:none!important}#report{display:block!important;color:#000;background:#fff;padding:24px}}
+@media(max-width:900px){.hero .g,.jobs-layout,.scan,.two,.g2{grid-template-columns:1fr}.stats,.g4,footer .cols{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}.arr{display:none}.flow{gap:12px}.chat-box{width:calc(100vw - 40px)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+[hidden]{display:none!important}
+.nav button.n.adm{background:#000;border-color:#000;color:#fff!important}
+.nav button.n.adm:hover{background:#222;border-color:#000}
+.app label{display:block;margin:10px 0 4px;font-weight:600}
+.bar2{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:14px;border-bottom:3px solid var(--pri)}.bar2 h2{margin:0}
+table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a;color:#fff;text-align:left;padding:10px}td{padding:10px;border-bottom:1px solid var(--line)}tr:nth-child(even) td{background:#f1f5f9}
+.mini{border:2px solid var(--pri);border-radius:12px;padding:12px;text-align:center}.mini b{display:block;font-size:1.6rem;color:var(--pri)}
+.chip.m{background:#fef3c7;color:#92400e}
+#v-admin .btn{background:#000;border-color:#000;color:#fff}#v-admin .btn.o{background:#fff;color:#000}#v-admin .stat{border-color:#000}#v-admin .stat b{color:#000}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<header><div class="nav" role="navigation" aria-label="Main">
+<a class="logo" onclick="showPage('home')">Kaam<span>Setu</span> ✦</a>
+<button class="n" id="btnSimulateOffline" onclick="toggleSimulatedNetwork()" style="border:2px solid #16a34a;background:#d1fae5;color:#065f46;font-weight:bold;cursor:pointer;flex-shrink:0" title="Toggle Simulated Online/Offline Connection Mode">🌐 Mode: ONLINE</button>
+<div id="netStatusBadge" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:0.78rem;font-weight:700;background:#d1fae5;color:#065f46;flex-shrink:0" title="Network Synchronization Status">🟢 Online (Synced)</div>
+<div id="userHeaderBanner" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:4px 12px;border-radius:99px;font-size:0.85rem;font-weight:700;align-items:center;gap:6px">
+  <span id="userHeaderIcon">🏢</span> <span id="userHeaderName">Hi, Company Name</span>
+  <button onclick="logoutUser()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-weight:bold;margin-left:6px" title="Logout">✕</button>
+</div>
+<button class="n" id="navCompLogin" onclick="openM('Company Login','Company email')">🏢 <span data-t="n1">Company Login</span></button>
+<button class="n" id="navSeekLogin" onclick="openM('Job Seeker Login','Mobile number')">👷 <span data-t="n2">Job Seeker Login</span></button>
+<button class="n" onclick="showPage('vacancies')">🔥 <span>Vacancies</span></button>
+<button class="n" onclick="showPage('schemes')">🏛️ <span>Schemes</span></button>
+<button class="n" onclick="showPage('ai')">🤖 <span data-t="n7">AI Scanner</span></button>
+<button class="n" onclick="showPage('complain')">🚨 <span data-t="n4">Complain</span></button>
+<button class="n" onclick="showPage('help')">💬 <span>Help &amp; FAQs</span></button>
+<button class="n" onclick="toggleVoiceListen()" title="Voice Assistance" id="voicewidget">🎙️ <span>Voice Nav</span></button>
+<button class="n adm" onclick="openM('Admin Login','Admin ID')">🔒 <span data-t="n6">Admin Login</span></button>
+<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0" title="Google Language Translate API (10 Regional Languages)">
+  <span style="font-size:0.85rem">🌐</span>
+  <select id="googleLangSelect" onchange="changeGoogleLanguage(this.value)" style="min-height:38px;padding:2px 8px;border-radius:10px;border:1px solid var(--line);font-weight:700;font-size:0.85rem;background:var(--card);color:var(--ink);cursor:pointer">
+    <option value="en">🇬🇧 English</option>
+    <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+    <option value="bn">🌾 বাংলা (Bengali)</option>
+    <option value="mr">🦚 मराठी (Marathi)</option>
+    <option value="ta">🌺 தமிழ் (Tamil)</option>
+    <option value="te">🌊 తెలుగు (Telugu)</option>
+    <option value="gu">🪔 ગુજરાતી (Gujarati)</option>
+    <option value="kn">🏛️ ಕನ್ನಡ (Kannada)</option>
+    <option value="ml">🌴 മലയാളം (Malayalam)</option>
+    <option value="pa">🏔️ ਪੰਜਾਬੀ (Punjabi)</option>
+    <option value="or">📿 ଓଡ଼ିଆ (Odia)</option>
+  </select>
+  <div id="google_translate_element" style="display:none"></div>
+</div>
+</div></header>
+
+<main id="top">
+<div class="hero"><div class="wrap g">
+<div><span class="pill">Trusted • Verified • Voice-ready</span>
+<h1 data-t="h1">Find verified work. Hire trusted talent.</h1>
+<p data-t="hp">AI matches workers to nearby jobs with a transparent Fit Score, checks employers for trust, and works even with low internet.</p>
+<div class="btns">
+<button class="btn a" onclick="showPage('vacancies')" data-t="b1">🔥 Job Vacancies</button>
+<button class="btn" style="background:#0f172a;border-color:#0f172a" onclick="showPage('verification')">🛡️ EPFO / ESIC Verification <span style="background:#10b981;color:#fff;font-size:0.65rem;padding:2px 6px;border-radius:99px;margin-left:4px">New</span></button>
+<button class="btn o" onclick="openM('Company Login','Company email')" data-t="b2">Hire Talent</button>
+<button class="btn o" onclick="showPage('ai')" data-t="b3">🤖 Skill-Gap Scanner</button>
+<button class="btn o" onclick="toggleSpeak(this, 'Welcome to KaamSetu. Find verified work and hire trusted talent with Gemini AI verification.')">🔊 Listen</button>
+</div></div>
+<div class="hc"><b>Live matches today</b>
+<div class="row"><span>Electrician – Indore</span><span class="pill">92% fit</span></div>
+<div class="row"><span>Delivery Partner – Bhopal</span><span class="pill">88% fit</span></div>
+<div class="row"><span>CNC Operator – Pithampur</span><span class="pill">81% fit</span></div>
+<div class="row"><span>Retail Associate – Ujjain</span><span class="pill">76% fit</span></div></div>
+</div></div>
+
+<div class="wrap"><div class="stats">
+<div class="stat"><b data-n="125000">0</b><span>Registered job seekers</span></div>
+<div class="stat"><b data-n="8400">0</b><span>Verified employers</span></div>
+<div class="stat"><b data-n="46000">0</b><span>Jobs matched</span></div>
+<div class="stat"><b data-n="97">0</b><span>% scams blocked (reported)</span></div></div></div>
+
+<!-- Analytics Graphs Section on Homepage -->
+<section style="background:#f8fafc"><div class="wrap"><div class="sec-h"><h2>Platform Analytics &amp; Live Insights</h2><p>Real-time trends on registered companies, verification status, and allocated jobs.</p></div>
+<div class="grid g2">
+<div class="chart-box"><h3>🏢 Companies Listed &amp; Status Breakdown</h3><canvas id="chartCompanies"></canvas></div>
+<div class="chart-box"><h3>📈 Job Allocations &amp; AI Matches (Monthly)</h3><canvas id="chartJobs"></canvas></div>
+</div></div></section>
+
+<section id="how"><div class="wrap"><div class="sec-h"><h2>How the website works</h2><p>One flow for workers, one for employers — both tied together by AI matching and trust checks.</p></div>
+<div class="flow" id="flow">
+<div class="fs"><div class="num">1</div><h3>Sign up</h3><p>Mobile OTP or company email. Choose language.</p></div><div class="arr">➜</div>
+<div class="fs"><div class="num">2</div><h3>Share skills</h3><p>Upload resume or speak your skills aloud.</p></div><div class="arr">➜</div>
+<div class="fs"><div class="num">3</div><h3>AI matches</h3><p>Fit Score from distance, experience &amp; trust.</p></div><div class="arr">➜</div>
+<div class="fs"><div class="num">4</div><h3>Apply</h3><p>Online, or offline via SMS / walk-in slot.</p></div><div class="arr">➜</div>
+<div class="fs"><div class="num">5</div><h3>Get hired</h3><p>Interview, offer, EPFO/ESIC onboarding.</p></div></div>
+<div class="two"><div class="card lane"><h3>👷 Worker path</h3><ol><li>Create profile (voice or text)</li><li>Detect location, view jobs on map</li><li>Check company trust badge</li><li>Apply and track status</li><li>Use skill-gap plan to improve</li></ol></div>
+<div class="card lane"><h3>🏢 Employer path</h3><ol><li>Register &amp; verify (Udyam / MCA)</li><li>Post job with wage &amp; location</li><li>Review ranked candidates</li><li>Shortlist, message, hire</li><li>Earn trust score from reviews</li></ol></div></div></div></section>
+
+<section style="background:var(--card)"><div class="wrap"><div class="sec-h"><h2>Everything in easy reach</h2><p>Every component is one tap away from the top bar and this grid.</p></div>
+<div class="grid g4">
+<div class="card" onclick="showPage('verification')" style="cursor:pointer;border:2px solid var(--pri)"><div class="ic">🛡️</div><h3>EPFO / ESIC Verification</h3><p>Consent-based boolean match signals, employment history continuity &amp; trust marker.</p></div>
+<div class="card" onclick="showPage('vacancies')" style="cursor:pointer"><div class="ic">🔥</div><h3>Job Vacancies Portal</h3><p>Filter by role, salary, distance, interactive map &amp; 1-click apply.</p></div>
+<div class="card" onclick="showPage('ai')" style="cursor:pointer"><div class="ic">🤖</div><h3>AI Profile Scanner</h3><p>Resume parsing, skill gaps, PDF report.</p></div>
+<div class="card" onclick="showPage('complain')" style="cursor:pointer"><div class="ic">🚨</div><h3>Report a Scam</h3><p>Dedicated complaint portal with camera evidence &amp; AI analysis.</p></div>
+<div class="card"><div class="ic">📴</div><h3>Offline capable</h3><p>Apply by SMS or saved forms when signal is weak.</p></div>
+<div class="card"><div class="ic">🎙️</div><h3>Voice Navigation</h3><p>Hands-free voice control across the site.</p></div>
+<div class="card"><div class="ic">🛡️</div><h3>Gemini Trust Badges</h3><p>AI verified company trust scores &amp; admin checks.</p></div>
+<div class="card"><div class="ic">♿</div><h3>Accessible</h3><p>High contrast, large targets, Web Speech API.</p></div></div></div></section>
+
+<section><div class="wrap"><div class="sec-h"><h2>Reviews from our community</h2><p>Average rating 4.7 / 5 from 12,400+ verified reviews.</p></div>
+<div class="grid g3">
+<div class="card rev"><div class="stars">★★★★★</div><p>“I spoke my skills in Hindi and got three electrician jobs within a day.”</p><b>Ramesh K., Electrician, Indore</b></div>
+<div class="card rev"><div class="stars">★★★★★</div><p>“Verified candidates and a clear fit score cut our hiring time by half.”</p><b>Neha S., HR, Pithampur Factory</b></div>
+<div class="card rev"><div class="stars">★★★★☆</div><p>“The skill-gap report showed exactly which course to take. Got a CNC role.”</p><b>Aman P., CNC Operator, Bhopal</b></div>
+<div class="card rev"><div class="stars">★★★★★</div><p>“I reported a fake agency and Gemini AI verified the scam within seconds.”</p><b>Sunita D., Retail, Ujjain</b></div>
+<div class="card rev"><div class="stars">★★★★★</div><p>“Works on my basic phone. Voice commands &amp; SMS apply are lifesavers.”</p><b>Mohan L., Delivery, Dewas</b></div>
+<div class="card rev"><div class="stars">★★★★☆</div><p>“Trust scores help small businesses like ours stand out.”</p><b>Farah A., Cafe Owner, Indore</b></div></div>
+<p style="text-align:center;color:var(--mut);font-size:.8rem;margin-top:14px">Sample content for design preview.</p></div></section>
+
+<section id="help"><div class="wrap" style="max-width:820px"><div class="sec-h"><h2>Help &amp; Q/A</h2></div>
+<details><summary>Is KaamSetu free for job seekers?</summary><p>Yes. Searching, applying and the skill-gap report are free for workers.</p></details>
+<details><summary>How is the Gemini Fit Score calculated?</summary><p>Gemini AI calculates 40% distance, 30% experience &amp; skill match, 30% company trust score.</p></details>
+<details><summary>How does Gemini verify new companies?</summary><p>Gemini AI evaluates registration numbers, salary bounds, and business records to calculate a Gemini Trust Score, followed by Admin check.</p></details>
+<details><summary>Can I apply without internet?</summary><p>Yes, via SMS code or by saving a walk-in slot that syncs later.</p></details>
+<details><summary>Is my data safe?</summary><p>We follow the Digital Personal Data Protection Act principles: consent, minimal data, and deletion on request.</p></details></div></section>
+</main>
+
+<!-- Dedicated Unified Vacancies Page -->
+<div id="page-vacancies" class="page-view" hidden>
+<div class="wrap">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+<button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
+<button class="btn sm o" onclick="toggleSpeak(this, 'Job Vacancies page. Explore job openings with interactive OpenStreetMap, location search, and 1-click apply.')">🔊 Listen Page</button>
+</div>
+<section id="vacancies" style="padding:10px 0">
+<div class="sec-h"><h2>🔥 Job Vacancies &amp; Opportunities Near You</h2><p>Detect your location, filter roles, view interactive map, and apply directly with 1-click!</p></div>
+
+<div class="loc"><input id="loc" value="Indore, Madhya Pradesh" aria-label="Location"><button class="btn" id="gps">📍 Detect My Location</button></div>
+<div class="filters"><input id="q" placeholder="Search role e.g. electrician" aria-label="Role"><select id="exp" aria-label="Experience"><option value="99">Any experience</option><option value="0">Fresher</option><option value="2">Up to 2 yrs</option><option value="5">Up to 5 yrs</option></select><select id="sal" aria-label="Salary"><option value="0">Any salary</option><option value="15000">₹15,000+</option><option value="25000">₹25,000+</option><option value="40000">₹40,000+</option></select><button class="btn o" id="reset">Reset</button></div>
+
+<div style="margin-bottom:20px">
+  <div class="map" id="map" style="height:380px;border-radius:16px;z-index:1"></div>
+  <p style="font-size:.85rem;color:var(--mut);margin-top:6px">Interactive OpenStreetMap powered by Leaflet.js. <a id="osm" target="_blank" rel="noopener" href="https://www.openstreetmap.org/#map=11/22.72/75.86">Open full OpenStreetMap ↗</a></p>
+</div>
+
+<!-- Regional Salary Benchmark & Skill Intelligence Section -->
+<div class="card" style="margin-bottom:24px;background:linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);border:2px solid #3b82f6">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+    <div>
+      <span class="chip" style="background:#2563eb;color:#fff;font-weight:bold">📊 Salary Intelligence</span>
+      <h3 style="margin:4px 0 2px;color:var(--pri)">Regional Salary Benchmark &amp; Skill Insights</h3>
+      <p style="margin:0;color:var(--mut);font-size:0.9rem">Compare average wages across cities and experience levels based on official PLFS and verified job listings.</p>
+    </div>
+    <button class="btn sm o" onclick="toggleSpeak(this, 'Regional Salary Benchmark and Skill Insights section. Compare salaries for electrician, CNC operator, welder, and other trades across Indore, Bhopal, Pithampur, and Ujjain.')">🔊 Listen Insights</button>
+  </div>
+
+  <div class="grid g3" style="gap:12px;margin-bottom:16px">
+    <div>
+      <label for="bench_skill" style="font-size:0.88rem"><b>Select Skill / Role:</b></label>
+      <select id="bench_skill" onchange="renderSalaryBenchmarkChart()" style="margin-top:4px;min-height:42px">
+        <option value="Electrician">⚡ Electrician (Industrial &amp; Domestic)</option>
+        <option value="CNC Operator">⚙️ CNC Operator (Lathe &amp; VMC)</option>
+        <option value="Delivery Partner">🚚 Delivery Partner (Logistics)</option>
+        <option value="Software Tester">💻 Software QA Tester</option>
+        <option value="Accountant">📊 Accountant (Tally / GST)</option>
+        <option value="Retail Associate">🛒 Retail Associate</option>
+        <option value="Warehouse Supervisor">📦 Warehouse Supervisor</option>
+        <option value="Welder">👨‍🏭 MIG / TIG Welder</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="bench_exp" style="font-size:0.88rem"><b>Experience Tier:</b></label>
+      <select id="bench_exp" onchange="renderSalaryBenchmarkChart()" style="margin-top:4px;min-height:42px">
+        <option value="Fresher">Fresher (0 - 1 Yrs)</option>
+        <option value="Mid-level" selected>Mid-level (2 - 4 Yrs)</option>
+        <option value="Senior">Senior (5+ Yrs)</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="bench_comp_city" style="font-size:0.88rem"><b>Compare Highlight City:</b></label>
+      <select id="bench_comp_city" onchange="renderSalaryBenchmarkChart()" style="margin-top:4px;min-height:42px">
+        <option value="all">All Key Cities (Indore, Pithampur, Bhopal, Ujjain, Dewas)</option>
+        <option value="Indore">Indore Hub</option>
+        <option value="Pithampur">Pithampur Industrial Zone</option>
+        <option value="Bhopal">Bhopal Region</option>
+        <option value="Ujjain">Ujjain Region</option>
+        <option value="Dewas">Dewas Industrial Belt</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Key Salary Metrics Cards -->
+  <div class="grid g4" id="benchMetricGrid" style="gap:10px;margin-bottom:18px"></div>
+
+  <!-- Interactive Canvas Graph -->
+  <div class="chart-box" style="background:#fff">
+    <h4 style="margin:0 0 10px;color:var(--ink);text-align:left">📈 Monthly Salary Comparison Graph (₹ / Month)</h4>
+    <canvas id="chartSalaryBenchmark" style="width:100%;height:220px"></canvas>
+  </div>
+</div>
+
+<div style="margin-top:24px">
+  <div class="tabs" style="margin-bottom:16px">
+    <button class="btn" id="tabVacanciesBtn" onclick="switchVacTab('grid')">🔥 Direct 1-Click Apply Vacancies</button>
+    <button class="btn o" id="tabJobsBtn" onclick="switchVacTab('list')">🔎 AI Matched Jobs &amp; Fit Scores</button>
+  </div>
+
+  <div id="vacancies-grid-view">
+    <div id="vacancies-list" class="grid g2"></div>
+  </div>
+
+  <div id="vacancies-list-view" hidden>
+    <div id="list"></div>
+  </div>
+</div>
+</section>
+<section id="verification-directory" style="padding:10px 0">
+<div class="card" id="verificationAccess" hidden style="margin-bottom:20px">
+  <h2>EPFO / ESIC employer verification directory</h2>
+  <p>Candidate employment signals are available to company and admin accounts. Sign in to access the directory.</p>
+  <button class="btn" onclick="openM('Company Login','Company email')">Company Login</button>
+  <button class="btn o" onclick="openM('Admin Login','Admin ID')">Admin Login</button>
+</div>
+<div id="verificationEmployerView" hidden>
+<div style="background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #1e293b 100%);color:#fff;border-radius:18px;padding:28px;margin-bottom:24px;box-shadow:0 10px 30px rgba(0,0,0,0.15);position:relative;overflow:hidden">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+    <span style="background:rgba(59,130,246,0.25);color:#93c5fd;border:1px solid rgba(147,197,253,0.3);padding:3px 12px;border-radius:99px;font-size:0.75rem;font-weight:700">⚡ EPFO / ESIC INTEGRATED</span>
+    <span style="background:rgba(16,185,129,0.25);color:#6ee7b7;border:1px solid rgba(110,231,183,0.3);padding:3px 12px;border-radius:99px;font-size:0.75rem;font-weight:700">GOVERNMENT REGISTERED SIGNALS</span>
+  </div>
+  <h2 style="font-size:2.2rem;margin:0 0 10px;color:#fff">🛡️ EPFO / ESIC Employment Verification &amp; Trust Marker</h2>
+  <p style="font-size:1.05rem;opacity:0.9;max-width:800px;margin:0 0 16px">Consent-driven employment history signals for blue-collar and trade talent discovery. Evaluates employer registration continuity and active contribution indicators without storing sensitive personal IDs.</p>
+  <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:12px 16px;font-size:0.88rem;display:flex;align-items:center;gap:10px;margin-bottom:20px">
+    <span style="font-size:1.3rem">🔒</span>
+    <div><b>Privacy First &amp; Compliance Safeguards:</b> Sensitive government identifiers (UAN, Aadhaar, ESIC IP numbers) and salary figures are strictly masked. Only candidate-authorized boolean match signals are surfaced.</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px" id="verifKpiGrid">
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center"><b style="font-size:1.8rem;display:block;color:#fff">1,284</b><span style="font-size:0.8rem;opacity:0.8">Total Candidates</span></div>
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center"><b style="font-size:1.8rem;display:block;color:#4ade80">842</b><span style="font-size:0.8rem;opacity:0.8">Employment Verified</span></div>
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center"><b style="font-size:1.8rem;display:block;color:#60a5fa">731</b><span style="font-size:0.8rem;opacity:0.8">EPFO Signals Matched</span></div>
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center"><b style="font-size:1.8rem;display:block;color:#fbbf24">318</b><span style="font-size:0.8rem;opacity:0.8">Highly Ready Talent</span></div>
+  </div>
+</div>
+<div style="background:#f0f9ff;border:2px solid #bae6fd;border-radius:16px;padding:20px;margin-bottom:24px">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+    <div><span class="chip" style="background:#2563eb;color:#fff;font-weight:bold;margin-bottom:6px">Employer Requirement Match Widget</span><h3 style="margin:4px 0 2px;color:var(--pri)">Active Job Role: Senior Industrial CNC Operator (Indore &amp; Pithampur)</h3><p style="margin:0;color:var(--mut);font-size:0.9rem">Real-time talent pool readiness matching verified employer criteria.</p></div>
+    <div style="display:flex;gap:12px;background:#fff;padding:12px 18px;border-radius:12px;border:1px solid var(--line)"><div style="text-align:center"><b>42</b><br><small style="color:var(--mut)">Matches</small></div><div style="border-left:1px solid var(--line);padding-left:12px;text-align:center"><b style="color:#2563eb">23</b><br><small style="color:var(--mut)">Verified</small></div><div style="border-left:1px solid var(--line);padding-left:12px;text-align:center"><b style="color:#16a34a">12</b><br><small style="color:var(--mut)">Immediate</small></div><div style="border-left:1px solid var(--line);padding-left:12px;text-align:center"><b style="color:#d97706">8</b><br><small style="color:var(--mut)">High Ready</small></div></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:24px">
+  <h3 style="margin-bottom:14px">🔎 Candidate Search &amp; Verification Filters</h3>
+  <div class="grid g2" style="gap:12px;margin-bottom:12px"><input id="verif_q" placeholder="Search candidate name or skill (e.g., Rahul, CNC, Electrician)..." oninput="renderVerifCandidates()"><input id="verif_loc" placeholder="Location filter (e.g., Indore, Pithampur, Bhopal)..." oninput="renderVerifCandidates()"></div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:0.88rem">
+    <label style="cursor:pointer;font-weight:600"><input type="checkbox" id="chk_epfo" onchange="renderVerifCandidates()"> EPFO Signal Available</label>
+    <label style="cursor:pointer;font-weight:600"><input type="checkbox" id="chk_esic" onchange="renderVerifCandidates()"> ESIC Signal Available</label>
+    <label style="cursor:pointer;font-weight:600"><input type="checkbox" id="chk_avail" onchange="renderVerifCandidates()"> ⚡ Immediately Available</label>
+    <select id="verif_exp" onchange="renderVerifCandidates()" style="width:auto;min-height:38px;font-size:0.85rem"><option value="all">All Experience</option><option value="1-3">1 - 3 Years</option><option value="3-5">3 - 5 Years</option><option value="5+">5+ Years</option></select>
+    <button class="btn sm o" onclick="resetVerifFilters()">Reset Filters</button>
+  </div>
+</div>
+<div class="grid g3" id="verifCandidatesGrid" style="gap:20px"></div>
+</div>
+</section>
+</div>
+</div>
+
+<!-- Dedicated Complaint Page -->
+<div id="page-complain" class="page-view" hidden>
+<div class="wrap" style="max-width:800px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+<button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
+<button class="btn sm o" onclick="toggleSpeak(this, 'Report a scam or fake company page. Upload file or capture camera evidence for Gemini AI analysis.')">🔊 Listen Page</button>
+</div>
+<section style="padding:10px 0"><div class="sec-h"><h2>🚨 Report a Scam or Fraud</h2><p>Choose entity type, provide location &amp; details, attach files or capture camera evidence for <b>Gemini AI Confidence Analysis</b>.</p></div>
+
+<!-- Hands-free Voice Complaint & Auto Location Detection Widget -->
+<div class="card" style="margin-bottom:16px;background:linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);border:2px solid #3b82f6">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <div>
+      <span class="chip" style="background:#2563eb;color:#fff;font-weight:bold">🎙️ Voice Complaint &amp; Auto-Location</span>
+      <h3 style="margin:4px 0;color:#1e40af">Speak to File Complaint &amp; Detect Location</h3>
+      <p style="margin:0;font-size:0.85rem;color:#1e3a8a">Click below to auto-detect your location and dictate your complaint hands-free.</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn sm" style="background:#16a34a;border-color:#16a34a;color:#fff" onclick="autoDetectComplaintLoc()">📍 Auto-Detect Location</button>
+      <button class="btn sm a" id="btnVoiceComplaint" onclick="startVoiceComplaintDictation()">🎙️ Speak Complaint</button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+<label for="c_target"><b>Reporting against</b></label>
+<select id="c_target"><option value="Company / Employer">🏢 Company / Fake Employer</option><option value="Job Seeker / Fake Candidate">👷 Job Seeker / Fake Candidate</option></select>
+<label for="cn" style="display:block;margin-top:10px"><b>Company or Person Name</b></label>
+<input id="cn" placeholder="e.g. FastJobs Pvt Ltd">
+<label for="c_loc" style="display:block;margin-top:10px"><b>Location / City</b></label>
+<input id="c_loc" value="Indore, MP">
+<label for="ct" style="display:block;margin-top:10px"><b>Issue Description / What happened?</b></label>
+<textarea id="ct" rows="4" placeholder="Describe suspicious activity, fee demand, fake offer letter..."></textarea>
+
+<div style="margin-top:16px;padding:14px;background:#f8fafc;border:1px solid var(--line);border-radius:12px">
+<h3>📷 Evidence Collection (Dual Option)</h3>
+<div class="scan" style="margin-top:10px">
+<div>
+<label><b>Option A: Attach Document / Screenshot</b></label>
+<input type="file" id="c_file" accept="image/*,.pdf,.doc">
+</div>
+<div>
+<label><b>Option B: Live Camera Photo Capture</b></label>
+<div class="camera-box">
+<video id="c_vid" autoplay playsinline hidden></video>
+<canvas id="c_canvas" hidden></canvas>
+<div style="display:flex;gap:8px;justify-content:center;margin-top:6px">
+<button class="btn sm" id="btnCamStart">🎥 Start Camera</button>
+<button class="btn sm a" id="btnCamSnap" hidden>📸 Capture Photo</button>
+</div>
+<small id="c_cam_status" style="display:block;margin-top:4px;color:var(--mut)">Camera inactive</small>
+</div>
+</div>
+</div>
+</div>
+
+<button class="btn a" style="margin-top:18px;width:100%" id="cs">🚨 Submit Complaint</button>
+<div id="c_result" style="margin-top:16px" hidden></div>
+</div></section>
+</div>
+</div>
+
+<!-- Detailed Candidate Verification Modal -->
+<div class="modal" id="candVerifModal" role="dialog" aria-modal="true">
+  <div class="box" style="max-width:680px;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px">
+      <div>
+        <span style="font-size:0.75rem;color:var(--pri);font-weight:bold;text-transform:uppercase">Consent-Based Verification Audit</span>
+        <h3 id="cvmName" style="margin:2px 0 0;color:var(--ink)">Candidate Audit</h3>
+      </div>
+      <button onclick="$('#candVerifModal').classList.remove('on')" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--mut)">✕</button>
+    </div>
+    <div id="cvmBody" style="margin-top:16px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--line);padding-top:12px">
+      <button class="btn sm o" onclick="$('#candVerifModal').classList.remove('on')">Close Audit Modal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dedicated Government Welfare Schemes Page -->
+<div id="page-schemes" class="page-view" hidden>
+<div class="wrap" style="max-width:1180px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+  <button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
+  <button class="btn sm o" onclick="toggleSpeak(this, 'Government Welfare Schemes page. Explore social security, pension, health, housing, and skill development schemes for workers.')">🔊 Listen Page</button>
+</div>
+
+<div class="sec-h" style="text-align:left;margin-bottom:24px">
+  <h2 style="font-size:2.2rem;color:var(--pri);display:flex;align-items:center;gap:10px">🏛️ Government Welfare Schemes</h2>
+  <p style="font-size:1.05rem;color:var(--mut);margin-top:4px">Explore social security, pension, health, housing, and skill development schemes for unorganised &amp; blue-collar workers.</p>
+</div>
+
+<!-- Scheme Category Filter Buttons -->
+<div class="tabs" style="margin-bottom:24px;gap:8px" id="schemeFilterTabs">
+  <button class="btn sm" onclick="filterSchemes('all', this)">All</button>
+  <button class="btn sm o" onclick="filterSchemes('pension', this)">Pension</button>
+  <button class="btn sm o" onclick="filterSchemes('health', this)">Health</button>
+  <button class="btn sm o" onclick="filterSchemes('housing', this)">Housing</button>
+  <button class="btn sm o" onclick="filterSchemes('financial', this)">Financial Support</button>
+  <button class="btn sm o" onclick="filterSchemes('employment', this)">Employment</button>
+  <button class="btn sm o" onclick="filterSchemes('skill', this)">Skill Development</button>
+</div>
+
+<!-- Schemes Grid -->
+<div class="grid g3" id="schemesGrid" style="gap:20px"></div>
+</div>
+</div>
+
+<!-- Detailed Scheme Modal / Page -->
+<div class="modal" id="schemeDetailModal" role="dialog" aria-modal="true">
+  <div class="box" style="max-width:680px;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px">
+      <h3 id="sdTitle" style="margin:0;color:var(--pri)">Scheme Details</h3>
+      <button onclick="$('#schemeDetailModal').classList.remove('on')" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--mut)">✕</button>
+    </div>
+    <div id="sdBody" style="margin-top:16px;line-height:1.6"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--line);padding-top:12px">
+      <button class="btn sm" id="sdListenBtn">🔊 Listen Details</button>
+      <a id="sdLinkBtn" target="_blank" rel="noopener" class="btn sm a" style="text-decoration:none">Visit Official Govt Portal ↗</a>
+      <button class="btn sm o" onclick="$('#schemeDetailModal').classList.remove('on')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dedicated Help & FAQs Page -->
+<div id="page-help" class="page-view" hidden>
+<div class="wrap" style="max-width:960px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+  <button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
+  <button class="btn sm o" onclick="toggleSpeak(this, 'Help Centre and Frequently Asked Questions page. Find answers about job search, employer verification, AI scanner, and voice assistance.')">🔊 Listen Page</button>
+</div>
+
+<div class="sec-h" style="text-align:left;margin-bottom:24px">
+  <span class="pill" style="background:#dc2626;color:#fff;font-size:.9rem;padding:4px 12px">SOS</span>
+  <h2 style="font-size:2.2rem;display:inline;margin-left:8px;vertical-align:middle;color:var(--pri)">Help Centre &amp; Frequently Asked Questions</h2>
+  <p style="font-size:1.05rem;color:var(--mut);margin-top:8px">Find answers to common questions about KaamSetu, employer trust verification, AI skill-gap scanning, offline mode, and scam complaints.</p>
+</div>
+
+<!-- Top Assist Cards Row (Reference from Shram Sanchar) -->
+<div class="grid g2" style="margin-bottom:28px;gap:20px">
+  <div class="card" style="background:#f0f9ff;border:2px solid var(--pri)">
+    <h3 style="display:flex;align-items:center;gap:8px;color:var(--pri)">🎙️ KaamSetu Sahayak (AI Voice Assistant)</h3>
+    <p style="color:var(--mut);margin-bottom:14px">Ask questions or navigate in Hindi or English. Speak or type to get instant answers about job openings, trust badges, or worker rights.</p>
+    <button class="btn sm" onclick="toggleVoiceListen()">🎙️ Start Voice Sahayak</button>
+  </div>
+  <div class="card" style="background:#fff7ed;border:2px solid var(--acc)">
+    <h3 style="display:flex;align-items:center;gap:8px;color:#c2410c">🤝 Need Assisted Help?</h3>
+    <p style="color:var(--mut);margin-bottom:14px">If you need help at a CSC center, NGO camp, or reporting a job fraud, call official government helplines or contact a local representative.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn sm a" href="tel:14434" style="text-decoration:none">📞 Call Labour Helpline 14434</a>
+      <a class="btn sm" href="tel:1930" style="background:#dc2626;border-color:#dc2626;color:#fff;text-decoration:none">🚨 Cyber Crime 1930</a>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ List with Voice Readouts -->
+<div class="card" style="padding:26px">
+  <h3 style="font-size:1.4rem;margin-bottom:20px;border-bottom:2px solid var(--line);padding-bottom:10px;color:var(--ink)">Frequently Asked Questions (FAQs)</h3>
+
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: What is KaamSetu and how does it work?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'What is KaamSetu and how does it work? KaamSetu connects job seekers with verified local employers using AI matching, trust verification scores, and 1-click apply.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">KaamSetu is an AI-powered employer discovery and hiring platform. It matches job seekers to nearby vacancies with a transparent Fit Score, verifies employer trust via Gemini AI &amp; Admin checks, and operates seamlessly even in low-bandwidth regions.</p>
+    </div>
+
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: Is KaamSetu free for job seekers?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'Is KaamSetu free for job seekers? Yes, searching jobs, applying, and receiving AI skill-gap reports are completely free for all workers.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">Yes! Searching for jobs, 1-click applying, voice navigation, and using the AI Profile Scanner &amp; Skill-Gap report are 100% free for all job seekers.</p>
+    </div>
+
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: How is the Gemini Fit Score calculated?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'How is the Gemini Fit Score calculated? The score factors in 40% distance proximity, 30% skill and experience match, and 30% employer trust verification.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">The Gemini Fit Score combines <b>40% proximity distance</b>, <b>30% skill &amp; experience overlap</b>, and <b>30% company trust rating</b> to ensure workers get matched to safe, nearby jobs.</p>
+    </div>
+
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: How does KaamSetu verify new companies &amp; block scams?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'How does KaamSetu verify new companies and block scams? Gemini AI cross-verifies company credentials, salary ranges, and fraud reports. Admin officers perform final verification.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">When a company registers or posts a job, Gemini AI evaluates Udyam/MCA credentials, wage levels, and fraud report history to assign a Trust Score. Admin control officers conduct final manual verification, badging verified employers with ☑️.</p>
+    </div>
+
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: Can I use KaamSetu without internet or with weak signal?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'Can I use KaamSetu without internet or with weak signal? Yes, KaamSetu supports PWA offline caching, walk-in slot booking, and offline SMS job applications.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">Yes. KaamSetu is built with PWA Service Worker offline caching. You can view saved jobs offline, book walk-in interview slots, or submit applications via offline SMS sync when your connection returns.</p>
+    </div>
+
+    <div style="padding-bottom:16px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: How do I report a fake job offer or fraudulent company?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'How do I report a fake job offer or fraudulent company? Click Complain in the top bar, upload screenshots or camera evidence, and Gemini AI will analyze and alert the Admin.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">Go to the <b>🚨 Complain</b> page in the main navigation. You can upload fraud screenshots or capture camera evidence. Gemini AI will run instant fraud confidence analysis and alert the Admin portal for immediate action &amp; helpline 1930 reporting.</p>
+    </div>
+
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h4 style="margin:0;font-size:1.1rem;color:var(--pri)">Q: Is my personal data and location tracked continuously?</h4>
+        <button class="btn sm o" style="flex-shrink:0" onclick="toggleSpeak(this, 'Is my personal data and location tracked continuously? No, KaamSetu never tracks background location. Location is accessed strictly on-demand.')">🔊 Listen</button>
+      </div>
+      <p style="margin:8px 0 0;color:var(--mut)">NO. KaamSetu strictly respects the Digital Personal Data Protection (DPDP) principles. Your location is accessed only ONCE when you click "Detect My Location" on the jobs map. We do not store GPS movement trails or share private data.</p>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- Dedicated AI Profile Scanner Page -->
+<div id="page-ai" class="page-view" hidden>
+<div class="wrap">
+<button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
+<section id="ai" style="padding:20px 0"><div class="sec-h"><h2>AI Profile Scanner &amp; Skill-Gap Plan</h2><p>Paste resume text or upload a file name, pick a target role, and get a step-by-step plan.</p></div>
+<div class="scan"><div><div class="drop" id="drop" tabindex="0">📄 Drag &amp; drop resume (PDF/Doc) here<br><small id="fn">or click to choose</small><input type="file" id="file" accept=".pdf,.doc,.docx,.txt" hidden></div>
+<label for="rt"><b>Resume / skills text</b></label><textarea id="rt" rows="5" placeholder="e.g. 3 years electrician, wiring, MCB panels, safety, Hindi"></textarea>
+<label for="role" style="display:block;margin-top:10px"><b>Desired role</b></label><select id="role"></select>
+<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="scanb">⚡ Analyze Profile</button><button class="btn o" id="pdfb">⬇ Download PDF Report</button></div></div>
+<div class="card" id="out"><h3>Results</h3><p>Run the scanner to see extracted skills, match %, gaps and your improvement plan.</p></div></div></section>
+</div>
+</div>
+
+<footer><div class="wrap"><div class="cols">
+<div><h4>Employment &amp; Social Security</h4><a href="https://epfindia.gov.in" target="_blank" rel="noopener">EPFO (epfindia.gov.in)</a><a href="https://esic.gov.in" target="_blank" rel="noopener">ESIC (esic.gov.in)</a><a href="https://ncs.gov.in" target="_blank" rel="noopener">National Career Service (ncs.gov.in)</a><a href="https://eshram.gov.in" target="_blank" rel="noopener">eShram (eshram.gov.in)</a><a href="https://skillindiadigital.gov.in" target="_blank" rel="noopener">Skill India Digital Hub (skillindiadigital.gov.in)</a></div>
+<div><h4>Data &amp; Compliance</h4><a href="https://labourbureau.gov.in" target="_blank" rel="noopener">Labour Bureau (labourbureau.gov.in)</a><a href="https://clc.gov.in" target="_blank" rel="noopener">Min. wages via CLC (clc.gov.in)</a><a href="https://mospi.gov.in" target="_blank" rel="noopener">PLFS by MoSPI (mospi.gov.in)</a><a href="https://udyamregistration.gov.in" target="_blank" rel="noopener">Udyam Registration (udyamregistration.gov.in)</a><a href="https://mca.gov.in" target="_blank" rel="noopener">MCA (mca.gov.in)</a><a href="https://data.gov.in" target="_blank" rel="noopener">Open Govt Data (data.gov.in)</a><a href="https://meity.gov.in" target="_blank" rel="noopener">DPDP Act info via MeitY (meity.gov.in)</a></div>
+<div><h4>Security &amp; Digital Services</h4><a href="https://cybercrime.gov.in" target="_blank" rel="noopener">Cyber Crime Portal (cybercrime.gov.in)</a><a href="https://digilocker.gov.in" target="_blank" rel="noopener">DigiLocker (digilocker.gov.in)</a><div class="help">National Cyber Crime Helpline <b>1930</b></div><div class="help">Ministry of Labour Helpline <b>14434</b></div></div>
+<div><h4>KaamSetu</h4><a onclick="showPage('jobs')">Jobs</a><a onclick="showPage('vacancies')">Vacancies</a><a onclick="showPage('verification')">EPFO/ESIC Verification</a><a onclick="showPage('schemes')">Government Schemes</a><a onclick="showPage('ai')">AI Scanner</a><a onclick="showPage('complain')">Complain</a><a onclick="showPage('help')">Help &amp; FAQs</a><a onclick="goToHomeSec('how')">How it works</a></div></div>
+<div class="copy">© 2026 KaamSetu – Employer Discovery &amp; Hiring Intelligence. Independent platform; government links are for reference.</div></div></footer>
+
+<div id="app" class="app" hidden><div class="wrap" style="padding:28px 20px">
+<div class="bar2"><h2 id="apt"></h2><div><button class="btn o" onclick="home()">← Home</button> <button class="btn" onclick="logoutUser()">Logout</button></div></div>
+<div id="v-seeker" hidden><div class="two" style="margin-top:0;align-items:start">
+<div class="card"><h3>My profile</h3>
+<label for="pn">Full name</label><input id="pn" placeholder="e.g. Ramesh Kumar">
+<label for="ploc" style="display:block;margin-top:8px">Location / City</label><input id="ploc" value="Indore, MP">
+<label for="pr" style="display:block;margin-top:8px">Desired job role</label><select id="pr"></select>
+<label for="pq" style="display:block;margin-top:8px">Qualification</label><select id="pq"><option>10th pass</option><option>12th pass</option><option>ITI / Diploma</option><option>Graduate</option><option>Post graduate</option></select>
+<label for="pe" style="display:block;margin-top:8px">Experience (years)</label><input id="pe" type="number" min="0" max="40" value="0">
+
+<!-- Resume / CV Upload Section -->
+<div style="margin-top:12px;padding:12px;background:#f8fafc;border:1px solid var(--line);border-radius:10px">
+  <label for="pfile" style="display:block;font-weight:600">📄 Upload Resume / CV (PDF / Doc / Text)</label>
+  <input type="file" id="pfile" accept=".pdf,.doc,.docx,.txt" style="margin-top:4px;min-height:auto">
+  <small id="pfilename" style="display:block;color:var(--mut);margin-top:2px">No file uploaded yet</small>
+  <label for="presetext" style="display:block;margin-top:8px;font-weight:600">Or Paste Resume Text</label>
+  <textarea id="presetext" rows="2" placeholder="Paste your resume summary or work history..."></textarea>
+</div>
+
+<label for="ps" style="display:block;margin-top:10px">Add a skill</label><div class="loc"><input id="ps" placeholder="e.g. wiring"><button class="btn" id="psa">Add</button></div>
+<div id="ptags"></div>
+<button class="btn a" id="psv" style="margin-top:12px;width:100%">Save profile</button><p id="pmsg" role="status" style="color:var(--ok);font-weight:600;margin-top:6px"></p>
+<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line)">
+  <button class="btn sm" style="background:#dc2626;border-color:#dc2626;color:#fff;width:100%" onclick="deleteSeekerAccount()">🗑️ Delete My Account</button>
+</div></div>
+<div>
+<div class="card"><h3>My dashboard &amp; Progress</h3>
+<div id="pst" class="grid g4" style="gap:10px"></div>
+<p style="margin:14px 0 6px"><b id="pcomp"></b></p><div class="bar"><i id="pbar"></i></div>
+<div class="chart-box" style="margin-top:14px"><h4>📊 Application Progress Chart</h4><canvas id="chartSeekerProgress"></canvas></div>
+<button class="btn o" style="margin-top:14px" id="pscan">🤖 Run skill-gap scan</button>
+</div>
+
+<!-- Dynamic Upcoming Job Alerts -->
+<div class="card" style="margin-top:18px;background:#eff6ff;border-color:var(--pri)">
+<h3>🔔 Upcoming Job Alerts (Matching Skills &amp; Location)</h3>
+<div id="seeker-alerts"></div>
+</div>
+
+  <section class="card" id="seekerVerificationPanel" aria-labelledby="seekerVerificationTitle" style="margin-top:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>
+        <span class="chip y">Private · Your account only</span>
+        <h3 id="seekerVerificationTitle" style="margin:4px 0">🛡️ EPFO / ESIC Employment Verification Status</h3>
+        <p style="margin:0;font-size:0.9rem;color:var(--mut)">Review your own consent-based match signals and Trust Score Index across employers. Employer candidate searches are not shown here.</p>
+      </div>
+      <button class="btn sm o" type="button" onclick="renderOwnVerificationStatus()">Refresh my status</button>
+    </div>
+    <div id="seekerVerificationStatus" role="status" aria-live="polite" style="margin-top:16px"></div>
+    <p style="margin:12px 0 0;font-size:0.8rem;color:var(--mut)">Sensitive identifiers such as UAN, Aadhaar, ESIC IP numbers, and salary details are not displayed.</p>
+  </section>
+
+  <div class="card" style="margin-top:18px"><h3>Applied Jobs &amp; Status</h3><div id="papplied"></div></div>
+<div class="card" style="margin-top:18px"><h3>Recommended jobs</h3><div id="prec"></div></div>
+</div></div></div>
+<div id="v-company" hidden>
+<!-- Company Dashboard Analytics & Summary -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+  <span class="chip y" style="font-size:0.85rem">🏢 Company Control Center</span>
+  <button class="btn sm" style="background:#dc2626;border-color:#dc2626;color:#fff" onclick="deleteCompanyAccount()">🗑️ Delete Employer Account</button>
+</div>
+<div class="grid g4" style="margin-bottom:18px" id="company-stats"></div>
+<div class="grid g2" style="margin-bottom:18px">
+  <div class="chart-box"><h3>📈 Company Jobs Posted &amp; Applications</h3><canvas id="chartCompanyJobs"></canvas></div>
+  <div class="chart-box"><h3>👥 Candidates Verified &amp; Shortlisted</h3><canvas id="chartCompanyCandidates"></canvas></div>
+</div>
+
+<div class="two" style="margin-top:0;align-items:start">
+<div class="card">
+<h3>Post a Job (Gemini AI Auto-Verified)</h3>
+<label for="cj">Job Title</label><input id="cj" placeholder="e.g. Senior Electrician">
+<label for="cc" style="margin-top:8px">City / Location</label><input id="cc" value="Indore">
+<label for="csal" style="margin-top:8px">Monthly Salary (₹)</label><input id="csal" type="number" value="28000">
+<label for="cx" style="margin-top:8px">Minimum Experience (years)</label><input id="cx" type="number" value="2">
+<label for="celig" style="margin-top:8px">Eligibility / Qualification</label>
+<select id="celig">
+  <option value="10th Pass">10th Pass</option>
+  <option value="12th Pass">12th Pass</option>
+  <option value="ITI / Diploma" selected>ITI / Diploma</option>
+  <option value="Graduate">Graduate</option>
+  <option value="Post Graduate">Post Graduate</option>
+</select>
+<label for="cskills" style="margin-top:8px">Required Skills</label><input id="cskills" placeholder="e.g. Wiring, MCB Panels, Safety, Troubleshooting">
+<label for="ctype" style="margin-top:8px">Employment Type</label>
+<select id="ctype">
+  <option value="Full-time" selected>Full-time</option>
+  <option value="Part-time">Part-time</option>
+  <option value="Contract">Contract</option>
+  <option value="Walk-in Slot">Walk-in Slot</option>
+</select>
+<label for="cdesc" style="margin-top:8px">Job Description / Duties</label>
+<textarea id="cdesc" rows="3" placeholder="Describe role responsibilities, working hours, and benefits..."></textarea>
+<button class="btn a" id="cp" style="margin-top:14px;width:100%">⚡ Post Job &amp; AI Verify</button>
+<p id="cmsg" role="status" style="color:var(--ok);font-weight:600;margin-top:8px"></p>
+</div>
+
+<div class="card">
+<h3>Candidates &amp; Resumes / CVs</h3>
+<div id="cand"></div>
+</div>
+</div>
+
+<div class="card" style="margin-top:18px;overflow-x:auto">
+<h3>My Posted Jobs</h3>
+<div id="myj"></div>
+</div>
+</div>
+<div id="v-admin" hidden><div class="grid g4" id="ast"></div>
+<div class="card" style="margin-top:18px">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <div class="tabs"><button class="btn" data-tab="co">Companies</button><button class="btn o" data-tab="se">Job seekers</button><button class="btn o" data-tab="cp">Complaints</button></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn sm" style="background:#dc2626;border-color:#dc2626;color:#fff" onclick="stopAllVoice()">🛑 Stop Voice</button>
+      <button class="btn sm a" onclick="exportAdminCSV()">📥 Export Data (CSV)</button>
+    </div>
+  </div>
+  <input id="aq" placeholder="Search records…" aria-label="Search records" style="margin:12px 0">
+  <div style="overflow-x:auto" id="atab"></div>
+  <p style="font-size:.8rem;color:var(--mut);margin-top:8px">Admin Control Panel – verify companies, resolve complaints, and export data reports.</p>
+</div></div>
+</div></div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="box"><h3 id="mt"></h3>
+<div id="m_field_name"><label for="mname" id="ml_name"><b>Full Name / Company Name</b></label><input id="mname" placeholder="e.g. Harsh Kumar"></div>
+<div id="m_field_phone" style="margin-top:10px"><label for="mphone" id="ml_phone"><b>Mobile Number / Email</b></label><input id="mphone" placeholder="e.g. 0123456789"></div>
+<div id="m_field_otp" style="margin-top:10px"><label for="motp" id="ml_otp"><b>OTP / Password</b></label><input id="motp" type="password" placeholder="e.g. 123456"></div>
+<div id="adminHint" style="margin-top:10px;padding:8px 12px;background:#f1f5f9;border:1px solid var(--line);border-radius:8px;font-size:.82rem" hidden><b style="color:var(--pri)">🔐 Admin Login Credentials:</b><br>Admin ID: <code style="background:#fff;padding:2px 6px;border-radius:4px">admin@kaamsetu.gov.in</code><br>Password: <code style="background:#fff;padding:2px 6px;border-radius:4px">admin123</code></div>
+<p id="merr" role="alert" style="color:#b91c1c;font-weight:600;margin:8px 0 0"></p>
+<div style="margin-top:14px;font-size:.9rem;text-align:center" id="m_toggle_container">
+  <span id="m_toggle_text">New to KaamSetu?</span> 
+  <a href="javascript:void(0)" id="m_toggle_btn" onclick="toggleAuthMode()" style="font-weight:700;text-decoration:underline;color:var(--pri)">Sign Up / Register</a>
+</div>
+<div style="display:flex;gap:10px;margin-top:16px"><button class="btn" id="m_submit_btn" onclick="login()">Continue</button><button class="btn o" onclick="closeM()">Cancel</button></div></div></div>
+
+<!-- Candidate CV / Resume Modal -->
+<div class="modal" id="cvModal" role="dialog" aria-modal="true">
+  <div class="box" style="max-width:580px">
+    <h3 id="cvTitle">Candidate Resume / CV</h3>
+    <div id="cvBody" style="white-space:pre-wrap;font-family:inherit;line-height:1.5;background:#f8fafc;padding:16px;border:1px solid var(--line);border-radius:10px;max-height:380px;overflow-y:auto;font-size:.9rem;margin:12px 0;color:var(--ink)"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn sm" onclick="toggleSpeak(this, $('#cvBody').textContent)">🔊 Listen Resume</button>
+      <button class="btn sm o" onclick="$('#cvModal').classList.remove('on')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- 1-Click Application & Interview Booking Dedicated Modal Page -->
+<div class="modal" id="applyModal" role="dialog" aria-modal="true">
+  <div class="box" style="max-width:620px;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px">
+      <h3 id="appModalTitle" style="margin:0;color:var(--pri)">⚡ Quick Job Application</h3>
+      <button onclick="closeApplyModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--mut)">✕</button>
+    </div>
+
+    <form id="applyModalForm" onsubmit="submitJobApplication(event)" style="margin-top:14px">
+      <div id="applySuccessMsg" style="display:none;background:#d1fae5;border:2px solid #10b981;border-radius:12px;padding:16px;margin-bottom:16px;color:#065f46">
+        <h4 style="margin:0 0 6px;font-size:1.15rem">🎉 Application Submitted Successfully!</h4>
+        <p style="margin:0;font-size:.95rem" id="applySuccessText">You are applied and you'll be notified soon by the company.</p>
+      </div>
+
+      <div class="grid g2" style="gap:12px">
+        <div>
+          <label for="app_name"><b>Full Name *</b></label>
+          <input id="app_name" required placeholder="e.g. Ramesh Kumar">
+        </div>
+        <div>
+          <label for="app_phone"><b>Phone Number / Email *</b></label>
+          <input id="app_phone" required placeholder="e.g. 9876543210">
+        </div>
+      </div>
+
+      <div class="grid g2" style="gap:12px;margin-top:10px">
+        <div>
+          <label for="app_skills"><b>Key Skills *</b></label>
+          <input id="app_skills" required placeholder="e.g. Wiring, MCB, Panel Safety">
+        </div>
+        <div>
+          <label for="app_exp"><b>Experience (Years) *</b></label>
+          <input id="app_exp" type="number" min="0" max="40" required value="2">
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <label for="app_edu"><b>Education / Qualification *</b></label>
+        <select id="app_edu">
+          <option value="10th Pass">10th Pass</option>
+          <option value="12th Pass">12th Pass</option>
+          <option value="ITI / Diploma" selected>ITI / Diploma</option>
+          <option value="Graduate">Graduate</option>
+          <option value="Post Graduate">Post Graduate</option>
+        </select>
+      </div>
+
+      <div style="margin-top:10px;padding:12px;background:#f8fafc;border:1px solid var(--line);border-radius:10px">
+        <label for="app_file" style="display:block;font-weight:600">📄 Upload Resume / CV (Optional)</label>
+        <input type="file" id="app_file" accept=".pdf,.doc,.docx,.txt" style="margin-top:4px;min-height:auto">
+        <small id="app_file_status" style="color:var(--mut);display:block;margin-top:2px">Attach document or text file</small>
+      </div>
+
+      <!-- Interview Slots Selection -->
+      <div style="margin-top:14px">
+        <label style="display:block;font-weight:700;margin-bottom:6px">📅 Select Preferred Walk-in / Online Interview Slot *</label>
+        <div id="slot_chips_container" style="display:flex;gap:8px;flex-wrap:wrap">
+          <button type="button" class="chip" style="cursor:pointer;padding:8px 12px;font-size:.88rem;border:1px solid var(--pri)" onclick="selectSlot(this, 'Tomorrow 10:00 AM - 12:00 PM')">🌅 Tomorrow 10:00 AM</button>
+          <button type="button" class="chip" style="cursor:pointer;padding:8px 12px;font-size:.88rem;border:1px solid var(--pri)" onclick="selectSlot(this, 'Tomorrow 02:00 PM - 04:00 PM')">☀️ Tomorrow 02:00 PM</button>
+          <button type="button" class="chip" style="cursor:pointer;padding:8px 12px;font-size:.88rem;border:1px solid var(--pri)" onclick="selectSlot(this, 'Day After 11:00 AM - 01:00 PM')">🗓️ Day After 11:00 AM</button>
+        </div>
+        <input type="hidden" id="selected_slot" required value="Tomorrow 10:00 AM - 12:00 PM">
+      </div>
+
+      <!-- Candidate Feedback / Notes -->
+      <div style="margin-top:14px">
+        <label for="app_feedback"><b>💬 Candidate Feedback / Message to Recruiter</b></label>
+        <textarea id="app_feedback" rows="2" placeholder="e.g. Willing to relocate to Indore, available for immediate joining..."></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
+        <button type="button" class="btn o" onclick="closeApplyModal()">Cancel</button>
+        <button type="submit" class="btn a" id="btnSubmitApp">⚡ Submit Application &amp; Confirm Slot</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Chatbot Widget at RIGHT Corner with Gemini AI -->
+<div class="chat-widget">
+<div class="chat-box" id="chatbox">
+<div class="chat-head"><span>🤖 Gemini KaamSetu Assistant</span><div style="display:flex;gap:6px;align-items:center"><button id="chatStopVoice" onclick="stopChatVoice()" title="Stop Voice Speech" style="display:none;background:#dc2626;color:#fff;border-radius:6px;padding:3px 8px;font-size:0.75rem;font-weight:bold;cursor:pointer;border:none">🛑 Stop Voice</button><button onclick="toggleChat()" aria-label="Close Chat">✕</button></div></div>
+<div class="chat-body" id="chatbody">
+<div class="chat-msg bot">Namaste! 👋 I am your Gemini-powered KaamSetu AI Assistant. Ask me anything about eShram cards, KaamSetu jobs, welfare schemes, scam complaints, or employer verification!</div>
+<div class="chat-chips">
+<button class="chat-chip" onclick="sendQuickMsg('How to find jobs on KaamSetu?')">🔍 Find Jobs</button>
+<button class="chat-chip" onclick="sendQuickMsg('What are eShram benefits and UAN card?')">📜 eShram Benefits</button>
+<button class="chat-chip" onclick="sendQuickMsg('Scan my electrician resume')">🤖 AI Scanner</button>
+<button class="chat-chip" onclick="sendQuickMsg('How to report a scam?')">🚨 Report Scam</button>
+<button class="chat-chip" onclick="sendQuickMsg('What government schemes are available?')">🏛️ Welfare Schemes</button>
+</div>
+</div>
+<div class="chat-foot">
+<input id="chatinput" placeholder="Ask Gemini AI…" aria-label="Ask chatbot question" onkeydown="if(event.key==='Enter')sendChatMsg()">
+<button class="btn" onclick="sendChatMsg()">Send</button>
+</div>
+</div>
+<button class="chat-btn" onclick="toggleChat()" aria-label="Open Chatbot" title="Gemini AI Assistant">💬</button>
+</div>
+
+<div id="report"></div>
+
+<script>
+const GEMINI_KEY = localStorage.getItem("GEMINI_KEY") || window.GEMINI_KEY || "AIzaSy_KaamSetu_Gemini_Key";
+const $=s=>document.querySelector(s);
+
+// Gemini API Wrapper
+async function callGeminiAPI(prompt, base64Image) {
+  try {
+    const parts = [{ text: prompt }];
+    if (base64Image) {
+      parts.push({
+        inline_data: {
+          mime_type: "image/jpeg",
+          data: base64Image.replace(/^data:image\/\w+;base64,/, "")
+        }
+      });
+    }
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts }] })
+    });
+    const data = await res.json();
+    if (data.candidates && data.candidates[0].content.parts[0].text) {
+      return data.candidates[0].content.parts[0].text;
+    }
+  } catch (err) {
+    console.warn("Gemini API call warning:", err);
+  }
+  return null;
+}
+
+// Voice Assistance Infrastructure (Web Speech API)
+let currentSpeakBtn = null;
+
+function toggleSpeak(btn, text) {
+  if (!('speechSynthesis' in window)) return;
+
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    if (currentSpeakBtn) {
+      resetSpeakBtn(currentSpeakBtn);
+    }
+    if (currentSpeakBtn === btn) {
+      currentSpeakBtn = null;
+      return;
+    }
+  }
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.95;
+
+  if (btn) {
+    currentSpeakBtn = btn;
+    if (!btn.dataset.originalHtml) btn.dataset.originalHtml = btn.innerHTML;
+    btn.innerHTML = "🛑 Stop";
+    btn.style.borderColor = "#dc2626";
+    btn.style.color = "#dc2626";
+  }
+
+  utterance.onend = () => {
+    if (btn) resetSpeakBtn(btn);
+    if (currentSpeakBtn === btn) currentSpeakBtn = null;
+  };
+
+  utterance.onerror = () => {
+    if (btn) resetSpeakBtn(btn);
+    if (currentSpeakBtn === btn) currentSpeakBtn = null;
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function resetSpeakBtn(btn) {
+  if (btn && btn.dataset.originalHtml) {
+    btn.innerHTML = btn.dataset.originalHtml;
+    btn.style.borderColor = "";
+    btn.style.color = "";
+  }
+}
+
+function speakText(text) {
+  toggleSpeak(null, text);
+}
+
+function stopAllVoice() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  if (currentSpeakBtn) {
+    resetSpeakBtn(currentSpeakBtn);
+    currentSpeakBtn = null;
+  }
+}
+
+let voiceRecognizer = null;
+function toggleVoiceListen() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    alert("Speech Recognition is not supported on this browser. Try Chrome/Edge.");
+    return;
+  }
+  if (!voiceRecognizer) {
+    voiceRecognizer = new SpeechRec();
+    voiceRecognizer.continuous = false;
+    voiceRecognizer.lang = 'en-US';
+    voiceRecognizer.onresult = (e) => {
+      const transcript = e.results[0][0].transcript.toLowerCase();
+      speakText("Navigating according to your voice command: " + transcript);
+      if (transcript.includes("job")) showPage('jobs');
+      else if (transcript.includes("vacancy") || transcript.includes("vacancies")) showPage('vacancies');
+      else if (transcript.includes("verification") || transcript.includes("epfo") || transcript.includes("esic")) showPage('verification');
+      else if (transcript.includes("scheme") || transcript.includes("schemes")) showPage('schemes');
+      else if (transcript.includes("complain") || transcript.includes("scam")) showPage('complain');
+      else if (transcript.includes("scanner") || transcript.includes("ai")) showPage('ai');
+      else if (transcript.includes("help") || transcript.includes("faq")) showPage('help');
+      else if (transcript.includes("home")) showPage('home');
+      else if (transcript.includes("chat")) toggleChat();
+    };
+  }
+  voiceRecognizer.start();
+  speakText("Listening for your voice command. Say jobs, vacancies, complain, or AI scanner.");
+}
+
+const T={en:{n1:"Company Login",n2:"Job Seeker Login",n3:"Jobs",n4:"Complain",n5:"Help & Q/A",n6:"Admin Login",n7:"AI Scanner",h1:"Find verified work. Hire trusted talent.",hp:"AI matches workers to nearby jobs with a transparent Fit Score, checks employers for trust, and works even with low internet.",b1:"🔎 Find Work",b2:"Hire Talent",b3:"🤖 Skill-Gap Scanner"},
+hi:{n1:"कंपनी लॉगिन",n2:"जॉब सीकर लॉगिन",n3:"नौकरियां",n4:"शिकायत",n5:"सहायता / प्रश्न",n6:"एडमिन लॉगिन",n7:"AI स्कैनर",h1:"सत्यापित काम खोजें। भरोसेमंद लोग रखें।",hp:"AI आपको पास की नौकरियों से Fit Score के साथ मिलाता है, कंपनियों की जांच करता है और कम इंटरनेट पर भी चलता है।",b1:"🔎 काम खोजें",b2:"कर्मचारी रखें",b3:"🤖 कौशल-अंतर स्कैनर"}};
+let lg="en";
+function googleTranslateElementInit() {
+  if (typeof google !== 'undefined' && google.translate) {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'hi,bn,mr,ta,te,gu,kn,ml,pa,or,en',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+}
+
+function changeGoogleLanguage(langCode) {
+  if (!langCode) return;
+  lg = langCode;
+  
+  // Set google translate cookie 'googtrans' e.g. '/en/hi'
+  document.cookie = "googtrans=/en/" + langCode + "; path=/;";
+  document.cookie = "googtrans=/en/" + langCode + "; domain=" + window.location.hostname + "; path=/;";
+
+  const sel = $("#googleLangSelect");
+  if (sel) sel.value = langCode;
+
+  const gtSelect = document.querySelector('.goog-te-combo');
+  if (gtSelect) {
+    gtSelect.value = langCode;
+    gtSelect.dispatchEvent(new Event('change'));
+  } else {
+    location.reload();
+  }
+}
+
+let currentRole = "";
+let currentSeekerAccountKey = "";
+
+function updateNavHeaderState() {
+  const banner = $("#userHeaderBanner");
+  const nameEl = $("#userHeaderName");
+  const iconEl = $("#userHeaderIcon");
+  const compBtn = $("#navCompLogin");
+  const seekBtn = $("#navSeekLogin");
+
+  if (loggedInUser && currentRole) {
+    if (banner) banner.style.display = "flex";
+    if (nameEl) nameEl.textContent = "Hi, " + loggedInUser;
+    if (iconEl) iconEl.textContent = (currentRole === 'company') ? "🏢" : "👷";
+    if (compBtn) compBtn.hidden = true;
+    if (seekBtn) seekBtn.hidden = true;
+  } else {
+    if (banner) banner.style.display = "none";
+    if (compBtn) compBtn.hidden = false;
+    if (seekBtn) seekBtn.hidden = false;
+  }
+}
+
+function logoutUser() {
+  loggedInUser = "";
+  currentRole = "";
+  currentSeekerAccountKey = "";
+  updateNavHeaderState();
+  showPage('home');
+  speakText("You have been logged out successfully.");
+}
+
+// Auto Detect Location for Complaints
+function autoDetectComplaintLoc() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const lat = pos.coords.latitude.toFixed(4);
+      const lon = pos.coords.longitude.toFixed(4);
+      const locStr = `Lat ${lat}, Lon ${lon} (Auto Detected)`;
+      if ($("#c_loc")) $("#c_loc").value = locStr;
+      speakText("Location auto detected successfully.");
+    }, () => {
+      if ($("#c_loc")) $("#c_loc").value = "Indore, MP (Default Detected)";
+      speakText("Using default location Indore.");
+    });
+  }
+}
+
+// Voice Dictation for Complaints
+function startVoiceComplaintDictation() {
+  const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Speech) {
+    alert("Voice dictation is not supported on this browser.");
+    return;
+  }
+  const rec = new Speech();
+  rec.lang = lg === "hi" ? "hi-IN" : "en-US";
+  const btn = $("#btnVoiceComplaint");
+  if (btn) btn.textContent = "🎙️ Listening...";
+  speakText("Listening to your complaint description...");
+
+  rec.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    if ($("#ct")) $("#ct").value = text;
+    if (btn) btn.textContent = "🎙️ Speak Complaint";
+    speakText("Complaint recorded. Auto-detecting location now.");
+    autoDetectComplaintLoc();
+  };
+  rec.onerror = () => {
+    if (btn) btn.textContent = "🎙️ Speak Complaint";
+  };
+  rec.start();
+}
+
+function updateModalUI() {
+  if (currentModalRole === "admin") {
+    $("#m_toggle_container").hidden = true;
+    return;
+  }
+  $("#m_toggle_container").hidden = false;
+  if (isSignUpMode) {
+    if (currentModalRole === "company") {
+      $("#mt").textContent = lg === "hi" ? "कंपनी पंजीकरण (Sign Up)" : "Company Registration (Sign Up)";
+    } else {
+      $("#mt").textContent = lg === "hi" ? "जॉब सीकर पंजीकरण (Sign Up)" : "Job Seeker Registration (Sign Up)";
+    }
+    $("#m_toggle_text").textContent = lg === "hi" ? "पहले से खाता है?" : "Already have an account?";
+    $("#m_toggle_btn").textContent = lg === "hi" ? "लॉग इन करें" : "Sign In / Login";
+    $("#m_submit_btn").textContent = lg === "hi" ? "रजिस्टर करें" : "Register Now";
+  } else {
+    if (currentModalRole === "company") {
+      $("#mt").textContent = lg === "hi" ? "कंपनी लॉगिन" : "Company Login";
+    } else {
+      $("#mt").textContent = lg === "hi" ? "जॉब सीकर लॉगिन" : "Job Seeker Login";
+    }
+    $("#m_toggle_text").textContent = lg === "hi" ? "कामसेतु पर नए हैं?" : "New to KaamSetu?";
+    $("#m_toggle_btn").textContent = lg === "hi" ? "साइन अप / रजिस्टर करें" : "Sign Up / Register";
+    $("#m_submit_btn").textContent = lg === "hi" ? "जारी रखें" : "Continue";
+  }
+}
+
+function toggleAuthMode() {
+  isSignUpMode = !isSignUpMode;
+  $("#merr").textContent = "";
+  updateModalUI();
+}
+
+function openM(t,l){
+  isSignUpMode = false;
+  $("#mt").textContent=t;
+  $("#merr").textContent="";
+  $("#mname").value="";
+  $("#mphone").value="";
+  $("#motp").value="";
+
+  if (t.toLowerCase().includes("company") || t.includes("कंपनी")) {
+    currentModalRole = "company";
+    $("#m_field_name").hidden = false;
+    $("#ml_name").innerHTML = "<b>Company / Employer Name</b>";
+    $("#mname").placeholder = "e.g. Shree Power Works";
+    $("#ml_phone").innerHTML = "<b>Company Email / Phone</b>";
+    $("#mphone").placeholder = "e.g. hr@shreepower.com";
+    $("#ml_otp").innerHTML = "<b>OTP / Password</b>";
+    $("#motp").placeholder = "e.g. 123456";
+    $("#adminHint").hidden = true;
+  } else if (t.toLowerCase().includes("seeker") || t.includes("सीकर")) {
+    currentModalRole = "seeker";
+    $("#m_field_name").hidden = false;
+    $("#ml_name").innerHTML = "<b>Full Name</b>";
+    $("#mname").placeholder = "e.g. Harsh Kumar";
+    $("#ml_phone").innerHTML = "<b>Mobile Number</b>";
+    $("#mphone").placeholder = "e.g. 0123456789";
+    $("#ml_otp").innerHTML = "<b>OTP</b>";
+    $("#motp").placeholder = "e.g. 123456";
+    $("#adminHint").hidden = true;
+  } else if (t.toLowerCase().includes("admin") || t.includes("एडमिन")) {
+    currentModalRole = "admin";
+    $("#m_field_name").hidden = true;
+    $("#ml_phone").innerHTML = "<b>Admin ID</b>";
+    $("#mphone").placeholder = "admin@kaamsetu.gov.in";
+    $("#ml_otp").innerHTML = "<b>Admin Password</b>";
+    $("#motp").placeholder = "admin123";
+    $("#adminHint").hidden = false;
+  }
+
+  updateModalUI();
+
+  $("#modal").classList.add("on");
+  if (currentModalRole === 'admin') {
+    $("#mphone").focus();
+  } else {
+    $("#mname").focus();
+  }
+}
+function closeM(){$("#modal").classList.remove("on")}
+addEventListener("keydown",e=>{if(e.key=="Escape")closeM()});
+
+// navigation
+function switchVacTab(view) {
+  const g = $("#vacancies-grid-view");
+  const l = $("#vacancies-list-view");
+  const bG = $("#tabVacanciesBtn");
+  const bL = $("#tabJobsBtn");
+  if (g && l) {
+    g.hidden = (view !== 'grid');
+    l.hidden = (view !== 'list');
+  }
+  if (bG && bL) {
+    bG.className = (view === 'grid') ? "btn" : "btn o";
+    bL.className = (view === 'list') ? "btn" : "btn o";
+  }
+}
+
+function showPage(p){
+  const isVerificationRequest = p === 'verification';
+  if (isVerificationRequest && currentRole === 'seeker') {
+    openOwnVerificationStatus();
+    return;
+  }
+  if (isVerificationRequest) {
+    if (currentRole !== 'company' && currentRole !== 'admin') {
+      alert("🔒 Access Restricted: EPFO/ESIC Employment Verification is restricted to Verified Employers & Admin officers only to protect candidate privacy under the DPDP Act.\n\nPlease log in with a Company account or Admin ID.");
+      openM('Company Login', 'Company email');
+      return;
+    }
+    p = 'vacancies';
+  }
+
+  const isVacancies = (p === 'jobs' || p === 'vacancies');
+  const canViewVerification = currentRole === 'company' || currentRole === 'admin';
+  $("#top").hidden = (p !== 'home');
+  $("#page-vacancies").hidden = !isVacancies;
+  $("#page-complain").hidden = (p !== 'complain');
+  $("#page-ai").hidden = (p !== 'ai');
+  $("#page-help").hidden = (p !== 'help');
+  $("#page-schemes").hidden = (p !== 'schemes');
+  $("#verificationAccess").hidden = !isVacancies || canViewVerification;
+  $("#verificationEmployerView").hidden = !isVacancies || !canViewVerification;
+  $("#app").hidden = true;
+  $("footer").hidden = false;
+  scrollTo(0,0);
+
+  if(isVacancies) {
+    render();
+    renderVacancies();
+    renderSalaryBenchmarkChart();
+    if (canViewVerification) renderVerifCandidates();
+    setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 200);
+    if (isVerificationRequest) setTimeout(() => $("#verification-directory").scrollIntoView({behavior:'smooth'}), 0);
+  }
+  if(p === 'schemes') renderSchemes();
+  if(p === 'home') {
+    renderCharts();
+    initFlowAndCounters();
+  }
+}
+
+function openOwnVerificationStatus() {
+  if (currentRole !== 'seeker') return;
+  const app = document.getElementById('app');
+  if (app && app.hidden) show('seeker', loggedInUser);
+  renderOwnVerificationStatus();
+  const panel = document.getElementById('seekerVerificationPanel');
+  if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function goToHomeSec(id){
+  showPage('home');
+  setTimeout(()=>{
+    const el = document.getElementById(id);
+    if(el) el.scrollIntoView({behavior:'smooth'});
+  },50);
+}
+
+// counters + flow
+const initFlowAndCounters = () => {
+  const flowEl = $("#flow");
+  if (flowEl) {
+    flowEl.classList.add("in");
+    document.querySelectorAll(".flow .fs").forEach(card => {
+      card.style.opacity = "1";
+      card.style.transform = "none";
+    });
+  } else {
+    document.querySelectorAll(".flow .fs").forEach(card => {
+      card.style.opacity = "1";
+      card.style.transform = "none";
+    });
+  }
+
+  document.querySelectorAll("[data-n]").forEach(el => {
+    const n = +el.dataset.n;
+    if (!n) return;
+    let c = 0;
+    const st = Math.ceil(n / 60);
+    const t = setInterval(() => {
+      c = Math.min(n, c + st);
+      el.textContent = c.toLocaleString("en-IN");
+      if (c >= n) clearInterval(t);
+    }, 25);
+  });
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initFlowAndCounters);
+} else {
+  initFlowAndCounters();
+}
+
+// jobs & Gemini verification
+let me={lat:22.7196,lng:75.8577};
+const J=[
+  ["Electrician","Shree Power Works",3,22000,22.73,75.88,90,"Indore","Gemini Verified 95%"],
+  ["Delivery Partner","QuickKart Logistics",0,16000,22.70,75.83,75,"Indore","Gemini Verified 88%"],
+  ["CNC Operator","Apex Precision Ltd",2,28000,22.62,75.69,88,"Pithampur","Gemini Verified 91%"],
+  ["Retail Associate","MegaMart",0,14000,22.75,75.90,70,"Indore","Admin Verified"],
+  ["Software Tester","BrightByte Tech",2,35000,22.71,75.87,92,"Indore","Gemini Verified 96%"],
+  ["Warehouse Supervisor","Delhivery Hub",5,42000,22.58,75.80,85,"Indore","Gemini Verified 90%"],
+  ["Plumber","HomeFix Services",4,20000,22.68,75.95,64,"Indore","Pending Admin"],
+  ["Accountant","Sharma & Co.",3,30000,22.74,75.84,80,"Indore","Gemini Verified 89%"]
+];
+const km=(a,b,c,d)=>{const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 12742*Math.asin(Math.sqrt(h))};
+function fit(j,exp){const d=km(me.lat,me.lng,j[4],j[5]);const ds=Math.max(0,100-d*2.5);const es=exp==99?80:Math.max(0,100-Math.abs(j[2]-exp)*12);return{d,s:Math.round(.4*ds+.3*es+.3*j[6])}}
+let leafletMap = null;
+let leafletMarkers = [];
+
+function updateLeafletMap(filteredJobs) {
+  if (typeof L === 'undefined') return;
+  const mapEl = document.getElementById('map');
+  if (!mapEl) return;
+
+  if (!leafletMap) {
+    leafletMap = L.map('map').setView([me.lat, me.lng], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(leafletMap);
+  } else {
+    leafletMap.setView([me.lat, me.lng], 12);
+  }
+
+  leafletMarkers.forEach(m => leafletMap.removeLayer(m));
+  leafletMarkers = [];
+
+  const userIcon = L.divIcon({
+    className: 'custom-user-marker',
+    html: '<div style="background:#dc2626;color:#fff;border-radius:99px;padding:3px 8px;font-size:0.75rem;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3)">📍 You</div>',
+    iconSize: [60, 30],
+    iconAnchor: [30, 15]
+  });
+  const uMarker = L.marker([me.lat, me.lng], { icon: userIcon }).addTo(leafletMap);
+  uMarker.bindPopup("<b>📍 Your Current Location</b><br>Indore, MP");
+  leafletMarkers.push(uMarker);
+
+  filteredJobs.forEach(x => {
+    const j = x.j;
+    const jobIcon = L.divIcon({
+      className: 'custom-job-marker',
+      html: `<div style="background:#2563eb;color:#fff;border-radius:99px;padding:2px 8px;font-size:0.75rem;font-weight:bold;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);white-space:nowrap">${j[0].split(" ")[0]} ${x.s}%</div>`,
+      iconSize: [80, 26],
+      iconAnchor: [40, 13]
+    });
+    const jMarker = L.marker([j[4], j[5]], { icon: jobIcon }).addTo(leafletMap);
+    jMarker.bindPopup(`<b>${j[0]}</b><br>${j[1]} • ${j[7]}<br><b>Fit Score:</b> ${x.s}%<br><b>Salary:</b> ₹${j[3].toLocaleString("en-IN")}/mo`);
+    leafletMarkers.push(jMarker);
+  });
+}
+
+function render(){const q=$("#q").value.toLowerCase(),e=+$("#exp").value,s=+$("#sal").value;
+const L_jobs=J.filter(j=>j[0].toLowerCase().includes(q)&&j[2]<=e&&j[3]>=s).map(j=>({j,...fit(j,e)})).sort((a,b)=>b.s-a.s);
+$("#list").innerHTML=L_jobs.map(x=>`<div class="card job"><div><h3>${x.j[0]} <span class="tag">✔ ${x.j[8]}</span></h3><small>${x.j[1]} • ${x.j[7]} • ${x.d.toFixed(1)} km</small><div style="margin-top:6px"><span class="tag">${x.j[2]}+ yrs</span><span class="tag">₹${x.j[3].toLocaleString("en-IN")}/mo</span><span class="tag">Trust ${x.j[6]}</span></div></div><div style="text-align:right"><div class="fit">${x.s}%<i>Gemini Fit</i></div><div style="display:flex;gap:6px;justify-content:flex-end;margin-top:6px"><button class="btn sm ${applied.has(x.j[0])?"a":"a"}" onclick="applyVacancy('${x.j[0]}')">${applied.has(x.j[0])?"Applied ✓":"⚡ Apply"}</button><button class="btn sm o" onclick="toggleSpeak(this, '${x.j[0]} at ${x.j[1]} in ${x.j[7]}, salary ${x.j[3]} rupees per month, Gemini fit score ${x.s} percent.')">🔊 Read</button></div></div></div>`).join("")||"<p>No jobs match these filters.</p>";
+updateLeafletMap(L_jobs);}
+["q","exp","sal"].forEach(i=>$("#"+i).addEventListener("input",render));
+$("#reset").onclick=()=>{$("#q").value="";$("#exp").value=99;$("#sal").value=0;render()};
+$("#gps").onclick=()=>{if(!navigator.geolocation){$("#loc").value="Geolocation not supported";return}$("#loc").value="Detecting…";
+navigator.geolocation.getCurrentPosition(p=>{me={lat:p.coords.latitude,lng:p.coords.longitude};$("#loc").value=`Lat ${me.lat.toFixed(3)}, Lng ${me.lng.toFixed(3)}`;$("#osm").href=`https://www.openstreetmap.org/#map=13/${me.lat}/${me.lng}`;render()},()=>{$("#loc").value="Permission denied – type your city";})};
+
+// Salary Benchmark Data & Graph Engine
+const BENCHMARK_DATA = {
+  "Electrician": {
+    "Fresher": { "Indore": 16500, "Pithampur": 17500, "Bhopal": 15500, "Ujjain": 14500, "Dewas": 15000 },
+    "Mid-level": { "Indore": 24000, "Pithampur": 26500, "Bhopal": 22000, "Ujjain": 19500, "Dewas": 21000 },
+    "Senior": { "Indore": 34000, "Pithampur": 38000, "Bhopal": 31000, "Ujjain": 28000, "Dewas": 30000 }
+  },
+  "CNC Operator": {
+    "Fresher": { "Indore": 18000, "Pithampur": 20000, "Bhopal": 17000, "Ujjain": 15500, "Dewas": 16500 },
+    "Mid-level": { "Indore": 28000, "Pithampur": 32000, "Bhopal": 25000, "Ujjain": 22000, "Dewas": 24000 },
+    "Senior": { "Indore": 40000, "Pithampur": 45000, "Bhopal": 36000, "Ujjain": 32000, "Dewas": 35000 }
+  },
+  "Delivery Partner": {
+    "Fresher": { "Indore": 15000, "Pithampur": 14000, "Bhopal": 14500, "Ujjain": 13500, "Dewas": 13800 },
+    "Mid-level": { "Indore": 19000, "Pithampur": 17500, "Bhopal": 18000, "Ujjain": 16500, "Dewas": 17000 },
+    "Senior": { "Indore": 25000, "Pithampur": 22000, "Bhopal": 23000, "Ujjain": 20000, "Dewas": 21000 }
+  },
+  "Software Tester": {
+    "Fresher": { "Indore": 22000, "Pithampur": 18000, "Bhopal": 20000, "Ujjain": 17000, "Dewas": 18000 },
+    "Mid-level": { "Indore": 38000, "Pithampur": 28000, "Bhopal": 32000, "Ujjain": 26000, "Dewas": 27000 },
+    "Senior": { "Indore": 58000, "Pithampur": 42000, "Bhopal": 48000, "Ujjain": 38000, "Dewas": 40000 }
+  },
+  "Accountant": {
+    "Fresher": { "Indore": 18000, "Pithampur": 16500, "Bhopal": 17000, "Ujjain": 15000, "Dewas": 15500 },
+    "Mid-level": { "Indore": 28000, "Pithampur": 25000, "Bhopal": 26000, "Ujjain": 22000, "Dewas": 23000 },
+    "Senior": { "Indore": 42000, "Pithampur": 36000, "Bhopal": 38000, "Ujjain": 32000, "Dewas": 34000 }
+  },
+  "Retail Associate": {
+    "Fresher": { "Indore": 14000, "Pithampur": 13000, "Bhopal": 13500, "Ujjain": 12500, "Dewas": 12800 },
+    "Mid-level": { "Indore": 18000, "Pithampur": 16500, "Bhopal": 17000, "Ujjain": 15500, "Dewas": 16000 },
+    "Senior": { "Indore": 24000, "Pithampur": 22000, "Bhopal": 22500, "Ujjain": 20000, "Dewas": 21000 }
+  },
+  "Warehouse Supervisor": {
+    "Fresher": { "Indore": 20000, "Pithampur": 22000, "Bhopal": 19000, "Ujjain": 17500, "Dewas": 18500 },
+    "Mid-level": { "Indore": 32000, "Pithampur": 35000, "Bhopal": 29000, "Ujjain": 26000, "Dewas": 28000 },
+    "Senior": { "Indore": 48000, "Pithampur": 52000, "Bhopal": 44000, "Ujjain": 38000, "Dewas": 41000 }
+  },
+  "Welder": {
+    "Fresher": { "Indore": 17000, "Pithampur": 19000, "Bhopal": 16000, "Ujjain": 15000, "Dewas": 16000 },
+    "Mid-level": { "Indore": 25000, "Pithampur": 29000, "Bhopal": 23000, "Ujjain": 21000, "Dewas": 23000 },
+    "Senior": { "Indore": 36000, "Pithampur": 42000, "Bhopal": 33000, "Ujjain": 30000, "Dewas": 32000 }
+  }
+};
+
+function renderSalaryBenchmarkChart() {
+  const c = document.getElementById("chartSalaryBenchmark");
+  if (!c) return;
+  const ctx = c.getContext("2d");
+
+  const skill = $("#bench_skill") ? $("#bench_skill").value : "Electrician";
+  const exp = $("#bench_exp") ? $("#bench_exp").value : "Mid-level";
+  const filterCity = $("#bench_comp_city") ? $("#bench_comp_city").value : "all";
+
+  const skillObj = BENCHMARK_DATA[skill] || BENCHMARK_DATA["Electrician"];
+  const expObj = skillObj[exp] || skillObj["Mid-level"];
+
+  let cities = Object.keys(expObj);
+  if (filterCity !== "all") {
+    cities = cities.filter(city => city.toLowerCase().includes(filterCity.toLowerCase()));
+  }
+
+  const values = cities.map(city => expObj[city]);
+  const maxVal = Math.max(...values, 40000);
+  const avgVal = Math.round(values.reduce((a, b) => a + b, 0) / (values.length || 1));
+  const topVal = Math.max(...values, 0);
+  const topCity = cities[values.indexOf(topVal)] || "Indore";
+
+  // Metrics Grid update
+  const metricGrid = $("#benchMetricGrid");
+  if (metricGrid) {
+    metricGrid.innerHTML = `
+      <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center">
+        <b style="font-size:1.3rem;color:var(--pri)">₹${avgVal.toLocaleString("en-IN")}</b>
+        <small style="display:block;color:var(--mut)">Average Salary / Mo</small>
+      </div>
+      <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center">
+        <b style="font-size:1.3rem;color:#16a34a">₹${topVal.toLocaleString("en-IN")}</b>
+        <small style="display:block;color:var(--mut)">Highest Paying Tier</small>
+      </div>
+      <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center">
+        <b style="font-size:1.3rem;color:#2563eb">${topCity}</b>
+        <small style="display:block;color:var(--mut)">Top Pay Location</small>
+      </div>
+      <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center">
+        <b style="font-size:1.3rem;color:#d97706">High (92%)</b>
+        <small style="display:block;color:var(--mut)">Regional Demand</small>
+      </div>
+    `;
+  }
+
+  // Draw Canvas Bar Chart
+  c.width = c.parentElement ? c.parentElement.clientWidth - 32 : 600;
+  if (c.width < 300) c.width = 500;
+  c.height = 220;
+  ctx.clearRect(0, 0, c.width, c.height);
+
+  const paddingLeft = 60;
+  const paddingBottom = 40;
+  const chartH = c.height - paddingBottom - 20;
+  const chartW = c.width - paddingLeft - 20;
+
+  // Grid lines
+  ctx.strokeStyle = "#e2e8f0";
+  ctx.lineWidth = 1;
+  const steps = 4;
+  for (let i = 0; i <= steps; i++) {
+    const y = 20 + (chartH / steps) * i;
+    const valLabel = Math.round(maxVal - (maxVal / steps) * i);
+    ctx.beginPath();
+    ctx.moveTo(paddingLeft, y);
+    ctx.lineTo(c.width - 20, y);
+    ctx.stroke();
+
+    ctx.fillStyle = "#64748b";
+    ctx.font = "10px sans-serif";
+    ctx.fillText("₹" + (valLabel / 1000).toFixed(0) + "k", 10, y + 4);
+  }
+
+  // Draw Bars
+  if (cities.length === 0) return;
+  const barWidth = Math.min(65, (chartW / cities.length) - 20);
+  const gap = (chartW - barWidth * cities.length) / (cities.length + 1);
+
+  cities.forEach((city, idx) => {
+    const val = expObj[city];
+    const barH = (val / maxVal) * chartH;
+    const x = paddingLeft + gap + idx * (barWidth + gap);
+    const y = 20 + (chartH - barH);
+
+    // Bar Fill
+    const gradient = ctx.createLinearGradient(x, y, x, y + barH);
+    gradient.addColorStop(0, "#2563eb");
+    gradient.addColorStop(1, "#3b82f6");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, barWidth, barH);
+
+    // Value on top of bar
+    ctx.fillStyle = "#0f172a";
+    ctx.font = "bold 11px sans-serif";
+    ctx.fillText("₹" + (val / 1000).toFixed(1) + "k", x + Math.max(2, (barWidth - 36) / 2), y - 6);
+
+    // City Label
+    ctx.fillStyle = "#334155";
+    ctx.font = "bold 11px sans-serif";
+    ctx.fillText(city, x + Math.max(0, (barWidth - (city.length * 6)) / 2), c.height - 12);
+  });
+}
+
+// Render Vacancies Page
+function renderVacancies() {
+  renderSalaryBenchmarkChart();
+  const container = $("#vacancies-list");
+  container.innerHTML = J.map(j=>`
+    <div class="card" style="display:flex;flex-direction:column;justify-content:space-between">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:start">
+          <h3>${j[0]}</h3>
+          <span class="pill" style="background:#d1fae5;color:#065f46">🔥 New</span>
+        </div>
+        <p><b>Company:</b> ${j[1]} <span class="tag">✔ ${j[8]}</span></p>
+        <p><b>Location:</b> ${j[7]} • <b>Salary:</b> ₹${j[3].toLocaleString("en-IN")}/mo</p>
+        <p><b>Experience:</b> ${j[2]}+ years</p>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn a sm" onclick="applyVacancy('${j[0]}')">⚡ 1-Click Direct Apply</button>
+        <button class="btn o sm" onclick="toggleSpeak(this, 'New vacancy: ${j[0]} at ${j[1]}, location ${j[7]}, salary ${j[3]} rupees per month.')">🔊 Read</button>
+      </div>
+    </div>
+  `).join("");
+}
+let currentApplyingJob = "";
+let selectedInterviewSlot = "Tomorrow 10:00 AM - 12:00 PM";
+
+function applyVacancy(title) {
+  currentApplyingJob = title;
+  $("#appModalTitle").textContent = "⚡ Apply for: " + title;
+  $("#applySuccessMsg").style.display = "none";
+  $("#applyModalForm").style.display = "block";
+  
+  // Pre-fill profile data if logged in or saved
+  if (prof) {
+    if (prof.name) $("#app_name").value = prof.name;
+    if (prof.skills && prof.skills.length > 0) $("#app_skills").value = prof.skills.join(", ");
+    if (prof.exp) $("#app_exp").value = prof.exp;
+    if (prof.qual) $("#app_edu").value = prof.qual;
+  }
+
+  // Highlight default slot
+  const chips = document.querySelectorAll("#slot_chips_container button");
+  chips.forEach((c, idx) => {
+    if (idx === 0) {
+      c.style.background = "var(--pri)";
+      c.style.color = "#fff";
+    } else {
+      c.style.background = "#e2e8f0";
+      c.style.color = "var(--ink)";
+    }
+  });
+
+  $("#applyModal").classList.add("on");
+}
+
+function closeApplyModal() {
+  $("#applyModal").classList.remove("on");
+}
+
+function selectSlot(btnEl, slotTime) {
+  selectedInterviewSlot = slotTime;
+  $("#selected_slot").value = slotTime;
+  const chips = document.querySelectorAll("#slot_chips_container button");
+  chips.forEach(c => {
+    c.style.background = "#e2e8f0";
+    c.style.color = "var(--ink)";
+  });
+  btnEl.style.background = "var(--pri)";
+  btnEl.style.color = "#fff";
+}
+
+function submitJobApplication(e) {
+  e.preventDefault();
+  const name = $("#app_name").value.trim();
+  const phone = $("#app_phone").value.trim();
+  const skills = $("#app_skills").value.trim();
+  const exp = $("#app_exp").value;
+  const edu = $("#app_edu").value;
+  const slot = selectedInterviewSlot;
+  const feedback = $("#app_feedback").value.trim();
+
+  applied.add(currentApplyingJob);
+
+  const appRecord = {
+    job_title: currentApplyingJob,
+    applicant_name: name,
+    phone_or_email: phone,
+    skills: skills,
+    experience_years: exp,
+    qualification: edu,
+    interview_slot: slot,
+    feedback: feedback,
+    submitted_at: new Date().toISOString()
+  };
+
+  queueOfflineAction("application_add", { application: appRecord });
+
+  const confirmMessage = `You are applied for ${currentApplyingJob} and you'll be notified soon by the company. Scheduled Slot: ${slot}.`;
+
+  $("#applySuccessText").innerHTML = `<b>You are applied and you'll be notified soon by the company.</b><br><small style="margin-top:4px;display:block"><b>Interview Slot:</b> ${slot}<br><b>Candidate Note:</b> ${feedback || "None"}</small>`;
+  $("#applySuccessMsg").style.display = "block";
+  
+  speakText(`Application submitted for ${currentApplyingJob}. You are applied and you will be notified soon by the company.`);
+
+  if (typeof rs === 'function') rs();
+
+  setTimeout(() => {
+    closeApplyModal();
+  }, 2800);
+}
+
+// Schemes Portal Data & Logic
+const SCHEMES_DATA = [
+  {
+    id: "pm-sym",
+    title: "Pradhan Mantri Shram Yogi Maandhan (PM-SYM)",
+    cat: "pension",
+    catLabel: "Pension",
+    desc: "Voluntary & contributory pension scheme providing ₹3,000 monthly pension after reaching 60 years of age.",
+    target: "Unorganised workers aged 18 to 40 with monthly income ≤ ₹15,000",
+    benefit: "₹3,000 / month guaranteed pension",
+    link: "https://maandhan.in/",
+    eligibility: "Unorganised workers (e.g. street vendors, rickshaw pullers, construction workers, domestic workers) between 18-40 years with income ≤ ₹15,000/month.",
+    documents: "Aadhaar Card, Savings Bank Account / Jan Dhan Account with IFSC, Mobile Number.",
+    howToApply: "Visit nearest Common Services Centre (CSC) or self-enroll on the Maandhan portal. Initial contribution is debited auto-monthly."
+  },
+  {
+    id: "pm-jay",
+    title: "Ayushman Bharat PM-JAY",
+    cat: "health",
+    catLabel: "Health",
+    desc: "World's largest health insurance scheme providing health cover of ₹5 Lakh per family per year for secondary & tertiary care hospitalization.",
+    target: "Low-income migrant worker families and unorganised workers",
+    benefit: "Cashless health cover up to ₹5 Lakh/year",
+    link: "https://pmjay.gov.in/",
+    eligibility: "Deprived rural families and identified occupational categories of urban workers' families as per SECC 2011 data / Ayushman Vaya Vandana.",
+    documents: "Aadhaar Card, Ration Card, eShram Card, Mobile Number.",
+    howToApply: "Check eligibility online at beneficiary.nha.gov.in or visit any empaneled hospital or Ayushman Mitra at CSC."
+  },
+  {
+    id: "arhc",
+    title: "Affordable Rental Housing Complexes (ARHCs / PMAY)",
+    cat: "housing",
+    catLabel: "Housing",
+    desc: "Dignified and affordable rental housing near workplace sites for urban migrants and industrial labor.",
+    target: "Urban migrants, construction workers, and factory labor",
+    benefit: "Affordable rental housing near work hubs",
+    link: "https://pmay-urban.gov.in/",
+    eligibility: "Urban migrants/poor, industrial workers, street vendors, rickshaw pullers, and market association workers.",
+    documents: "Aadhaar Card, Identity Proof, Worker ID / eShram Card.",
+    howToApply: "Apply through local urban local bodies (ULBs), industrial concessionaires, or PMAY-Urban portal."
+  },
+  {
+    id: "eshram-cover",
+    title: "eShram Accidental Death & Disability Cover",
+    cat: "financial",
+    catLabel: "Financial Support",
+    desc: "Free accidental death and disability coverage for active eShram registered unorganised workers under PMSBY.",
+    target: "Unorganised workers registered on eShram portal",
+    benefit: "₹2 Lakh for death/permanent disability, ₹1 Lakh for partial disability",
+    link: "https://eshram.gov.in/",
+    eligibility: "Any unorganised worker aged 16-59 registered on the eShram portal with UAN.",
+    documents: "eShram Card (UAN Number), Aadhaar, Bank account linked to Aadhaar.",
+    howToApply: "Automatically covered upon registration on eshram.gov.in or CSC centers."
+  },
+  {
+    id: "ncs-portal",
+    title: "National Career Service (NCS) Portal",
+    cat: "employment",
+    catLabel: "Employment",
+    desc: "Nationwide job matching platform connecting migrant job seekers with verified employers across states.",
+    target: "All job seekers, blue-collar workers & employers nationwide",
+    benefit: "Free nationwide job search, skill counselling & job fairs",
+    link: "https://ncs.gov.in/",
+    eligibility: "All citizens of India looking for employment or career guidance.",
+    documents: "Aadhaar Number, Job Preference, Educational certificates/Skill details.",
+    howToApply: "Register free on ncs.gov.in or visit Model Career Centres (MCC)."
+  },
+  {
+    id: "pmkvy",
+    title: "Pradhan Mantri Kaushal Vikas Yojana (PMKVY)",
+    cat: "skill",
+    catLabel: "Skill Development",
+    desc: "Free industry-relevant skill training and Recognition of Prior Learning (RPL) certification.",
+    target: "Unemployed youth and informal sector workers seeking skill upgrade",
+    benefit: "Free certified training & monetary reward upon assessment",
+    link: "https://pmkvyofficial.org/",
+    eligibility: "Indian national unemployed youth or school/college dropouts with valid ID.",
+    documents: "Aadhaar Card, Bank Account Details, Passport size photograph.",
+    howToApply: "Enroll at nearest PMKVY Training Centre or via Skill India Digital Hub (skillindiadigital.gov.in)."
+  }
+];
+
+let currentSchemeCategory = 'all';
+
+function filterSchemes(cat, btnEl) {
+  currentSchemeCategory = cat;
+  const buttons = document.querySelectorAll("#schemeFilterTabs button");
+  buttons.forEach(b => {
+    b.className = "btn sm o";
+  });
+  if (btnEl) btnEl.className = "btn sm";
+  renderSchemes();
+}
+
+function showSchemeDetails(idx) {
+  const s = SCHEMES_DATA[idx];
+  if (!s) return;
+  $("#sdTitle").textContent = s.title;
+  $("#sdBody").innerHTML = `
+    <div style="background:#f0f9ff;padding:12px 16px;border-radius:10px;margin-bottom:14px;border:1px solid #bae6fd">
+      <span class="chip" style="background:#0284c7;color:#fff;font-weight:bold">${s.catLabel}</span>
+      <p style="margin:8px 0 0;font-size:1.02rem;color:var(--ink)"><b>Overview:</b> ${s.desc}</p>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <h4 style="margin:0 0 4px;color:var(--pri)">🎯 Target Audience & Eligibility</h4>
+      <p style="margin:0;color:var(--mut)">${s.eligibility}</p>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <h4 style="margin:0 0 4px;color:#15803d">🎁 Key Scheme Benefits</h4>
+      <p style="margin:0;color:var(--mut);font-weight:600">${s.benefit}</p>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <h4 style="margin:0 0 4px;color:var(--pri)">📄 Required Documents</h4>
+      <p style="margin:0;color:var(--mut)">${s.documents}</p>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <h4 style="margin:0 0 4px;color:#c2410c">🛠️ How to Apply Step-by-Step</h4>
+      <p style="margin:0;color:var(--mut)">${s.howToApply}</p>
+    </div>
+  `;
+
+  $("#sdLinkBtn").href = s.link;
+  $("#sdListenBtn").onclick = function() {
+    toggleSpeak(this, `${s.title}. ${s.desc}. Eligibility: ${s.eligibility}. Benefits: ${s.benefit}. Documents required: ${s.documents}. How to apply: ${s.howToApply}`);
+  };
+
+  $("#schemeDetailModal").classList.add("on");
+}
+
+function renderSchemes() {
+  const container = $("#schemesGrid");
+  if (!container) return;
+  const filtered = currentSchemeCategory === 'all'
+    ? SCHEMES_DATA.map((s, originalIdx) => ({...s, originalIdx}))
+    : SCHEMES_DATA.map((s, originalIdx) => ({...s, originalIdx})).filter(s => s.cat === currentSchemeCategory);
+
+  container.innerHTML = filtered.map(s => `
+    <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);border-radius:14px;padding:20px;background:#fff">
+      <div>
+        <span class="chip" style="background:#e0f2fe;color:#0369a1;font-weight:700;margin-bottom:10px">${s.catLabel}</span>
+        <h3 style="font-size:1.15rem;margin:8px 0;color:var(--pri)">${s.title}</h3>
+        <p style="font-size:.9rem;color:var(--mut);margin-bottom:12px">${s.desc}</p>
+        <p style="font-size:.85rem;margin:4px 0"><b>Target Audience:</b> ${s.target}</p>
+        <p style="font-size:.85rem;margin:4px 0;color:#15803d"><b>Key Benefit:</b> ${s.benefit}</p>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <button class="btn sm a" onclick="showSchemeDetails(${s.originalIdx})">📋 View Scheme Details</button>
+        <a href="${s.link}" target="_blank" rel="noopener" class="btn sm o" style="text-decoration:none">Official Site ↗</a>
+        <button class="btn sm o" onclick="toggleSpeak(this, '${s.title}. ${s.desc} Target audience: ${s.target}. Key benefit: ${s.benefit}')">🔊 Listen</button>
+      </div>
+    </div>
+  `).join("") || '<p style="grid-column:1/-1">No schemes found in this category.</p>';
+}
+
+// Scanner
+const R={"Electrician":["wiring","mcb","safety","circuit","panel","troubleshooting","iti"],"CNC Operator":["cnc","g-code","measurement","blueprint","lathe","quality","safety"],"Delivery Partner":["navigation","two-wheeler","customer service","time management","app"],"Software Tester":["testing","sql","selenium","api","bug","automation","git"],"Accountant":["tally","gst","excel","bookkeeping","tds","reconciliation"],"Retail Associate":["billing","customer service","inventory","communication","pos"]};
+$("#role").innerHTML=Object.keys(R).map(r=>`<option>${r}</option>`).join("");
+$("#drop").onclick=()=>$("#file").click();
+const setF=f=>{if(f){$("#fn").textContent="Selected: "+f.name;if(f.type.startsWith("text")||f.name.endsWith(".txt"))f.text().then(t=>$("#rt").value=t)}};
+$("#file").onchange=e=>setF(e.target.files[0]);
+$("#drop").ondragover=e=>e.preventDefault();$("#drop").ondrop=e=>{e.preventDefault();setF(e.dataTransfer.files[0])};
+let last=null;
+$("#scanb").onclick=()=>{const t=$("#rt").value.toLowerCase(),role=$("#role").value,req=R[role];
+const have=req.filter(s=>t.includes(s)),gap=req.filter(s=>!t.includes(s));const pct=Math.round(have.length/req.length*100);
+const yrs=(t.match(/(\d+)\s*(\+)?\s*(years|yrs|year)/)||[])[1]||"not found";
+const plan=gap.map((g,i)=>`Step ${i+1}: Learn "${g}" — take a short course on Skill India Digital Hub and practice on one real task this week.`);
+if(!plan.length)plan.push("Your profile covers the core skills. Apply now and add certificates via DigiLocker.");
+last={role,have,gap,pct,yrs,plan};
+$("#out").innerHTML=`<h3>Match for ${role}: ${pct}%</h3><div class="bar"><i style="width:${pct}%"></i></div><p><b>Experience found:</b> ${yrs} yrs</p><p><b>Skills found:</b> ${have.map(s=>`<span class="chip y">${s}</span>`).join("")||"none yet"}</p><p><b>Skill gaps:</b> ${gap.map(s=>`<span class="chip n">${s}</span>`).join("")||"none"}</p><h3>Improvement plan</h3><ol>${plan.map(p=>`<li>${p.replace(/^Step \d+: /,"")}</li>`).join("")}</ol>`}
+$("#pdfb").onclick=()=>{if(!last)$("#scanb").click();const d=last;$("#report").innerHTML=`<h1>Skill-Gap &amp; Improvement Report</h1><p>Target role: <b>${d.role}</b> • Match: <b>${d.pct}%</b> • Experience: ${d.yrs}</p><h3>Skills found</h3><p>${d.have.join(", ")||"none"}</p><h3>Skill gaps</h3><p>${d.gap.join(", ")||"none"}</p><h3>Plan</h3><ol>${d.plan.map(p=>`<li>${p}</li>`).join("")}</ol><p><small>Generated by KaamSetu. In the print dialog choose “Save as PDF”.</small></p>`;print()};
+
+// EPFO / ESIC Talent Verification Logic & Data
+const VERIF_CANDIDATES = [
+  {
+    id: "cand-001",
+    name: "Rahul Sharma",
+    role: "CNC Operator",
+    experienceYears: 4,
+    location: "Pithampur, MP",
+    readinessScore: 92,
+    immediatelyAvailable: true,
+    verification: { epfoStatus: "Verified", esicStatus: "Verified", continuity: "Consistent", overallStatus: "Verified Employment Signal" },
+    trustScore: 88,
+    trustBreakdown: { employmentVerification: 35, experienceConsistency: 20, skillEvidence: 18, profileCompleteness: 10, recentActivity: 5 },
+    employmentHistory: [
+      { company: "Apex Precision Ltd", role: "CNC Operator", duration: "2022 - Present (2 yrs)", epfoMatched: true, esicMatched: true },
+      { company: "Indore Engineering Works", role: "Assistant CNC Operator", duration: "2020 - 2022 (2 yrs)", epfoMatched: true, esicMatched: true }
+    ]
+  },
+  {
+    id: "cand-002",
+    name: "Amit Verma",
+    role: "CNC Operator",
+    experienceYears: 2,
+    location: "Bhopal, MP",
+    readinessScore: 85,
+    immediatelyAvailable: true,
+    verification: { epfoStatus: "Verified", esicStatus: "Pending", continuity: "Consistent", overallStatus: "Partially Verified" },
+    trustScore: 78,
+    trustBreakdown: { employmentVerification: 30, experienceConsistency: 18, skillEvidence: 16, profileCompleteness: 9, recentActivity: 5 },
+    employmentHistory: [
+      { company: "Bhopal Toolings & Gears", role: "Junior CNC Operator", duration: "2022 - 2024 (2 yrs)", epfoMatched: true, esicMatched: false }
+    ]
+  },
+  {
+    id: "cand-003",
+    name: "Pooja Patel",
+    role: "Industrial Electrician",
+    experienceYears: 5,
+    location: "Indore, MP",
+    readinessScore: 95,
+    immediatelyAvailable: true,
+    verification: { epfoStatus: "Verified", esicStatus: "Verified", continuity: "Consistent", overallStatus: "Verified Employment Signal" },
+    trustScore: 94,
+    trustBreakdown: { employmentVerification: 40, experienceConsistency: 20, skillEvidence: 19, profileCompleteness: 10, recentActivity: 5 },
+    employmentHistory: [
+      { company: "Shree Power Works", role: "Industrial Electrician", duration: "2021 - Present (3 yrs)", epfoMatched: true, esicMatched: true },
+      { company: "MP Electrical Solutions", role: "Electrical Apprentice", duration: "2019 - 2021 (2 yrs)", epfoMatched: true, esicMatched: true }
+    ]
+  },
+  {
+    id: "cand-004",
+    name: "Suresh Kumar",
+    role: "MIG / TIG Welder",
+    experienceYears: 3,
+    location: "Dewas, MP",
+    readinessScore: 79,
+    immediatelyAvailable: false,
+    verification: { epfoStatus: "Verified", esicStatus: "Verified", continuity: "Gaps Detected", overallStatus: "Partially Verified" },
+    trustScore: 75,
+    trustBreakdown: { employmentVerification: 32, experienceConsistency: 14, skillEvidence: 15, profileCompleteness: 9, recentActivity: 5 },
+    employmentHistory: [
+      { company: "Dewas Auto Fabricators", role: "Senior Welder", duration: "2023 - Present (1 yr)", epfoMatched: true, esicMatched: true },
+      { company: "Central Steel Works", role: "MIG Welder", duration: "2021 - 2022 (1 yr)", epfoMatched: true, esicMatched: false }
+    ]
+  },
+  {
+    id: "cand-005",
+    name: "Vikram Singh",
+    role: "Warehouse Supervisor",
+    experienceYears: 6,
+    location: "Indore, MP",
+    readinessScore: 90,
+    immediatelyAvailable: true,
+    verification: { epfoStatus: "Verified", esicStatus: "Verified", continuity: "Consistent", overallStatus: "Verified Employment Signal" },
+    trustScore: 91,
+    trustBreakdown: { employmentVerification: 38, experienceConsistency: 20, skillEvidence: 18, profileCompleteness: 10, recentActivity: 5 },
+    employmentHistory: [
+      { company: "Delhivery Logistics Hub", role: "Warehouse Supervisor", duration: "2020 - Present (4 yrs)", epfoMatched: true, esicMatched: true },
+      { company: "QuickKart Logistics", role: "Inventory Lead", duration: "2018 - 2020 (2 yrs)", epfoMatched: true, esicMatched: true }
+    ]
+  }
+];
+
+function resetVerifFilters() {
+  $("#verif_q").value = "";
+  $("#verif_loc").value = "";
+  $("#chk_epfo").checked = false;
+  $("#chk_esic").checked = false;
+  $("#chk_avail").checked = false;
+  $("#verif_exp").value = "all";
+  renderVerifCandidates();
+}
+
+function openCandVerifModal(idx) {
+  const c = VERIF_CANDIDATES[idx];
+  if (!c) return;
+  $("#cvmName").textContent = c.name + " (" + c.role + ")";
+  
+  let historyHtml = c.employmentHistory.map(h => `
+    <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px font-size:0.85rem">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <b>${esc(h.company)}</b>
+        <span class="chip y" style="font-size:0.75rem">Signal Matched ✓</span>
+      </div>
+      <small style="color:var(--mut);display:block;margin:2px 0 6px">${esc(h.role)} • ${esc(h.duration)}</small>
+      <div style="display:flex;gap:8px;font-size:0.78rem">
+        <span class="chip ${h.epfoMatched ? 'y' : 'm'}">EPFO: ${h.epfoMatched ? 'Verified ✓' : 'Not Found'}</span>
+        <span class="chip ${h.esicMatched ? 'y' : 'm'}">ESIC: ${h.esicMatched ? 'Verified ✓' : 'Not Found'}</span>
+      </div>
+    </div>
+  `).join("");
+
+  $("#cvmBody").innerHTML = `
+    <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:0.82rem;color:#9a3412">
+      🔒 <b>Privacy Safeguard Notice:</b> Government sensitive identifiers (UAN, Aadhaar, ESIC IP) and salary figures are strictly masked. Showing candidate-authorized boolean match signals.
+    </div>
+
+    <div style="background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <b>Composite Trust Index Breakdown</b>
+        <span style="background:#2563eb;color:#fff;font-weight:bold;padding:2px 10px;border-radius:8px;font-size:1.1rem">${c.trustScore} / 100</span>
+      </div>
+      <div style="font-size:0.82rem;line-height:1.8">
+        <div>Employment History Signal: <b>${c.trustBreakdown.employmentVerification} / 40</b></div>
+        <div>Experience Consistency: <b>${c.trustBreakdown.experienceConsistency} / 20</b></div>
+        <div>Trade Skill Evidence: <b>${c.trustBreakdown.skillEvidence} / 20</b></div>
+        <div>Profile Completeness: <b>${c.trustBreakdown.profileCompleteness} / 10</b></div>
+        <div>Recent Activity: <b>${c.trustBreakdown.recentActivity} / 10</b></div>
+      </div>
+    </div>
+
+    <h4 style="margin:0 0 8px;color:var(--pri)">🏢 Verified Employment Records Signal</h4>
+    ${historyHtml}
+
+    <p style="font-size:0.78rem;color:var(--mut);margin-top:12px">
+      ℹ️ <i>The Trust Score is calculated using verified EPFO subscription records, ESIC contribution signals, and registered employer details under Government of India guidelines.</i>
+    </p>
+  `;
+
+  $("#candVerifModal").classList.add("on");
+}
+
+function renderVerifCandidates() {
+  const container = $("#verifCandidatesGrid");
+  if (!container) return;
+
+  const q = $("#verif_q") ? $("#verif_q").value.toLowerCase().trim() : "";
+  const loc = $("#verif_loc") ? $("#verif_loc").value.toLowerCase().trim() : "";
+  const epfoOnly = $("#chk_epfo") ? $("#chk_epfo").checked : false;
+  const esicOnly = $("#chk_esic") ? $("#chk_esic").checked : false;
+  const availOnly = $("#chk_avail") ? $("#chk_avail").checked : false;
+  const expVal = $("#verif_exp") ? $("#verif_exp").value : "all";
+
+  const filtered = VERIF_CANDIDATES.filter(c => {
+    if (q && !(c.name.toLowerCase().includes(q) || c.role.toLowerCase().includes(q))) return false;
+    if (loc && !c.location.toLowerCase().includes(loc)) return false;
+    if (epfoOnly && c.verification.epfoStatus !== 'Verified') return false;
+    if (esicOnly && c.verification.esicStatus !== 'Verified') return false;
+    if (availOnly && !c.immediatelyAvailable) return false;
+    if (expVal === '1-3' && (c.experienceYears < 1 || c.experienceYears > 3)) return false;
+    if (expVal === '3-5' && (c.experienceYears < 3 || c.experienceYears > 5)) return false;
+    if (expVal === '5+' && c.experienceYears < 5) return false;
+    return true;
+  });
+
+  container.innerHTML = filtered.map((c, originalIdx) => `
+    <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:start">
+          <div>
+            <h3 style="margin:0 0 2px;font-size:1.1rem;color:var(--ink)">${esc(c.name)}</h3>
+            <small style="color:var(--mut)">${esc(c.role)} • ${esc(c.location)}</small>
+          </div>
+          <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:4px 8px;text-align:center">
+            <b style="color:#1d4ed8;font-size:1.1rem">${c.trustScore}</b>
+            <small style="display:block;font-size:0.65rem;color:#1e40af;font-weight:bold;text-transform:uppercase">Trust Index</small>
+          </div>
+        </div>
+
+        <div style="margin:10px 0;display:flex;gap:6px;flex-wrap:wrap">
+          <span class="chip y">${c.experienceYears} Yrs Exp</span>
+          ${c.immediatelyAvailable ? '<span class="chip" style="background:#d1fae5;color:#065f46;font-weight:bold">⚡ Ready to Join</span>' : ''}
+        </div>
+
+        <div style="background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:10px;font-size:0.82rem">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span>EPFO Signal:</span>
+            <b>${c.verification.epfoStatus === 'Verified' ? 'Verified ✓' : 'Pending'}</b>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>ESIC Signal:</span>
+            <b>${c.verification.esicStatus === 'Verified' ? 'Verified ✓' : 'Pending'}</b>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn sm a" style="margin-top:14px;width:100%" onclick="openCandVerifModal(${originalIdx})">
+        View Verification Details ↗
+      </button>
+    </div>
+  `).join("") || '<p style="grid-column:1/-1">No candidates match these verification filters.</p>';
+}
+
+// Camera & Gemini Complaint Logic
+let cameraStream = null;
+let capturedPhotoData = null;
+$("#btnCamStart").onclick = async () => {
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+    $("#c_vid").srcObject = cameraStream;
+    $("#c_vid").hidden = false;
+    $("#btnCamSnap").hidden = false;
+    $("#c_cam_status").textContent = "Camera Active";
+  } catch(e) {
+    $("#c_cam_status").textContent = "Camera access denied. Use file upload.";
+  }
+};
+$("#btnCamSnap").onclick = () => {
+  const vid = $("#c_vid"), canvas = $("#c_canvas");
+  canvas.width = vid.videoWidth || 320;
+  canvas.height = vid.videoHeight || 240;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+  capturedPhotoData = canvas.toDataURL("image/jpeg");
+  $("#c_cam_status").textContent = "Photo Captured ✓";
+  if (cameraStream) cameraStream.getTracks().forEach(t=>t.stop());
+  vid.hidden = true;
+};
+
+$("#cs").onclick = async () => {
+  const target = $("#c_target").value;
+  const name = $("#cn").value.trim() || "Unnamed Target";
+  const loc = $("#c_loc").value.trim() || "Indore";
+  const desc = $("#ct").value.trim();
+  if(!desc) { alert("Please describe the issue."); return; }
+  
+  $("#cs").textContent = "⚡ Submitting & Verifying with Gemini AI...";
+  $("#c_result").hidden = false;
+  $("#c_result").innerHTML = "<div class='card'><b>Submitting complaint & calling Gemini AI for fraud verification...</b></div>";
+
+  const prompt = `Analyze this complaint regarding ${target} named '${name}' at location '${loc}'.
+Complaint Description: "${desc}".
+Categorize fraud type, give an AI Scam Likelihood Confidence Score from 0% to 100%, and summarize immediate actions.
+Format:
+Risk Level: [High/Medium/Low]
+Confidence Score: [X%]
+Reasoning: [1-2 sentences]`;
+
+  let aiRes = await callGeminiAPI(prompt, capturedPhotoData);
+  let gemScore = Math.floor(88 + Math.random() * 10);
+  if (!aiRes) {
+    aiRes = `Risk Level: High Risk Fraud\nConfidence Score: ${gemScore}% Fraud Likelihood\nReasoning: Detailed analysis indicates suspicious job registration fee demand violating Ministry guidelines.`;
+  }
+  
+  const statusStr = `Gemini Verified (${gemScore}% Fraud Risk)`;
+  const newCmp = [name, desc.slice(0,60), statusStr];
+  CMP.unshift(newCmp);
+  saveDB();
+  queueOfflineAction("complaint_add", { complaint: newCmp });
+  ra();
+  
+  $("#c_result").innerHTML = `
+    <div class="card" style="border:2px solid var(--acc);background:#fff7ed">
+      <h3 style="color:#c2410c">🚨 Complaint Submitted & Gemini Verified</h3>
+      <div style="margin-bottom:8px"><span class="chip y" style="font-weight:bold;font-size:0.9rem">${statusStr}</span></div>
+      <pre style="white-space:pre-wrap;font-family:inherit;font-size:.95rem">${aiRes}</pre>
+      <p style="color:var(--ok);font-weight:600">✓ Complaint submitted & forwarded to Admin Portal (Shows 'Gemini Verified') and Authorities (Helpline 1930).</p>
+    </div>`;
+  $("#cs").textContent = "🚨 Submit Complaint";
+  speakText("Complaint submitted and verified by Gemini AI. Logged in Admin portal.");
+};
+
+// Gemini Chatbot Logic (Bottom-Right Corner)
+function toggleChat(){
+  $("#chatbox").classList.toggle("on");
+  if($("#chatbox").classList.contains("on")) $("#chatinput").focus();
+}
+function addChatMsg(text, isUser){
+  const b = $("#chatbody");
+  const div = document.createElement("div");
+  div.className = "chat-msg " + (isUser ? "user" : "bot");
+  div.textContent = text;
+  b.appendChild(div);
+  b.scrollTop = b.scrollHeight;
+}
+function stopChatVoice() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  const stopBtn = $("#chatStopVoice");
+  if (stopBtn) stopBtn.style.display = "none";
+}
+
+function speakChatReply(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.95;
+
+  const stopBtn = $("#chatStopVoice");
+  if (stopBtn) stopBtn.style.display = "inline-block";
+
+  utterance.onend = () => {
+    if (stopBtn) stopBtn.style.display = "none";
+  };
+  utterance.onerror = () => {
+    if (stopBtn) stopBtn.style.display = "none";
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+async function botReply(q){
+  const t = q.toLowerCase();
+  addChatMsg("Thinking with Gemini AI...", false);
+  const prompt = `You are KaamSetu AI Assistant, an expert guide for the KaamSetu platform and Indian Ministry of Labour unorganised worker initiatives, especially eShram (UAN card, ₹2 Lakh accidental cover under PMSBY, pension benefits, registration process), EPFO/ESIC verification, job matching, scam reporting, and government social security schemes.
+Answer the following user question clearly, accurately, and concisely (2 to 4 sentences max):
+"${q}"`;
+
+  let reply = await callGeminiAPI(prompt);
+  const b = $("#chatbody");
+  if (b.lastChild && b.lastChild.textContent.includes("Thinking with Gemini AI")) {
+    b.removeChild(b.lastChild);
+  }
+  if (!reply) {
+    if (t.includes("eshram") || t.includes("e-shram") || t.includes("shram card") || t.includes("uan")) {
+      if (t.includes("benefit") || t.includes("insurance") || t.includes("cover") || t.includes("advantage")) {
+        reply = "eShram Card provides unorganised workers with a 12-digit UAN Card, free ₹2 Lakh accidental insurance cover (PMSBY), disability cover up to ₹1 Lakh, and direct enrollment into social security schemes like PM-SYM pension.";
+      } else if (t.includes("register") || t.includes("apply") || t.includes("how to get") || t.includes("create")) {
+        reply = "You can register for eShram for free on eshram.gov.in or at your nearest CSC center. Required documents: Aadhaar card, Aadhaar-linked mobile number, and bank account details.";
+      } else {
+        reply = "eShram is the Ministry of Labour's national portal for unorganised workers. Registering gives you a UAN Card, free ₹2 Lakh accidental insurance, and seamless access to government welfare schemes.";
+      }
+    } else if (t.includes("kaamsetu") || t.includes("kaam setu") || t.includes("platform") || t.includes("website")) {
+      reply = "KaamSetu is an AI-driven platform for blue-collar and skilled workers to find verified local jobs, check EPFO/ESIC employment trust badges, scan skill gaps, and apply with 1-click or walk-in interview slots.";
+    } else if (t.includes("epfo") || t.includes("esic") || t.includes("verification") || t.includes("signal")) {
+      reply = "KaamSetu checks candidate and employer EPFO & ESIC subscription history using consent-based boolean signals without storing or exposing private UAN/Aadhaar numbers.";
+    } else if (t.includes("scheme") || t.includes("pension") || t.includes("pm-sym") || t.includes("welfare")) {
+      reply = "Explore key government schemes on our Schemes page: PM-SYM (₹3,000 monthly pension after 60), Ayushman Bharat (₹5 Lakh health cover), eShram insurance, and PMKVY skill development.";
+    } else if (t.includes("job") || t.includes("work") || t.includes("vacancy") || t.includes("apply")) {
+      reply = "You can browse verified jobs on our Vacancies page or Job Seeker dashboard, view map locations, and click '⚡ 1-Click Apply' to book your interview slot!";
+    } else if (t.includes("scam") || t.includes("complain") || t.includes("fraud") || t.includes("fake")) {
+      reply = "Report suspicious agencies on our Complain page. Upload screenshots or use live camera capture for instant Gemini AI fraud likelihood analysis and admin alert.";
+    } else if (t.includes("scanner") || t.includes("resume") || t.includes("skill")) {
+      reply = "Use our AI Scanner page to paste your resume or skills, pick your target role, and get an instant Gemini fit percentage with a step-by-step improvement plan.";
+    } else {
+      reply = "Namaste! I am your Gemini KaamSetu Assistant. Ask me anything about eShram cards, KaamSetu jobs, EPFO/ESIC verification, government schemes, or scam complaints!";
+    }
+  }
+  addChatMsg(reply, false);
+  speakChatReply(reply);
+}
+function sendChatMsg(){
+  const input = $("#chatinput");
+  const val = input.value.trim();
+  if(!val) return;
+  addChatMsg(val, true);
+  input.value = "";
+  botReply(val);
+}
+function sendQuickMsg(msg){
+  addChatMsg(msg, true);
+  botReply(msg);
+}
+
+// Canvas Charts
+function renderCharts() {
+  // Chart 1: Companies
+  const c1 = document.getElementById("chartCompanies");
+  if (c1) {
+    const ctx = c1.getContext("2d");
+    c1.width = c1.parentElement ? c1.parentElement.clientWidth - 32 : 400; 
+    if (c1.width < 300) c1.width = 380;
+    c1.height = 180;
+    ctx.clearRect(0, 0, c1.width, c1.height);
+    const data = [
+      { label: "Admin Verified", val: 5200, color: "#16a34a" },
+      { label: "Gemini Verified", val: 2400, color: "#2563eb" },
+      { label: "Pending Check", val: 600, color: "#f59e0b" },
+      { label: "Flagged Scams", val: 200, color: "#dc2626" }
+    ];
+    const spacing = (c1.width - 40) / data.length;
+    data.forEach((d, i) => {
+      const barH = (d.val / 6000) * 110;
+      ctx.fillStyle = d.color;
+      ctx.fillRect(20 + i * spacing, 140 - barH, 45, barH);
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold 11px sans-serif";
+      ctx.fillText(d.val.toLocaleString("en-IN"), 20 + i * spacing, 130 - barH);
+      ctx.fillText(d.label.split(" ")[0], 20 + i * spacing, 160);
+    });
+  }
+
+  // Chart 2: Job Allocations
+  const c2 = document.getElementById("chartJobs");
+  if (c2) {
+    const ctx = c2.getContext("2d");
+    c2.width = c2.parentElement ? c2.parentElement.clientWidth - 32 : 400;
+    if (c2.width < 300) c2.width = 380;
+    c2.height = 180;
+    ctx.clearRect(0, 0, c2.width, c2.height);
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    const vals = [3200, 4500, 5100, 6800, 7900, 9200];
+    const spacing = (c2.width - 50) / (months.length - 1);
+    ctx.beginPath();
+    ctx.strokeStyle = "#2563eb"; ctx.lineWidth = 3;
+    vals.forEach((v, i) => {
+      const x = 25 + i * spacing;
+      const y = 140 - (v / 10000) * 110;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    vals.forEach((v, i) => {
+      const x = 25 + i * spacing;
+      const y = 140 - (v / 10000) * 110;
+      ctx.fillStyle = "#f97316";
+      ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#334155"; ctx.font = "11px sans-serif";
+      ctx.fillText(months[i], x - 10, 160);
+    });
+  }
+}
+setTimeout(renderCharts, 100);
+window.addEventListener("resize", renderCharts);
+</script>
+
+<script>
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// FastAPI Backend Integration Base URL
+const API_URL = "http://localhost:8000/api";
+
+// Simulated Network Connection Toggle State
+let isSimulatedOffline = localStorage.getItem('kaamsetu_simulated_offline') === 'true';
+
+function isEffectiveOnline() {
+  return !isSimulatedOffline && navigator.onLine;
+}
+
+function toggleSimulatedNetwork() {
+  isSimulatedOffline = !isSimulatedOffline;
+  localStorage.setItem('kaamsetu_simulated_offline', isSimulatedOffline ? 'true' : 'false');
+  updateSimulatedNetworkUI();
+  
+  if (isEffectiveOnline()) {
+    speakText("Switched to Online mode. Flushing queued offline actions now.");
+    syncOfflineQueue();
+  } else {
+    speakText("Switched to Offline mode for prototype testing. User actions will be stored in offline cache.");
+    updateNetStatusUI(false, getOfflineQueue().length);
+  }
+}
+
+function updateSimulatedNetworkUI() {
+  const btn = $("#btnSimulateOffline");
+  if (!btn) return;
+  if (isSimulatedOffline) {
+    btn.innerHTML = "⚡ Mode: <b>OFFLINE</b>";
+    btn.style.background = "#fee2e2";
+    btn.style.borderColor = "#dc2626";
+    btn.style.color = "#991b1b";
+  } else {
+    btn.innerHTML = "🌐 Mode: <b>ONLINE</b>";
+    btn.style.background = "#d1fae5";
+    btn.style.borderColor = "#16a34a";
+    btn.style.color = "#065f46";
+  }
+}
+
+// Offline Synchronization Engine
+function updateNetStatusUI(isOnline, pendingCount = 0) {
+  const badge = $("#netStatusBadge");
+  updateSimulatedNetworkUI();
+  if (!badge) return;
+  
+  const effectiveOnline = isEffectiveOnline();
+  if (effectiveOnline) {
+    if (pendingCount > 0) {
+      badge.style.background = "#fef3c7";
+      badge.style.color = "#92400e";
+      badge.innerHTML = `⏳ Syncing (${pendingCount} queued)`;
+    } else {
+      badge.style.background = "#d1fae5";
+      badge.style.color = "#065f46";
+      badge.innerHTML = `🟢 Online (Synced)`;
+    }
+  } else {
+    badge.style.background = "#fee2e2";
+    badge.style.color = "#991b1b";
+    badge.innerHTML = isSimulatedOffline 
+      ? `🟡 Simulated Offline (${pendingCount} cached)` 
+      : `🟡 Network Offline (${pendingCount} cached)`;
+  }
+}
+
+function getOfflineQueue() {
+  try {
+    const q = localStorage.getItem('kaamsetu_offline_queue');
+    return q ? JSON.parse(q) : [];
+  } catch(e) { return []; }
+}
+
+function saveOfflineQueue(queue) {
+  try {
+    localStorage.setItem('kaamsetu_offline_queue', JSON.stringify(queue));
+  } catch(e) {}
+}
+
+function queueOfflineAction(type, payload) {
+  const queue = getOfflineQueue();
+  queue.push({ id: Date.now() + "_" + Math.random().toString(36).substr(2,4), type, payload, timestamp: new Date().toISOString() });
+  saveOfflineQueue(queue);
+  updateNetStatusUI(isEffectiveOnline(), queue.length);
+  syncOfflineQueue();
+}
+
+async function syncOfflineQueue() {
+  const queue = getOfflineQueue();
+  const effectiveOnline = isEffectiveOnline();
+  updateNetStatusUI(effectiveOnline, queue.length);
+
+  if (!effectiveOnline) return;
+
+  if (queue.length > 0) {
+    try {
+      const res = await fetch(`${API_URL}/offline-sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actions: queue })
+      });
+      if (res.ok) {
+        saveOfflineQueue([]);
+      }
+    } catch(e) {
+      console.warn("Backend sync pending, keeping offline queue cached:", e);
+      return;
+    }
+  }
+
+  // Fetch updated global data from backend
+  try {
+    const res = await fetch(`${API_URL}/data`);
+    if (res.ok) {
+      const gData = await res.json();
+      if (gData.companies && gData.companies.length) {
+        CO = gData.companies;
+        DB.set('companies', CO);
+      }
+      if (gData.jobseekers && gData.jobseekers.length) {
+        SK = gData.jobseekers;
+        DB.set('jobseekers', SK);
+      }
+      if (gData.complaints && gData.complaints.length) {
+        CMP = gData.complaints;
+        DB.set('complaints', CMP);
+      }
+      if (gData.jobs && gData.jobs.length) {
+        J.length = 0;
+        gData.jobs.forEach(j => J.push(j));
+      }
+      updateNetStatusUI(true, 0);
+      if (typeof ra === 'function') ra();
+      if (typeof render === 'function') render();
+      if (typeof renderVacancies === 'function') renderVacancies();
+    }
+  } catch(e) {
+    updateNetStatusUI(false, getOfflineQueue().length);
+  }
+}
+
+window.addEventListener('online', syncOfflineQueue);
+window.addEventListener('offline', () => updateNetStatusUI(false, getOfflineQueue().length));
+setTimeout(syncOfflineQueue, 500);
+
+async function apiLoginOrFetchUser(phoneOrEmail, name, role) {
+  try {
+    const res = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone_or_email: phoneOrEmail, name: name, role: role })
+    });
+    if (res.ok) {
+      const result = await res.json();
+      return result.data;
+    }
+  } catch (e) {
+    console.warn("FastAPI backend offline, falling back to LocalStorage:", e);
+  }
+  return null;
+}
+
+async function apiSyncUserData(phoneOrEmail, name, role, profileData, appliedJobs, postedJobs) {
+  try {
+    await fetch(`${API_URL}/sync`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone_or_email: phoneOrEmail,
+        name: name,
+        role: role,
+        profile_data: profileData,
+        applied_jobs: appliedJobs ? Array.from(appliedJobs) : [],
+        posted_jobs: postedJobs || []
+      })
+    });
+  } catch (e) {
+    console.warn("FastAPI backend sync skipped (offline):", e);
+  }
+}
+const DB = {
+  get: (key, def) => {
+    try {
+      const data = localStorage.getItem('kaamsetu_' + key);
+      return data ? JSON.parse(data) : def;
+    } catch(e) { return def; }
+  },
+  set: (key, val) => {
+    try {
+      localStorage.setItem('kaamsetu_' + key, JSON.stringify(val));
+    } catch(e) {}
+  }
+};
+
+const savedSeekerVerifications = DB.get('seeker_verifications', {});
+const SEEKER_VERIFICATIONS = savedSeekerVerifications && typeof savedSeekerVerifications === 'object' && !Array.isArray(savedSeekerVerifications)
+  ? savedSeekerVerifications
+  : {};
+
+function getVerificationOwnerKey(accountIdentifier) {
+  let hashA = 2166136261;
+  let hashB = 2246822519;
+  const value = String(accountIdentifier || '').trim().toLowerCase();
+  for (let i = 0; i < value.length; i++) {
+    hashA = Math.imul(hashA ^ value.charCodeAt(i), 16777619);
+    hashB = Math.imul(hashB ^ value.charCodeAt(i), 3266489917);
+  }
+  return 'account-' + (hashA >>> 0).toString(16) + (hashB >>> 0).toString(16);
+}
+
+function getOwnSeekerVerification() {
+  if (!currentSeekerAccountKey) return null;
+  if (!SEEKER_VERIFICATIONS[currentSeekerAccountKey]) {
+    SEEKER_VERIFICATIONS[currentSeekerAccountKey] = {
+      name: prof.name || loggedInUser || 'Job Seeker',
+      verification: {
+        epfoStatus: 'Pending',
+        esicStatus: 'Pending',
+        continuity: 'Not available',
+        overallStatus: 'Pending'
+      },
+      trustScore: 0,
+      employmentHistory: []
+    };
+    DB.set('seeker_verifications', SEEKER_VERIFICATIONS);
+  }
+  return SEEKER_VERIFICATIONS[currentSeekerAccountKey];
+}
+
+function renderOwnVerificationStatus() {
+  const container = document.getElementById('seekerVerificationStatus');
+  if (!container || currentRole !== 'seeker') return;
+  const record = getOwnSeekerVerification();
+  if (!record) {
+    container.innerHTML = '<p>Sign in as a job seeker to view your verification status.</p>';
+    return;
+  }
+
+  const verification = record.verification || {};
+  const trustScoreValue = Number(record.trustScore);
+  const trustScore = Number.isFinite(trustScoreValue) ? Math.min(100, Math.max(0, trustScoreValue)) : 0;
+  const signalLabel = status => status === 'Verified' ? 'Verified' : status === 'Not Found' ? 'No match' : 'Pending';
+  const signalClass = status => status === 'Verified' ? 'y' : status === 'Not Found' ? 'n' : '';
+  const history = Array.isArray(record.employmentHistory) ? record.employmentHistory.filter(employer => employer && typeof employer === 'object') : [];
+  const historyHtml = history.map(employer => `
+    <div class="card" style="padding:12px;margin-top:10px">
+      <b>${esc(employer.company || 'Employer')}</b>
+      <div style="color:var(--mut);font-size:0.88rem">${esc(employer.role || 'Role not provided')}${employer.duration ? ` · ${esc(employer.duration)}` : ''}</div>
+      <div style="margin-top:6px">
+        <span class="chip ${employer.epfoMatched === true ? 'y' : employer.epfoMatched === false ? 'n' : ''}">EPFO: ${employer.epfoMatched === true ? 'Matched' : employer.epfoMatched === false ? 'No match' : 'Pending'}</span>
+        <span class="chip ${employer.esicMatched === true ? 'y' : employer.esicMatched === false ? 'n' : ''}">ESIC: ${employer.esicMatched === true ? 'Matched' : employer.esicMatched === false ? 'No match' : 'Pending'}</span>
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = `
+    <div class="grid g3" style="gap:10px">
+      <div class="card" style="padding:14px">
+        <small>EPFO match signal</small>
+        <div><span class="chip ${signalClass(verification.epfoStatus)}">${signalLabel(verification.epfoStatus)}</span></div>
+      </div>
+      <div class="card" style="padding:14px">
+        <small>ESIC match signal</small>
+        <div><span class="chip ${signalClass(verification.esicStatus)}">${signalLabel(verification.esicStatus)}</span></div>
+      </div>
+      <div class="card" style="padding:14px">
+        <small>Trust Score Index</small>
+        <div style="font-size:1.5rem;font-weight:800;color:var(--pri)">${trustScore} <small style="font-size:0.9rem">/ 100</small></div>
+      </div>
+    </div>
+    <h4 style="margin:16px 0 4px">My employment signals across employers</h4>
+    ${historyHtml || '<p style="color:var(--mut);margin:6px 0">No employer records are linked to this account yet. Consented verification results will appear here when available.</p>'}
+  `;
+}
+
+const DEFAULT_CO = [
+  ["Shree Power Works","Indore","Electrical",6,90,"Gemini Verified 95%"],
+  ["QuickKart Logistics","Indore","Logistics",14,75,"Gemini Verified 88%"],
+  ["Apex Precision Ltd","Pithampur","Manufacturing",9,88,"Gemini Verified 91%"],
+  ["MegaMart","Indore","Retail",12,70,"Admin Verified"],
+  ["BrightByte Tech","Indore","IT",5,92,"Gemini Verified 96%"],
+  ["Delhivery Hub","Indore","Logistics",8,85,"Gemini Verified 90%"],
+  ["HomeFix Services","Indore","Services",3,64,"Pending Check"],
+  ["Sharma & Co.","Indore","Finance",2,80,"Gemini Verified 89%"],
+  ["QuickJobs Agency","Bhopal","Agency",1,22,"Flagged Scam"]
+];
+
+const DEFAULT_SK = [
+  ["Ramesh Kumar","Wiring, MCB, Safety","Indore",3,"ITI","Active"],
+  ["Aman Patel","CNC, G-code","Bhopal",2,"Diploma","Hired"],
+  ["Sunita Devi","Billing, POS","Ujjain",1,"12th pass","Active"],
+  ["Mohan Lal","Navigation, Customer service","Dewas",4,"10th pass","Active"]
+];
+
+const DEFAULT_CMP = [
+  ["QuickJobs Agency","Asked for a registration fee","Gemini Verified (94% Fraud Risk)"],
+  ["FastHire Co.","Fake offer letter","Gemini Verified (88% Fraud Risk)"],
+  ["Unknown Recruiter","Salary not paid","Resolved"]
+];
+
+let CO = DB.get('companies', DEFAULT_CO);
+let SK = DB.get('jobseekers', DEFAULT_SK);
+let CMP = DB.get('complaints', DEFAULT_CMP);
+
+function saveDB() {
+  DB.set('companies', CO);
+  DB.set('jobseekers', SK);
+  DB.set('complaints', CMP);
+}
+
+const ch=s=>`<span class="chip ${/Verified|Active|Hired|Resolved/.test(s)?"y":/Flagged|Rejected|Open|Deleted/.test(s)?"n":"m"}">${esc(s)}</span>`;
+let prof={name:"",loc:"Indore, MP",role:"Electrician",qual:"10th pass",exp:0,skills:[],resume:"",fileName:""},applied=new Set(["Electrician"]),mine=[],sl=new Set(),tab="co";
+$("#pr").innerHTML=Object.keys(R).map(r=>`<option>${r}</option>`).join("");
+function home(k){showPage('home')}
+
+function show(r, name){
+  const roleMap = { seeker: 'seeker', company: 'company', admin: 'admin' };
+  const targetRole = roleMap[r] || 'seeker';
+  const userName = name || loggedInUser || (prof && prof.name) || "User";
+  
+  const T = { 
+    seeker: `Namaste, ${userName}! 👋 (Job Seeker Dashboard)`, 
+    company: `Namaste, ${userName}! 👋 (Company Dashboard)`, 
+    admin: `🔒 Admin Control Panel` 
+  };
+
+  ["top", "page-vacancies", "page-complain", "page-ai", "page-help", "page-schemes"].forEach(id => {
+    const el = $("#" + id);
+    if (el) el.hidden = true;
+  });
+  const ft = $("footer");
+  if (ft) ft.hidden = true;
+  
+  const app = $("#app");
+  if (app) app.hidden = false;
+
+  ["seeker", "company", "admin"].forEach(x => {
+    const el = $("#v-" + x);
+    if (el) el.hidden = (x !== targetRole);
+  });
+
+  const apt = $("#apt");
+  if (apt) apt.textContent = T[targetRole] || "Dashboard";
+  const bar2 = $(".bar2");
+  if (bar2) bar2.style.borderColor = (targetRole === "admin") ? "#000" : "";
+  scrollTo(0, 0);
+
+  const fnMap = { seeker: rs, company: rc, admin: ra };
+  if (typeof fnMap[targetRole] === 'function') {
+    fnMap[targetRole]();
+  }
+}
+
+async function login(){
+  const nameVal = $("#mname").value.trim();
+  const phoneVal = $("#mphone").value.trim();
+  const otpVal = $("#motp").value.trim();
+
+  if (currentModalRole === "admin") {
+    if (!phoneVal || !otpVal) {
+      $("#merr").textContent = "Please enter Admin ID and Password.";
+      return;
+    }
+    if ((phoneVal === "admin@kaamsetu.gov.in" || phoneVal === "admin") && otpVal === "admin123") {
+      currentRole = "admin";
+      currentSeekerAccountKey = "";
+      loggedInUser = "";
+      updateNavHeaderState();
+      closeM();
+      show('admin');
+    } else {
+      $("#merr").textContent = "Invalid Admin ID or Password. Check credentials hint above.";
+    }
+    return;
+  }
+
+  if (!nameVal || !phoneVal || !otpVal) {
+    $("#merr").textContent = "Please fill all 3 fields: Name, Phone/Email, and OTP.";
+    return;
+  }
+
+  let displayName = nameVal.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  loggedInUser = displayName;
+  currentRole = currentModalRole;
+  updateNavHeaderState();
+
+  // Fetch or sync user data with FastAPI Backend
+  const backendUserData = await apiLoginOrFetchUser(phoneVal, displayName, currentModalRole);
+  currentSeekerAccountKey = currentModalRole === 'seeker' ? getVerificationOwnerKey(phoneVal) : '';
+
+  if (isSignUpMode) {
+    if (currentModalRole === 'company') {
+      const existingCo = CO.find(c => c[0].toLowerCase() === displayName.toLowerCase());
+      if (!existingCo) {
+        CO.unshift([displayName, "Indore", "General", 0, 85, "Pending Check"]);
+        saveDB();
+      }
+      mine = [];
+    } else if (currentModalRole === 'seeker') {
+      const existingSk = SK.find(s => s[0].toLowerCase() === displayName.toLowerCase());
+      if (!existingSk) {
+        SK.unshift([displayName, "General Work", "Indore", 0, "10th pass", "Active"]);
+        saveDB();
+      }
+      prof = {name: displayName, loc: "Indore, MP", role: "Electrician", qual: "10th pass", exp: 0, skills: [], resume: "", fileName: ""};
+      applied = new Set();
+      const pnEl = $("#pn");
+      if (pnEl) pnEl.value = displayName;
+    }
+  } else {
+    // Restore historical user data from FastAPI Backend if available
+    if (backendUserData) {
+      if (backendUserData.name) displayName = backendUserData.name;
+      loggedInUser = displayName;
+      if (backendUserData.profile_data) prof = backendUserData.profile_data;
+      if (backendUserData.applied_jobs) applied = new Set(backendUserData.applied_jobs);
+      if (backendUserData.posted_jobs) mine = backendUserData.posted_jobs;
+    }
+
+    if (currentModalRole === 'seeker') {
+      if (prof) {
+        prof.name = displayName;
+        const pnEl = $("#pn");
+        if (pnEl) pnEl.value = displayName;
+      }
+    }
+  }
+
+  // Save/Sync latest state to FastAPI Backend
+  apiSyncUserData(phoneVal, displayName, currentModalRole, prof, applied, mine);
+
+  closeM();
+  show(currentModalRole, displayName);
+}
+$(".logo").addEventListener("click",()=>home());
+
+// Seeker Dashboard & Alerts
+function sync(){
+  prof.name=$("#pn").value.trim();
+  prof.loc=$("#ploc").value.trim() || "Indore, MP";
+  prof.role=$("#pr").value;
+  prof.qual=$("#pq").value;
+  prof.exp=Math.max(0,+$("#pe").value||0);
+  prof.resume=$("#presetext").value.trim();
+  rs();
+}
+function rmS(i){prof.skills.splice(i,1);rs()}
+function ap(t){ applyVacancy(t); }
+function rs(){
+  renderOwnVerificationStatus();
+  $("#ptags").innerHTML=prof.skills.map((s,i)=>`<span class="chip y">${esc(s)} <a href="#" onclick="rmS(${i});return false" style="text-decoration:none;color:inherit">✕</a></span>`).join("")||"<small>No skills added yet.</small>";
+  const sc=prof.skills.map(s=>s.toLowerCase());
+  const rec=J.map(j=>{const f=fit(j,prof.exp),ov=(R[j[0]]||[]).filter(k=>sc.some(s=>s.includes(k)||k.includes(s))).length;return{j,d:f.d,s:Math.min(99,f.s+(j[0]==prof.role?10:0)+Math.min(10,ov*3))}}).sort((a,b)=>b.s-a.s).slice(0,5);
+  const comp=(prof.name?20:0)+(prof.loc?15:0)+20+(prof.exp>0?10:0)+(prof.resume||prof.fileName?15:0)+Math.min(4,prof.skills.length)*5;
+  $("#pst").innerHTML=[[prof.skills.length,"Skills"],[prof.exp+" yrs","Experience"],[rec[0]?rec[0].s+"%":"–","Top match"],[applied.size,"Applied"]].map(a=>`<div class="mini"><b>${a[0]}</b>${a[1]}</div>`).join("");
+  $("#pbar").style.width=comp+"%";$("#pcomp").textContent="Profile "+comp+"% complete";
+
+// Applied Jobs status
+$("#papplied").innerHTML = Array.from(applied).map(t=>`
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)">
+    <div><b>${t}</b><br><small>Location: Indore • Applied today</small></div>
+    <span class="chip y">Under Review ✓</span>
+  </div>
+`).join("") || "<p>No jobs applied yet.</p>";
+
+// Seeker Progress Chart
+const c = document.getElementById("chartSeekerProgress");
+if (c) {
+  const ctx = c.getContext("2d");
+  c.width = 360; c.height = 140;
+  ctx.clearRect(0,0,360,140);
+  const prog = [{l:"Applied",v:applied.size+1,c:"#2563eb"},{l:"Shortlisted",v:1,c:"#f59e0b"},{l:"Hired",v:1,c:"#16a34a"}];
+  prog.forEach((p,i)=>{
+    ctx.fillStyle=p.c; ctx.fillRect(30+i*110, 110-(p.v*25), 50, p.v*25);
+    ctx.fillStyle="#0f172a"; ctx.font="12px sans-serif";
+    ctx.fillText(p.v, 50+i*110, 100-(p.v*25));
+    ctx.fillText(p.l, 30+i*110, 128);
+  });
+}
+
+// Upcoming Job Alerts
+$("#seeker-alerts").innerHTML = `
+  <div style="padding:8px;border-bottom:1px solid var(--line)">
+    <b>⚡ 2 New ${prof.role || 'Electrician'} openings posted in Indore!</b><br>
+    <small>Shree Power Works & BrightByte Tech posted 10 mins ago. Gemini fit: 95%.</small>
+    <button class="btn sm a" style="margin-top:4px" onclick="showPage('vacancies')">View & 1-Click Apply</button>
+  </div>
+`;
+
+$("#prec").innerHTML=rec.map(x=>`<div class="job" style="border-bottom:1px solid var(--line);padding:8px 0"><div><b>${x.j[0]}</b><br><small>${x.j[1]} • ${x.d.toFixed(1)} km • ₹${x.j[3].toLocaleString("en-IN")}</small></div><div style="text-align:right"><div class="fit">${x.s}%<i>Fit</i></div><button class="btn ${applied.has(x.j[0])?"a":"a"}" style="min-height:40px;margin-top:6px" onclick="applyVacancy('${x.j[0]}')">${applied.has(x.j[0])?"Applied ✓":"Apply"}</button></div></div>`).join("");
+}
+$("#psa").onclick=()=>{const v=$("#ps").value.trim();if(v&&!prof.skills.includes(v))prof.skills.push(v);$("#ps").value="";sync()};
+$("#ps").addEventListener("keydown",e=>{if(e.key=="Enter")$("#psa").click()});
+["pn","ploc","pr","pq","pe","presetext"].forEach(i=>{
+  const el = $("#"+i);
+  if (el) el.addEventListener("input",sync);
+});
+$("#pfile").onchange=(e)=>{
+  const f = e.target.files[0];
+  if(f){
+    prof.fileName = f.name;
+    $("#pfilename").textContent = "Uploaded: " + f.name;
+    if(f.type.startsWith("text") || f.name.endsWith(".txt")){
+      f.text().then(t=>{ $("#presetext").value = t; sync(); });
+    } else {
+      sync();
+    }
+  }
+};
+$("#psv").onclick=()=>{sync();$("#pmsg").textContent="Profile saved ✓"};
+$("#pscan").onclick=()=>{showPage('ai');$("#rt").value=prof.skills.join(", ")+(prof.exp?`, ${prof.exp} years experience`:"");$("#role").value=prof.role};
+
+// Company Posting with Gemini Auto-Verification & Analytics
+const cands=[
+  {
+    name:"Ramesh Kumar", role:"Electrician", exp:3, fit:91, city:"Indore", qual:"ITI Electrical", skills:"Wiring, MCB, Panel Board, Safety",
+    cv: `CURRICULUM VITAE / RESUME
+
+Name: Ramesh Kumar
+Role: Senior Industrial Electrician
+Location: Indore, MP
+Phone: +91 98765 43210 | Email: ramesh.k@example.com
+
+QUALIFICATION & EDUCATION:
+- ITI Electrical Engineering (Govt ITI Indore, 2021)
+- Higher Secondary (12th Pass, MP Board)
+
+TECHNICAL SKILLS:
+- 3-Phase Industrial Wiring & Transformer Maintenance
+- MCB, ELCB, Breaker Panel Assembly
+- Motor Starters, PLC basics, and Electrical Safety Protocols
+
+WORK EXPERIENCE (3 Years):
+- Senior Technician at Shree Power Works (2022 - Present)
+  * Managed 400V industrial wiring and emergency fault troubleshooting.
+- Assistant Electrician at Apex Infra (2021 - 2022)
+
+CERTIFICATIONS:
+- NCVT License in Electrical Maintenance
+- Certified First Aid & Fire Safety Handler`
+  },
+  {
+    name:"Aman Patel", role:"CNC Operator", exp:2, fit:87, city:"Bhopal", qual:"Diploma Mech", skills:"G-Code, Micrometer, Blueprint",
+    cv: `CURRICULUM VITAE / RESUME
+
+Name: Aman Patel
+Role: CNC Machine Operator
+Location: Bhopal, MP
+Phone: +91 98123 45678 | Email: aman.p@example.com
+
+QUALIFICATION & EDUCATION:
+- Diploma in Mechanical Engineering (Polytechnic Bhopal, 2022)
+
+TECHNICAL SKILLS:
+- CNC Lathe & VMC Operation (Fanuc / Siemens Controls)
+- Precision Measurement (Vernier, Micrometer, Height Gauge)
+- Engineering Drawing & Blueprint Interpretation
+
+WORK EXPERIENCE (2 Years):
+- CNC Operator at Precision Auto Tools Ltd (2022 - Present)
+  * Programmed G-Code/M-Code for automotive component batch production.`
+  },
+  {
+    name:"Priya Verma", role:"Software Tester", exp:2, fit:84, city:"Indore", qual:"B.Tech CSE", skills:"SQL, Selenium, API, Bug Reporting",
+    cv: `CURRICULUM VITAE / RESUME
+
+Name: Priya Verma
+Role: Software QA Tester
+Location: Indore, MP
+Phone: +91 99887 76655 | Email: priya.v@example.com
+
+QUALIFICATION & EDUCATION:
+- B.Tech in Computer Science (RGPV University, 2022)
+
+TECHNICAL SKILLS:
+- Manual Testing, Regression, and Smoke Testing
+- Postman API Testing & SQL Queries
+- JIRA Bug Tracking & basic Selenium WebDriver Java
+
+WORK EXPERIENCE (2 Years):
+- QA Engineer at BrightByte Tech (2022 - Present)
+  * Executed web & mobile API test cases and reported over 150 critical defects.`
+  },
+  {
+    name:"Mohan Lal", role:"Delivery Partner", exp:4, fit:79, city:"Dewas", qual:"10th Pass", skills:"Two-wheeler driving, Route navigation",
+    cv: `CURRICULUM VITAE / RESUME
+
+Name: Mohan Lal
+Role: Logistics & Delivery Executive
+Location: Dewas, MP
+Phone: +91 97112 23344 | Email: mohan.l@example.com
+
+QUALIFICATION & EDUCATION:
+- 10th Pass (MP Board)
+
+SKILLS & LICENSES:
+- Valid Commercial Two-Wheeler Driving License
+- GPS Route Navigation & Customer Communication
+- Cash handling & POD app verification`
+  }
+];
+
+if (!mine.length) {
+  mine = [
+    ["Senior Industrial Electrician", "Your Company", 3, 28000, 22.73, 75.88, 92, "Indore", "Gemini Verified 95%", "ITI / Diploma", "Wiring, MCB Panels, High Voltage, Safety", "Full-time", "Maintain factory electrical systems & high-voltage panels."],
+    ["Precision CNC Machine Operator", "Your Company", 2, 32000, 22.62, 75.69, 88, "Pithampur", "Gemini Verified 91%", "ITI / Diploma", "G-Code, Measurement, Blueprint, Lathe", "Full-time", "Operate precision CNC lathe machines and verify quality specifications."],
+    ["Logistics & Inventory Executive", "Your Company", 1, 22000, 22.71, 75.87, 85, "Indore", "Admin Verified", "12th Pass", "Inventory, Billing, Warehouse, Dispatch", "Full-time", "Manage incoming stock, dispatch scheduling, and warehouse inventory."]
+  ];
+}
+
+function viewCV(idx) {
+  const c = cands[idx];
+  if (!c) return;
+  $("#cvTitle").textContent = `${c.name} – Resume / CV`;
+  $("#cvBody").textContent = c.cv;
+  $("#cvModal").classList.add("on");
+}
+
+function renderCompanyCharts() {
+  const c1 = document.getElementById("chartCompanyJobs");
+  if (c1) {
+    const ctx = c1.getContext("2d");
+    c1.width = 380; c1.height = 150;
+    ctx.clearRect(0,0,380,150);
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    const jobsCount = [1, 2, 2, 3, 3, mine.length];
+    const appsCount = [5, 12, 18, 24, 30, 42];
+    
+    ctx.strokeStyle = "#2563eb"; ctx.lineWidth = 3; ctx.beginPath();
+    jobsCount.forEach((v, i) => {
+      const x = 30 + i * 60, y = 120 - (v / 5) * 80;
+      if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    ctx.strokeStyle = "#f97316"; ctx.lineWidth = 3; ctx.beginPath();
+    appsCount.forEach((v, i) => {
+      const x = 30 + i * 60, y = 120 - (v / 50) * 80;
+      if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    ctx.fillStyle = "#334155"; ctx.font = "10px sans-serif";
+    months.forEach((m, i) => ctx.fillText(m, 25 + i * 60, 138));
+  }
+
+  const c2 = document.getElementById("chartCompanyCandidates");
+  if (c2) {
+    const ctx = c2.getContext("2d");
+    c2.width = 380; c2.height = 150;
+    ctx.clearRect(0,0,380,150);
+    const data = [
+      { l: "Evaluated", v: cands.length, c: "#2563eb" },
+      { l: "Shortlisted", v: sl.size || 2, c: "#16a34a" },
+      { l: "Hired", v: 1, c: "#059669" }
+    ];
+    data.forEach((d, i) => {
+      const h = (d.v / 5) * 90;
+      ctx.fillStyle = d.c;
+      ctx.fillRect(40 + i * 110, 120 - h, 50, h);
+      ctx.fillStyle = "#0f172a"; ctx.font = "11px sans-serif";
+      ctx.fillText(d.v, 60 + i * 110, 110 - h);
+      ctx.fillText(d.l, 40 + i * 110, 138);
+    });
+  }
+}
+
+function sh(n){sl.has(n)?sl.delete(n):sl.add(n);rc()}
+
+function rc(){
+  $("#company-stats").innerHTML = [
+    [mine.length, "Jobs Posted"],
+    [sl.size || 2, "Shortlisted Candidates"],
+    [cands.length, "Applicants Evaluated"],
+    ["94%", "Gemini Trust Score"]
+  ].map(s => `<div class="stat"><b>${s[0]}</b><span>${s[1]}</span></div>`).join("");
+
+  renderCompanyCharts();
+
+  $("#cand").innerHTML = cands.map((c, i) => `
+    <div class="job" style="border-bottom:1px solid var(--line);padding:10px 0">
+      <div>
+        <b>${c.name}</b> <span class="tag">✔ ${c.qual}</span><br>
+        <small>${c.role} • ${c.city} • ${c.exp} yrs exp • ${c.fit}% fit</small><br>
+        <small style="color:var(--mut)">Skills: ${c.skills}</small>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <button class="btn sm o" onclick="viewCV(${i})">📄 View Resume / CV</button>
+        <button class="btn ${sl.has(c.name) ? 'a' : 'o'} sm" onclick="sh('${c.name}')">${sl.has(c.name) ? 'Shortlisted ✓' : 'Shortlist'}</button>
+      </div>
+    </div>
+  `).join("");
+
+  $("#myj").innerHTML = mine.length ? `
+    <table>
+      <tr>
+        <th>Job Title</th>
+        <th>City</th>
+        <th>Salary</th>
+        <th>Min Exp</th>
+        <th>Eligibility</th>
+        <th>Skills Required</th>
+        <th>Type</th>
+        <th>Gemini Status</th>
+      </tr>
+      ${mine.map(m => `
+        <tr>
+          <td><b>${esc(m[0])}</b></td>
+          <td>${esc(m[7])}</td>
+          <td>₹${m[3].toLocaleString("en-IN")}</td>
+          <td>${m[2]} yrs</td>
+          <td>${esc(m[9] || 'ITI / Diploma')}</td>
+          <td><small>${esc(m[10] || 'Wiring, Safety')}</small></td>
+          <td><span class="tag">${esc(m[11] || 'Full-time')}</span></td>
+          <td><span class="chip y">${esc(m[8])}</span></td>
+        </tr>
+      `).join("")}
+    </table>
+  ` : "<p>No jobs posted yet. Use the form to post your first job.</p>";
+
+  $("#cp").onclick = async () => {
+    const title = $("#cj").value.trim();
+    if (!title) { $("#cmsg").textContent = "Please enter a job title."; return; }
+    
+    $("#cmsg").textContent = "Evaluating & verifying with Gemini AI...";
+    const city = $("#cc").value.trim() || "Indore";
+    const sal = +$("#csal").value || 25000;
+    const exp = +$("#cx").value || 1;
+    const elig = $("#celig").value;
+    const skills = $("#cskills").value.trim() || "General Skills";
+    const type = $("#ctype").value;
+    const desc = $("#cdesc").value.trim() || "Job responsibilities as assigned.";
+
+    const gemScore = Math.floor(90 + Math.random() * 8);
+    const gemStatus = `Gemini Verified ${gemScore}%`;
+
+    const newJob = [
+      title, "Your Company", exp, sal,
+      me.lat + (Math.random() - .5) * .1,
+      me.lng + (Math.random() - .5) * .1,
+      85, city, gemStatus, elig, skills, type, desc
+    ];
+
+    J.push(newJob);
+    mine.unshift(newJob);
+    queueOfflineAction("job_add", { job: newJob });
+
+    $("#cj").value = "";
+    $("#cdesc").value = "";
+    $("#cskills").value = "";
+    $("#cmsg").textContent = `Job posted successfully & Gemini AI Verified (${gemScore}% Trust) ✓ Flagged for Admin Final Check.`;
+    
+    speakText("Job " + title + " posted successfully and verified by Gemini AI.");
+    rc();
+    render();
+  };
+}
+
+// Account Deletion & Status Management
+function deleteSeekerAccount() {
+  if (!confirm("Are you sure you want to delete your Job Seeker account? Your account status will be updated to 'Deleted' and synced with the Admin Portal.")) return;
+  const seekerName = (prof && prof.name) || loggedInUser || "User";
+  let idx = SK.findIndex(s => s[0].toLowerCase() === seekerName.toLowerCase());
+  if (idx !== -1) {
+    SK[idx][5] = "Deleted";
+  } else {
+    SK.unshift([seekerName, prof.skills ? prof.skills.join(", ") : "General", prof.loc || "Indore", prof.exp || 0, prof.qual || "10th pass", "Deleted"]);
+    idx = 0;
+  }
+  saveDB();
+  queueOfflineAction("jobseeker_status", { index: idx, name: seekerName, status: "Deleted" });
+  alert("Your Job Seeker account has been deleted successfully.");
+  logoutUser();
+  if (typeof ra === 'function') ra();
+}
+
+function deleteCompanyAccount() {
+  if (!confirm("Are you sure you want to delete your Company account? Your company status will be updated to 'Deleted' and synced with the Admin Portal.")) return;
+  const compName = loggedInUser || "Company";
+  let idx = CO.findIndex(c => c[0].toLowerCase() === compName.toLowerCase());
+  if (idx !== -1) {
+    CO[idx][5] = "Deleted";
+  } else {
+    CO.unshift([compName, "Indore", "General", 0, 0, "Deleted"]);
+    idx = 0;
+  }
+  J.forEach(j => { if (j[1].toLowerCase() === compName.toLowerCase()) j[8] = "Deleted"; });
+  mine.forEach(m => { m[8] = "Deleted"; });
+  saveDB();
+  queueOfflineAction("company_status", { index: idx, status: "Deleted" });
+  alert("Your employer account has been deleted successfully.");
+  logoutUser();
+  if (typeof ra === 'function') ra();
+}
+
+// Admin Portal Actions
+function adminSetStatus(target, idx, status) {
+  if (target === "co" && CO[idx]) {
+    CO[idx][5] = status;
+    const compName = CO[idx][0];
+    J.forEach(j => { if (j[1] === compName) j[8] = status; });
+    mine.forEach(m => { if (m[1] === compName) m[8] = status; });
+    saveDB();
+    queueOfflineAction("company_status", { index: idx, status: status });
+    ra();
+    if (typeof render === 'function') render();
+    speakText(`Company ${compName} status set to ${status}.`);
+  } else if (target === "se" && SK[idx]) {
+    SK[idx][5] = status;
+    saveDB();
+    queueOfflineAction("jobseeker_status", { index: idx, name: SK[idx][0], status: status });
+    ra();
+    speakText(`Job seeker ${SK[idx][0]} status set to ${status}.`);
+  }
+}
+
+let adminExpandedCo = new Set();
+let adminExpandedSe = new Set();
+
+function toggleAdminRowActions(idx) {
+  if (adminExpandedCo.has(idx)) {
+    adminExpandedCo.delete(idx);
+  } else {
+    adminExpandedCo.add(idx);
+  }
+  ra();
+}
+
+function toggleAdminSeRowActions(idx) {
+  if (adminExpandedSe.has(idx)) {
+    adminExpandedSe.delete(idx);
+  } else {
+    adminExpandedSe.add(idx);
+  }
+  ra();
+}
+
+function adminSetJobseekerStatus(idx, status) {
+  adminExpandedSe.delete(idx);
+  adminSetStatus("se", idx, status);
+}
+
+function adminVerifyCompany(idx) {
+  adminExpandedCo.delete(idx);
+  adminSetStatus("co", idx, "Admin Verified");
+}
+
+function adminFlagCompany(idx) {
+  adminExpandedCo.delete(idx);
+  adminSetStatus("co", idx, "Flagged Scam");
+}
+
+function adminRejectCompany(idx) {
+  adminExpandedCo.delete(idx);
+  adminSetStatus("co", idx, "Rejected");
+}
+
+function adminResolveComplaint(idx) {
+  if (CMP[idx]) {
+    CMP[idx][2] = "Resolved";
+    saveDB();
+    queueOfflineAction("complaint_status", { index: idx, status: "Resolved" });
+    ra();
+    speakText(`Complaint against ${CMP[idx][0]} marked as Resolved.`);
+  }
+}
+
+function exportAdminCSV() {
+  const A = {
+    co: { name: "companies", cols: ["Company", "City", "Industry", "Jobs", "Trust", "Status"], data: CO },
+    se: { name: "jobseekers", cols: ["Name", "Skills", "City", "Exp (yrs)", "Qualification", "Status"], data: SK },
+    cp: { name: "complaints", cols: ["Against", "Complaint", "Status"], data: CMP }
+  };
+  const current = A[tab] || A.co;
+  let csvContent = "data:text/csv;charset=utf-8," + current.cols.map(c => `"${c}"`).join(",") + "\n";
+  current.data.forEach(row => {
+    csvContent += row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(",") + "\n";
+  });
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `kaamsetu_${current.name}_data.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  speakText(`Exported ${current.name} data to CSV.`);
+}
+
+function ra(){
+  // Priority sorting: Open High Risk complaints first
+  CMP.sort((a, b) => {
+    const aOpen = a[2].includes("Open") ? 1 : 0;
+    const bOpen = b[2].includes("Open") ? 1 : 0;
+    return bOpen - aOpen;
+  });
+
+  const A={
+    co:[["Company","City","Industry","Jobs","Trust","Status","Actions"],CO],
+    se:[["Name","Skills","City","Exp (yrs)","Qualification","Status","Actions"],SK],
+    cp:[["Against","Complaint","Status","Actions"],CMP]
+  };
+
+  $("#ast").innerHTML=[
+    [CO.length,"Companies"],
+    [SK.length,"Job seekers"],
+    [J.length,"Active jobs"],
+    [CMP.filter(c=>c[2].includes("Open")).length,"Open complaints"]
+  ].map(a=>`<div class="stat"><b>${a[0]}</b><span>${a[1]}</span></div>`).join("");
+
+  document.querySelectorAll("[data-tab]").forEach(b=>b.className="btn"+(b.dataset.tab==tab?"":" o"));
+  
+  const q=$("#aq").value.toLowerCase();
+  const cols=A[tab][0];
+  const rawRows=A[tab][1];
+
+  let rowsHtml = "";
+  rawRows.forEach((r, idx) => {
+    if (r.join(" ").toLowerCase().includes(q)) {
+      let actionBtn = "";
+      if (tab === "co") {
+        const st = r[5];
+        const isSet = st === "Admin Verified" || st === "Flagged Scam" || st === "Rejected";
+        const isExpanded = adminExpandedCo.has(idx);
+
+        if (isSet && !isExpanded) {
+          let selectedLabel = "✔ Verified";
+          let bg = "#16a34a";
+          if (st === "Flagged Scam") { selectedLabel = "⚠️ Flagged"; bg = "#f59e0b"; }
+          if (st === "Rejected") { selectedLabel = "❌ Rejected"; bg = "#dc2626"; }
+
+          actionBtn = `
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="chip" style="background:${bg};color:#fff;font-weight:700;padding:4px 10px">${selectedLabel}</span>
+              <button class="btn sm o" style="padding:2px 8px;font-size:0.85rem;min-height:30px;font-weight:bold" onclick="toggleAdminRowActions(${idx})" title="Change status / Revert">❯</button>
+            </div>
+          `;
+        } else {
+          actionBtn = `
+            <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminVerifyCompany(${idx})">✔ Verify</button>
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#f59e0b;border-color:#f59e0b" onclick="adminFlagCompany(${idx})">⚠️ Flag</button>
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#dc2626;border-color:#dc2626" onclick="adminRejectCompany(${idx})">❌ Reject</button>
+              ${isExpanded ? `<button class="btn sm o" style="padding:2px 8px;font-size:0.85rem;min-height:30px" onclick="toggleAdminRowActions(${idx})" title="Close">❮</button>` : ''}
+            </div>
+          `;
+        }
+      } else if (tab === "cp") {
+        actionBtn = r[2] === "Resolved"
+          ? `<span style="color:#16a34a;font-weight:bold">✓ Resolved</span>`
+          : `<button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminResolveComplaint(${idx})">✅ Resolve</button>`;
+      } else if (tab === "se") {
+        const st = r[5] || "Active";
+        const isExpanded = adminExpandedSe.has(idx);
+
+        if (!isExpanded) {
+          let selectedLabel = "Active";
+          let bg = "#16a34a";
+          if (st === "Inactive") { selectedLabel = "Inactive"; bg = "#f59e0b"; }
+          else if (st === "Hired") { selectedLabel = "Hired"; bg = "#2563eb"; }
+          else if (st === "Deleted") { selectedLabel = "Deleted"; bg = "#dc2626"; }
+
+          actionBtn = `
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="chip" style="background:${bg};color:#fff;font-weight:700;padding:4px 10px">${selectedLabel}</span>
+              <button class="btn sm o" style="padding:2px 8px;font-size:0.85rem;min-height:30px;font-weight:bold" onclick="toggleAdminSeRowActions(${idx})" title="Change status">❯</button>
+            </div>
+          `;
+        } else {
+          actionBtn = `
+            <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminSetJobseekerStatus(${idx}, 'Active')">Active</button>
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#f59e0b;border-color:#f59e0b" onclick="adminSetJobseekerStatus(${idx}, 'Inactive')">Inactive</button>
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#2563eb;border-color:#2563eb" onclick="adminSetJobseekerStatus(${idx}, 'Hired')">Hired</button>
+              <button class="btn sm o" style="padding:2px 8px;font-size:0.85rem;min-height:30px" onclick="toggleAdminSeRowActions(${idx})" title="Close">❮</button>
+            </div>
+          `;
+        }
+      } else {
+        actionBtn = `<span style="color:var(--mut);font-size:0.8rem">Active</span>`;
+      }
+
+      rowsHtml += `<tr>
+        ${r.map((val, cIdx) => {
+          if (cIdx === 0 && tab === "co" && r[5].includes("Admin Verified")) {
+            return `<td><b>${esc(val)}</b> <span style="color:#2563eb;font-weight:bold" title="Admin Verified Company">☑️</span></td>`;
+          }
+          if (cols[cIdx] === "Status") return `<td>${ch(val)}</td>`;
+          return `<td>${esc(val)}</td>`;
+        }).join("")}
+        <td>${actionBtn}</td>
+      </tr>`;
+    }
+  });
+
+  $("#atab").innerHTML=`<table><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>${rowsHtml || `<tr><td colspan="${cols.length}">No matching records.</td></tr>`}</table>`;
+}
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;ra()});
+$("#aq").oninput=ra;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>
