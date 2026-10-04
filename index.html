@@ -117,6 +117,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <body>
 <header><div class="nav" role="navigation" aria-label="Main">
 <a class="logo" onclick="showPage('home')">Kaam<span>Setu</span> ✦</a>
+<button class="n" id="btnSimulateOffline" onclick="toggleSimulatedNetwork()" style="border:2px solid #16a34a;background:#d1fae5;color:#065f46;font-weight:bold;cursor:pointer;flex-shrink:0" title="Toggle Simulated Online/Offline Connection Mode">🌐 Mode: ONLINE</button>
 <div id="netStatusBadge" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:0.78rem;font-weight:700;background:#d1fae5;color:#065f46;flex-shrink:0" title="Network Synchronization Status">🟢 Online (Synced)</div>
 <div id="userHeaderBanner" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:4px 12px;border-radius:99px;font-size:0.85rem;font-weight:700;align-items:center;gap:6px">
   <span id="userHeaderIcon">🏢</span> <span id="userHeaderName">Hi, Company Name</span>
@@ -1956,11 +1957,51 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 // FastAPI Backend Integration Base URL
 const API_URL = "http://localhost:8000/api";
 
+// Simulated Network Connection Toggle State
+let isSimulatedOffline = localStorage.getItem('kaamsetu_simulated_offline') === 'true';
+
+function isEffectiveOnline() {
+  return !isSimulatedOffline && navigator.onLine;
+}
+
+function toggleSimulatedNetwork() {
+  isSimulatedOffline = !isSimulatedOffline;
+  localStorage.setItem('kaamsetu_simulated_offline', isSimulatedOffline ? 'true' : 'false');
+  updateSimulatedNetworkUI();
+  
+  if (isEffectiveOnline()) {
+    speakText("Switched to Online mode. Flushing queued offline actions now.");
+    syncOfflineQueue();
+  } else {
+    speakText("Switched to Offline mode for prototype testing. User actions will be stored in offline cache.");
+    updateNetStatusUI(false, getOfflineQueue().length);
+  }
+}
+
+function updateSimulatedNetworkUI() {
+  const btn = $("#btnSimulateOffline");
+  if (!btn) return;
+  if (isSimulatedOffline) {
+    btn.innerHTML = "⚡ Mode: <b>OFFLINE</b>";
+    btn.style.background = "#fee2e2";
+    btn.style.borderColor = "#dc2626";
+    btn.style.color = "#991b1b";
+  } else {
+    btn.innerHTML = "🌐 Mode: <b>ONLINE</b>";
+    btn.style.background = "#d1fae5";
+    btn.style.borderColor = "#16a34a";
+    btn.style.color = "#065f46";
+  }
+}
+
 // Offline Synchronization Engine
 function updateNetStatusUI(isOnline, pendingCount = 0) {
   const badge = $("#netStatusBadge");
+  updateSimulatedNetworkUI();
   if (!badge) return;
-  if (isOnline) {
+  
+  const effectiveOnline = isEffectiveOnline();
+  if (effectiveOnline) {
     if (pendingCount > 0) {
       badge.style.background = "#fef3c7";
       badge.style.color = "#92400e";
@@ -1973,7 +2014,9 @@ function updateNetStatusUI(isOnline, pendingCount = 0) {
   } else {
     badge.style.background = "#fee2e2";
     badge.style.color = "#991b1b";
-    badge.innerHTML = `🟡 Offline (${pendingCount} cached)`;
+    badge.innerHTML = isSimulatedOffline 
+      ? `🟡 Simulated Offline (${pendingCount} cached)` 
+      : `🟡 Network Offline (${pendingCount} cached)`;
   }
 }
 
@@ -1994,15 +2037,16 @@ function queueOfflineAction(type, payload) {
   const queue = getOfflineQueue();
   queue.push({ id: Date.now() + "_" + Math.random().toString(36).substr(2,4), type, payload, timestamp: new Date().toISOString() });
   saveOfflineQueue(queue);
-  updateNetStatusUI(navigator.onLine, queue.length);
+  updateNetStatusUI(isEffectiveOnline(), queue.length);
   syncOfflineQueue();
 }
 
 async function syncOfflineQueue() {
   const queue = getOfflineQueue();
-  updateNetStatusUI(navigator.onLine, queue.length);
+  const effectiveOnline = isEffectiveOnline();
+  updateNetStatusUI(effectiveOnline, queue.length);
 
-  if (!navigator.onLine) return;
+  if (!effectiveOnline) return;
 
   if (queue.length > 0) {
     try {
