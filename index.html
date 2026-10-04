@@ -120,6 +120,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <button class="n" onclick="openM('Company Login','Company email')">🏢 <span data-t="n1">Company Login</span></button>
 <button class="n" onclick="openM('Job Seeker Login','Mobile number')">👷 <span data-t="n2">Job Seeker Login</span></button>
 <button class="n" onclick="showPage('vacancies')">🔥 <span>Vacancies</span></button>
+<button class="n" onclick="showPage('schemes')">🏛️ <span>Schemes</span></button>
 <button class="n" onclick="showPage('ai')">🤖 <span data-t="n7">AI Scanner</span></button>
 <button class="n" onclick="showPage('complain')">🚨 <span data-t="n4">Complain</span></button>
 <button class="n" onclick="showPage('help')">💬 <span>Help &amp; FAQs</span></button>
@@ -279,6 +280,35 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 </div>
 </div>
 
+<!-- Dedicated Government Welfare Schemes Page -->
+<div id="page-schemes" class="page-view" hidden>
+<div class="wrap" style="max-width:1180px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+  <button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
+  <button class="btn sm o" onclick="toggleSpeak(this, 'Government Welfare Schemes page. Explore social security, pension, health, housing, and skill development schemes for workers.')">🔊 Listen Page</button>
+</div>
+
+<div class="sec-h" style="text-align:left;margin-bottom:24px">
+  <h2 style="font-size:2.2rem;color:var(--pri);display:flex;align-items:center;gap:10px">🏛️ Government Welfare Schemes</h2>
+  <p style="font-size:1.05rem;color:var(--mut);margin-top:4px">Explore social security, pension, health, housing, and skill development schemes for unorganised &amp; blue-collar workers.</p>
+</div>
+
+<!-- Scheme Category Filter Buttons -->
+<div class="tabs" style="margin-bottom:24px;gap:8px" id="schemeFilterTabs">
+  <button class="btn sm" onclick="filterSchemes('all', this)">All</button>
+  <button class="btn sm o" onclick="filterSchemes('pension', this)">Pension</button>
+  <button class="btn sm o" onclick="filterSchemes('health', this)">Health</button>
+  <button class="btn sm o" onclick="filterSchemes('housing', this)">Housing</button>
+  <button class="btn sm o" onclick="filterSchemes('financial', this)">Financial Support</button>
+  <button class="btn sm o" onclick="filterSchemes('employment', this)">Employment</button>
+  <button class="btn sm o" onclick="filterSchemes('skill', this)">Skill Development</button>
+</div>
+
+<!-- Schemes Grid -->
+<div class="grid g3" id="schemesGrid" style="gap:20px"></div>
+</div>
+</div>
+
 <!-- Dedicated Help & FAQs Page -->
 <div id="page-help" class="page-view" hidden>
 <div class="wrap" style="max-width:960px">
@@ -392,7 +422,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div><h4>Employment &amp; Social Security</h4><a href="https://epfindia.gov.in" target="_blank" rel="noopener">EPFO (epfindia.gov.in)</a><a href="https://esic.gov.in" target="_blank" rel="noopener">ESIC (esic.gov.in)</a><a href="https://ncs.gov.in" target="_blank" rel="noopener">National Career Service (ncs.gov.in)</a><a href="https://eshram.gov.in" target="_blank" rel="noopener">eShram (eshram.gov.in)</a><a href="https://skillindiadigital.gov.in" target="_blank" rel="noopener">Skill India Digital Hub (skillindiadigital.gov.in)</a></div>
 <div><h4>Data &amp; Compliance</h4><a href="https://labourbureau.gov.in" target="_blank" rel="noopener">Labour Bureau (labourbureau.gov.in)</a><a href="https://clc.gov.in" target="_blank" rel="noopener">Min. wages via CLC (clc.gov.in)</a><a href="https://mospi.gov.in" target="_blank" rel="noopener">PLFS by MoSPI (mospi.gov.in)</a><a href="https://udyamregistration.gov.in" target="_blank" rel="noopener">Udyam Registration (udyamregistration.gov.in)</a><a href="https://mca.gov.in" target="_blank" rel="noopener">MCA (mca.gov.in)</a><a href="https://data.gov.in" target="_blank" rel="noopener">Open Govt Data (data.gov.in)</a><a href="https://meity.gov.in" target="_blank" rel="noopener">DPDP Act info via MeitY (meity.gov.in)</a></div>
 <div><h4>Security &amp; Digital Services</h4><a href="https://cybercrime.gov.in" target="_blank" rel="noopener">Cyber Crime Portal (cybercrime.gov.in)</a><a href="https://digilocker.gov.in" target="_blank" rel="noopener">DigiLocker (digilocker.gov.in)</a><div class="help">National Cyber Crime Helpline <b>1930</b></div><div class="help">Ministry of Labour Helpline <b>14434</b></div></div>
-<div><h4>KaamSetu</h4><a onclick="showPage('jobs')">Jobs</a><a onclick="showPage('vacancies')">Vacancies</a><a onclick="showPage('ai')">AI Scanner</a><a onclick="showPage('complain')">Complain</a><a onclick="showPage('help')">Help &amp; FAQs</a><a onclick="goToHomeSec('how')">How it works</a></div></div>
+<div><h4>KaamSetu</h4><a onclick="showPage('jobs')">Jobs</a><a onclick="showPage('vacancies')">Vacancies</a><a onclick="showPage('schemes')">Government Schemes</a><a onclick="showPage('ai')">AI Scanner</a><a onclick="showPage('complain')">Complain</a><a onclick="showPage('help')">Help &amp; FAQs</a><a onclick="goToHomeSec('how')">How it works</a></div></div>
 <div class="copy">© 2026 KaamSetu – Employer Discovery &amp; Hiring Intelligence. Independent platform; government links are for reference.</div></div></footer>
 
 <div id="app" class="app" hidden><div class="wrap" style="padding:28px 20px">
@@ -732,6 +762,7 @@ function toggleVoiceListen() {
       speakText("Navigating according to your voice command: " + transcript);
       if (transcript.includes("job")) showPage('jobs');
       else if (transcript.includes("vacancy") || transcript.includes("vacancies")) showPage('vacancies');
+      else if (transcript.includes("scheme") || transcript.includes("schemes")) showPage('schemes');
       else if (transcript.includes("complain") || transcript.includes("scam")) showPage('complain');
       else if (transcript.includes("scanner") || transcript.includes("ai")) showPage('ai');
       else if (transcript.includes("help") || transcript.includes("faq")) showPage('help');
@@ -857,6 +888,7 @@ function showPage(p){
   $("#page-complain").hidden = (p !== 'complain');
   $("#page-ai").hidden = (p !== 'ai');
   $("#page-help").hidden = (p !== 'help');
+  $("#page-schemes").hidden = (p !== 'schemes');
   $("#app").hidden = true;
   $("footer").hidden = false;
   scrollTo(0,0);
@@ -866,6 +898,7 @@ function showPage(p){
     renderVacancies();
     setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 200);
   }
+  if(p === 'schemes') renderSchemes();
   if(p === 'home') renderCharts();
 }
 function goToHomeSec(id){
@@ -1041,6 +1074,100 @@ function submitJobApplication(e) {
   setTimeout(() => {
     closeApplyModal();
   }, 2800);
+}
+
+// Schemes Portal Data & Logic
+const SCHEMES_DATA = [
+  {
+    title: "Pradhan Mantri Shram Yogi Maandhan (PM-SYM)",
+    cat: "pension",
+    catLabel: "Pension",
+    desc: "Voluntary & contributory pension scheme providing ₹3,000 monthly pension after reaching 60 years of age.",
+    target: "Unorganised workers aged 18 to 40 with monthly income ≤ ₹15,000",
+    benefit: "₹3,000 / month guaranteed pension",
+    link: "https://maandhan.in/"
+  },
+  {
+    title: "Ayushman Bharat PM-JAY",
+    cat: "health",
+    catLabel: "Health",
+    desc: "World's largest health insurance scheme providing health cover of ₹5 Lakh per family per year for secondary & tertiary care hospitalization.",
+    target: "Low-income migrant worker families and unorganised workers",
+    benefit: "Cashless health cover up to ₹5 Lakh/year",
+    link: "https://pmjay.gov.in/"
+  },
+  {
+    title: "Affordable Rental Housing Complexes (ARHCs / PMAY)",
+    cat: "housing",
+    catLabel: "Housing",
+    desc: "Dignified and affordable rental housing near workplace sites for urban migrants and industrial labor.",
+    target: "Urban migrants, construction workers, and factory labor",
+    benefit: "Affordable rental housing near work hubs",
+    link: "https://pmay-urban.gov.in/"
+  },
+  {
+    title: "eShram Accidental Death & Disability Cover",
+    cat: "financial",
+    catLabel: "Financial Support",
+    desc: "Free accidental death and disability coverage for active eShram registered unorganised workers under PMSBY.",
+    target: "Unorganised workers registered on eShram portal",
+    benefit: "₹2 Lakh for death/permanent disability, ₹1 Lakh for partial disability",
+    link: "https://eshram.gov.in/"
+  },
+  {
+    title: "National Career Service (NCS) Portal",
+    cat: "employment",
+    catLabel: "Employment",
+    desc: "Nationwide job matching platform connecting migrant job seekers with verified employers across states.",
+    target: "All job seekers, blue-collar workers & employers nationwide",
+    benefit: "Free nationwide job search, skill counselling & job fairs",
+    link: "https://ncs.gov.in/"
+  },
+  {
+    title: "Pradhan Mantri Kaushal Vikas Yojana (PMKVY)",
+    cat: "skill",
+    catLabel: "Skill Development",
+    desc: "Free industry-relevant skill training and Recognition of Prior Learning (RPL) certification.",
+    target: "Unemployed youth and informal sector workers seeking skill upgrade",
+    benefit: "Free certified training & monetary reward upon assessment",
+    link: "https://pmkvyofficial.org/"
+  }
+];
+
+let currentSchemeCategory = 'all';
+
+function filterSchemes(cat, btnEl) {
+  currentSchemeCategory = cat;
+  const buttons = document.querySelectorAll("#schemeFilterTabs button");
+  buttons.forEach(b => {
+    b.className = "btn sm o";
+  });
+  if (btnEl) btnEl.className = "btn sm";
+  renderSchemes();
+}
+
+function renderSchemes() {
+  const container = $("#schemesGrid");
+  if (!container) return;
+  const filtered = currentSchemeCategory === 'all'
+    ? SCHEMES_DATA
+    : SCHEMES_DATA.filter(s => s.cat === currentSchemeCategory);
+
+  container.innerHTML = filtered.map(s => `
+    <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);border-radius:14px;padding:20px;background:#fff">
+      <div>
+        <span class="chip" style="background:#e0f2fe;color:#0369a1;font-weight:700;margin-bottom:10px">${s.catLabel}</span>
+        <h3 style="font-size:1.15rem;margin:8px 0;color:var(--pri)">${s.title}</h3>
+        <p style="font-size:.9rem;color:var(--mut);margin-bottom:12px">${s.desc}</p>
+        <p style="font-size:.85rem;margin:4px 0"><b>Target Audience:</b> ${s.target}</p>
+        <p style="font-size:.85rem;margin:4px 0;color:#15803d"><b>Key Benefit:</b> ${s.benefit}</p>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <a href="${s.link}" target="_blank" rel="noopener" class="btn sm o" style="text-decoration:none">Visit Official Website ↗</a>
+        <button class="btn sm o" onclick="toggleSpeak(this, '${s.title}. ${s.desc} Target audience: ${s.target}. Key benefit: ${s.benefit}')">🔊 Listen</button>
+      </div>
+    </div>
+  `).join("") || "<p style="grid-column:1/-1">No schemes found in this category.</p>";
 }
 
 // Scanner
@@ -1318,7 +1445,7 @@ function show(r, name){
     admin: `🔒 Admin Control Panel` 
   };
 
-  ["top", "page-vacancies", "page-complain", "page-ai", "page-help"].forEach(id => {
+  ["top", "page-vacancies", "page-complain", "page-ai", "page-help", "page-schemes"].forEach(id => {
     const el = $("#" + id);
     if (el) el.hidden = true;
   });
