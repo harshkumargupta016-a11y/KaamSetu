@@ -212,7 +212,18 @@ def update_company(index: int, payload: Dict[str, Any]):
         return {"status": "updated", "company": companies[index]}
     raise HTTPException(status_code=404, detail="Company index not found")
 
-@app.post("/api/complaints")
+@app.put("/api/jobseekers/{index}")
+def update_jobseeker(index: int, payload: Dict[str, Any]):
+    db = load_db()
+    jobseekers = db.get("jobseekers", [])
+    if 0 <= index < len(jobseekers):
+        status = payload.get("status")
+        if status:
+            jobseekers[index][5] = status
+        db["jobseekers"] = jobseekers
+        save_db(db)
+        return {"status": "updated", "jobseeker": jobseekers[index]}
+    raise HTTPException(status_code=404, detail="Jobseeker index not found")
 def add_complaint(complaint: List[Any]):
     db = load_db()
     complaints = db.get("complaints", [])
@@ -278,6 +289,19 @@ def process_offline_sync(req: OfflineSyncRequest):
                     if len(j) > 1 and j[1] == comp_name:
                         j[8] = p["status"]
                 processed_count += 1
+        elif a_type == "jobseeker_status" and "status" in p:
+            st = p["status"]
+            if "index" in p:
+                idx = p["index"]
+                if 0 <= idx < len(db["jobseekers"]):
+                    db["jobseekers"][idx][5] = st
+                    processed_count += 1
+            elif "name" in p:
+                s_name = p["name"].lower().strip()
+                for sk in db.get("jobseekers", []):
+                    if len(sk) > 0 and sk[0].lower().strip() == s_name:
+                        sk[5] = st
+                        processed_count += 1
         elif a_type == "complaint_add" and "complaint" in p:
             db["complaints"].insert(0, p["complaint"])
             processed_count += 1

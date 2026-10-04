@@ -589,7 +589,10 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 
 <label for="ps" style="display:block;margin-top:10px">Add a skill</label><div class="loc"><input id="ps" placeholder="e.g. wiring"><button class="btn" id="psa">Add</button></div>
 <div id="ptags"></div>
-<button class="btn a" id="psv" style="margin-top:12px;width:100%">Save profile</button><p id="pmsg" role="status" style="color:var(--ok);font-weight:600;margin-top:6px"></p></div>
+<button class="btn a" id="psv" style="margin-top:12px;width:100%">Save profile</button><p id="pmsg" role="status" style="color:var(--ok);font-weight:600;margin-top:6px"></p>
+<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line)">
+  <button class="btn sm" style="background:#dc2626;border-color:#dc2626;color:#fff;width:100%" onclick="deleteSeekerAccount()">🗑️ Delete My Account</button>
+</div></div>
 <div>
 <div class="card"><h3>My dashboard &amp; Progress</h3>
 <div id="pst" class="grid g4" style="gap:10px"></div>
@@ -623,6 +626,10 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 </div></div></div>
 <div id="v-company" hidden>
 <!-- Company Dashboard Analytics & Summary -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+  <span class="chip y" style="font-size:0.85rem">🏢 Company Control Center</span>
+  <button class="btn sm" style="background:#dc2626;border-color:#dc2626;color:#fff" onclick="deleteCompanyAccount()">🗑️ Delete Employer Account</button>
+</div>
 <div class="grid g4" style="margin-bottom:18px" id="company-stats"></div>
 <div class="grid g2" style="margin-bottom:18px">
   <div class="chart-box"><h3>📈 Company Jobs Posted &amp; Applications</h3><canvas id="chartCompanyJobs"></canvas></div>
@@ -1110,6 +1117,14 @@ function switchVacTab(view) {
 }
 
 function showPage(p){
+  if (p === 'verification') {
+    if (currentRole !== 'company' && currentRole !== 'admin') {
+      alert("🔒 Access Restricted: EPFO/ESIC Employment Verification is restricted to Verified Employers & Admin officers only to protect candidate privacy under the DPDP Act.\n\nPlease log in with a Company account or Admin ID.");
+      openM('Company Login', 'Company email');
+      return;
+    }
+  }
+
   const isVacancies = (p === 'jobs' || p === 'vacancies');
   $("#top").hidden = (p !== 'home');
   $("#page-vacancies").hidden = !isVacancies;
@@ -2183,7 +2198,7 @@ function saveDB() {
   DB.set('complaints', CMP);
 }
 
-const ch=s=>`<span class="chip ${/Verified|Active|Hired|Resolved/.test(s)?"y":/Flagged|Rejected|Open/.test(s)?"n":"m"}">${esc(s)}</span>`;
+const ch=s=>`<span class="chip ${/Verified|Active|Hired|Resolved/.test(s)?"y":/Flagged|Rejected|Open|Deleted/.test(s)?"n":"m"}">${esc(s)}</span>`;
 let prof={name:"",loc:"Indore, MP",role:"Electrician",qual:"10th pass",exp:0,skills:[],resume:"",fileName:""},applied=new Set(["Electrician"]),mine=[],sl=new Set(),tab="co";
 $("#pr").innerHTML=Object.keys(R).map(r=>`<option>${r}</option>`).join("");
 function home(k){showPage('home')}
@@ -2644,6 +2659,43 @@ function rc(){
   };
 }
 
+// Account Deletion & Status Management
+function deleteSeekerAccount() {
+  if (!confirm("Are you sure you want to delete your Job Seeker account? Your account status will be updated to 'Deleted' and synced with the Admin Portal.")) return;
+  const seekerName = (prof && prof.name) || loggedInUser || "User";
+  let idx = SK.findIndex(s => s[0].toLowerCase() === seekerName.toLowerCase());
+  if (idx !== -1) {
+    SK[idx][5] = "Deleted";
+  } else {
+    SK.unshift([seekerName, prof.skills ? prof.skills.join(", ") : "General", prof.loc || "Indore", prof.exp || 0, prof.qual || "10th pass", "Deleted"]);
+    idx = 0;
+  }
+  saveDB();
+  queueOfflineAction("jobseeker_status", { index: idx, name: seekerName, status: "Deleted" });
+  alert("Your Job Seeker account has been deleted successfully.");
+  logoutUser();
+  if (typeof ra === 'function') ra();
+}
+
+function deleteCompanyAccount() {
+  if (!confirm("Are you sure you want to delete your Company account? Your company status will be updated to 'Deleted' and synced with the Admin Portal.")) return;
+  const compName = loggedInUser || "Company";
+  let idx = CO.findIndex(c => c[0].toLowerCase() === compName.toLowerCase());
+  if (idx !== -1) {
+    CO[idx][5] = "Deleted";
+  } else {
+    CO.unshift([compName, "Indore", "General", 0, 0, "Deleted"]);
+    idx = 0;
+  }
+  J.forEach(j => { if (j[1].toLowerCase() === compName.toLowerCase()) j[8] = "Deleted"; });
+  mine.forEach(m => { m[8] = "Deleted"; });
+  saveDB();
+  queueOfflineAction("company_status", { index: idx, status: "Deleted" });
+  alert("Your employer account has been deleted successfully.");
+  logoutUser();
+  if (typeof ra === 'function') ra();
+}
+
 // Admin Portal Actions
 function adminSetStatus(target, idx, status) {
   if (target === "co" && CO[idx]) {
@@ -2659,6 +2711,7 @@ function adminSetStatus(target, idx, status) {
   } else if (target === "se" && SK[idx]) {
     SK[idx][5] = status;
     saveDB();
+    queueOfflineAction("jobseeker_status", { index: idx, name: SK[idx][0], status: status });
     ra();
     speakText(`Job seeker ${SK[idx][0]} status set to ${status}.`);
   }
@@ -2783,8 +2836,16 @@ function ra(){
         actionBtn = r[2] === "Resolved"
           ? `<span style="color:#16a34a;font-weight:bold">✓ Resolved</span>`
           : `<button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminResolveComplaint(${idx})">✅ Resolve</button>`;
+      } else if (tab === "se") {
+        actionBtn = `
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminSetStatus('se', ${idx}, 'Active')">Active</button>
+            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#f59e0b;border-color:#f59e0b" onclick="adminSetStatus('se', ${idx}, 'Inactive')">Inactive</button>
+            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#dc2626;border-color:#dc2626" onclick="adminSetStatus('se', ${idx}, 'Deleted')">Delete</button>
+          </div>
+        `;
       } else {
-        actionBtn = `<span style="color:var(--mut);font-size:0.8rem">Active Seeker</span>`;
+        actionBtn = `<span style="color:var(--mut);font-size:0.8rem">Active</span>`;
       }
 
       rowsHtml += `<tr>
