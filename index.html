@@ -603,7 +603,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div class="copy">© 2026 KaamSetu – Employer Discovery &amp; Hiring Intelligence. Independent platform; government links are for reference.</div></div></footer>
 
 <div id="app" class="app" hidden><div class="wrap" style="padding:28px 20px">
-<div class="bar2"><h2 id="apt"></h2><div><button class="btn o" onclick="home()">← Home</button> <button class="btn" onclick="home()">Logout</button></div></div>
+<div class="bar2"><h2 id="apt"></h2><div><button class="btn o" onclick="home()">← Home</button> <button class="btn" onclick="logoutUser()">Logout</button></div></div>
 <div id="v-seeker" hidden><div class="two" style="margin-top:0;align-items:start">
 <div class="card"><h3>My profile</h3>
 <label for="pn">Full name</label><input id="pn" placeholder="e.g. Ramesh Kumar">
@@ -641,19 +641,18 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div id="seeker-alerts"></div>
 </div>
 
-  <!-- Verification Access Card in Job Seeker Dashboard -->
-  <div class="card" style="margin-top:18px;background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);color:#fff">
+  <section class="card" id="seekerVerificationPanel" aria-labelledby="seekerVerificationTitle" style="margin-top:18px">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
       <div>
-        <span style="background:rgba(59,130,246,0.3);color:#93c5fd;padding:2px 8px;border-radius:6px;font-size:0.75rem;font-weight:bold">Verified Talent Network</span>
-        <h3 style="margin:4px 0;color:#fff">🛡️ EPFO / ESIC Employment Verification Status</h3>
-        <p style="margin:0;font-size:0.85rem;opacity:0.85">Check candidate boolean match signals and trust score index across employers.</p>
+        <span class="chip y">Private · Your account only</span>
+        <h3 id="seekerVerificationTitle" style="margin:4px 0">🛡️ EPFO / ESIC Employment Verification Status</h3>
+        <p style="margin:0;font-size:0.9rem;color:var(--mut)">Review your own consent-based match signals and Trust Score Index across employers. Employer candidate searches are not shown here.</p>
       </div>
-      <button class="btn" style="background:#2563eb;border-color:#2563eb;color:#fff" onclick="showPage('verification')">
-        Open Verification Directory ↗
-      </button>
+      <button class="btn sm o" type="button" onclick="renderOwnVerificationStatus()">Refresh my status</button>
     </div>
-  </div>
+    <div id="seekerVerificationStatus" role="status" aria-live="polite" style="margin-top:16px"></div>
+    <p style="margin:12px 0 0;font-size:0.8rem;color:var(--mut)">Sensitive identifiers such as UAN, Aadhaar, ESIC IP numbers, and salary details are not displayed.</p>
+  </section>
 
   <div class="card" style="margin-top:18px"><h3>Applied Jobs &amp; Status</h3><div id="papplied"></div></div>
 <div class="card" style="margin-top:18px"><h3>Recommended jobs</h3><div id="prec"></div></div>
@@ -1009,6 +1008,7 @@ function changeGoogleLanguage(langCode) {
 }
 
 let currentRole = "";
+let currentSeekerAccountKey = "";
 
 function updateNavHeaderState() {
   const banner = $("#userHeaderBanner");
@@ -1033,6 +1033,7 @@ function updateNavHeaderState() {
 function logoutUser() {
   loggedInUser = "";
   currentRole = "";
+  currentSeekerAccountKey = "";
   updateNavHeaderState();
   showPage('home');
   speakText("You have been logged out successfully.");
@@ -1181,6 +1182,10 @@ function switchVacTab(view) {
 
 function showPage(p){
   const isVerificationRequest = p === 'verification';
+  if (isVerificationRequest && currentRole === 'seeker') {
+    openOwnVerificationStatus();
+    return;
+  }
   if (isVerificationRequest) {
     if (currentRole !== 'company' && currentRole !== 'admin') {
       alert("🔒 Access Restricted: EPFO/ESIC Employment Verification is restricted to Verified Employers & Admin officers only to protect candidate privacy under the DPDP Act.\n\nPlease log in with a Company account or Admin ID.");
@@ -1218,6 +1223,16 @@ function showPage(p){
     initFlowAndCounters();
   }
 }
+
+function openOwnVerificationStatus() {
+  if (currentRole !== 'seeker') return;
+  const app = document.getElementById('app');
+  if (app && app.hidden) show('seeker', loggedInUser);
+  renderOwnVerificationStatus();
+  const panel = document.getElementById('seekerVerificationPanel');
+  if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function goToHomeSec(id){
   showPage('home');
   setTimeout(()=>{
@@ -2385,6 +2400,87 @@ const DB = {
   }
 };
 
+const savedSeekerVerifications = DB.get('seeker_verifications', {});
+const SEEKER_VERIFICATIONS = savedSeekerVerifications && typeof savedSeekerVerifications === 'object' && !Array.isArray(savedSeekerVerifications)
+  ? savedSeekerVerifications
+  : {};
+
+function getVerificationOwnerKey(accountIdentifier) {
+  let hashA = 2166136261;
+  let hashB = 2246822519;
+  const value = String(accountIdentifier || '').trim().toLowerCase();
+  for (let i = 0; i < value.length; i++) {
+    hashA = Math.imul(hashA ^ value.charCodeAt(i), 16777619);
+    hashB = Math.imul(hashB ^ value.charCodeAt(i), 3266489917);
+  }
+  return 'account-' + (hashA >>> 0).toString(16) + (hashB >>> 0).toString(16);
+}
+
+function getOwnSeekerVerification() {
+  if (!currentSeekerAccountKey) return null;
+  if (!SEEKER_VERIFICATIONS[currentSeekerAccountKey]) {
+    SEEKER_VERIFICATIONS[currentSeekerAccountKey] = {
+      name: prof.name || loggedInUser || 'Job Seeker',
+      verification: {
+        epfoStatus: 'Pending',
+        esicStatus: 'Pending',
+        continuity: 'Not available',
+        overallStatus: 'Pending'
+      },
+      trustScore: 0,
+      employmentHistory: []
+    };
+    DB.set('seeker_verifications', SEEKER_VERIFICATIONS);
+  }
+  return SEEKER_VERIFICATIONS[currentSeekerAccountKey];
+}
+
+function renderOwnVerificationStatus() {
+  const container = document.getElementById('seekerVerificationStatus');
+  if (!container || currentRole !== 'seeker') return;
+  const record = getOwnSeekerVerification();
+  if (!record) {
+    container.innerHTML = '<p>Sign in as a job seeker to view your verification status.</p>';
+    return;
+  }
+
+  const verification = record.verification || {};
+  const trustScoreValue = Number(record.trustScore);
+  const trustScore = Number.isFinite(trustScoreValue) ? Math.min(100, Math.max(0, trustScoreValue)) : 0;
+  const signalLabel = status => status === 'Verified' ? 'Verified' : status === 'Not Found' ? 'No match' : 'Pending';
+  const signalClass = status => status === 'Verified' ? 'y' : status === 'Not Found' ? 'n' : '';
+  const history = Array.isArray(record.employmentHistory) ? record.employmentHistory.filter(employer => employer && typeof employer === 'object') : [];
+  const historyHtml = history.map(employer => `
+    <div class="card" style="padding:12px;margin-top:10px">
+      <b>${esc(employer.company || 'Employer')}</b>
+      <div style="color:var(--mut);font-size:0.88rem">${esc(employer.role || 'Role not provided')}${employer.duration ? ` · ${esc(employer.duration)}` : ''}</div>
+      <div style="margin-top:6px">
+        <span class="chip ${employer.epfoMatched === true ? 'y' : employer.epfoMatched === false ? 'n' : ''}">EPFO: ${employer.epfoMatched === true ? 'Matched' : employer.epfoMatched === false ? 'No match' : 'Pending'}</span>
+        <span class="chip ${employer.esicMatched === true ? 'y' : employer.esicMatched === false ? 'n' : ''}">ESIC: ${employer.esicMatched === true ? 'Matched' : employer.esicMatched === false ? 'No match' : 'Pending'}</span>
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = `
+    <div class="grid g3" style="gap:10px">
+      <div class="card" style="padding:14px">
+        <small>EPFO match signal</small>
+        <div><span class="chip ${signalClass(verification.epfoStatus)}">${signalLabel(verification.epfoStatus)}</span></div>
+      </div>
+      <div class="card" style="padding:14px">
+        <small>ESIC match signal</small>
+        <div><span class="chip ${signalClass(verification.esicStatus)}">${signalLabel(verification.esicStatus)}</span></div>
+      </div>
+      <div class="card" style="padding:14px">
+        <small>Trust Score Index</small>
+        <div style="font-size:1.5rem;font-weight:800;color:var(--pri)">${trustScore} <small style="font-size:0.9rem">/ 100</small></div>
+      </div>
+    </div>
+    <h4 style="margin:16px 0 4px">My employment signals across employers</h4>
+    ${historyHtml || '<p style="color:var(--mut);margin:6px 0">No employer records are linked to this account yet. Consented verification results will appear here when available.</p>'}
+  `;
+}
+
 const DEFAULT_CO = [
   ["Shree Power Works","Indore","Electrical",6,90,"Gemini Verified 95%"],
   ["QuickKart Logistics","Indore","Logistics",14,75,"Gemini Verified 88%"],
@@ -2474,6 +2570,10 @@ async function login(){
       return;
     }
     if ((phoneVal === "admin@kaamsetu.gov.in" || phoneVal === "admin") && otpVal === "admin123") {
+      currentRole = "admin";
+      currentSeekerAccountKey = "";
+      loggedInUser = "";
+      updateNavHeaderState();
       closeM();
       show('admin');
     } else {
@@ -2494,6 +2594,7 @@ async function login(){
 
   // Fetch or sync user data with FastAPI Backend
   const backendUserData = await apiLoginOrFetchUser(phoneVal, displayName, currentModalRole);
+  currentSeekerAccountKey = currentModalRole === 'seeker' ? getVerificationOwnerKey(phoneVal) : '';
 
   if (isSignUpMode) {
     if (currentModalRole === 'company') {
@@ -2508,25 +2609,6 @@ async function login(){
       if (!existingSk) {
         SK.unshift([displayName, "General Work", "Indore", 0, "10th pass", "Active"]);
         saveDB();
-      }
-      // Sync candidate entry with EPFO/ESIC Verification directory
-      const existingVerif = VERIF_CANDIDATES.find(v => v.name.toLowerCase() === displayName.toLowerCase());
-      if (!existingVerif) {
-        VERIF_CANDIDATES.unshift({
-          id: "cand-" + Date.now(),
-          name: displayName,
-          role: "Electrician / General",
-          experienceYears: 1,
-          location: "Indore, MP",
-          readinessScore: 88,
-          immediatelyAvailable: true,
-          verification: { epfoStatus: "Verified", esicStatus: "Verified", continuity: "Consistent", overallStatus: "Verified Employment Signal" },
-          trustScore: 85,
-          trustBreakdown: { employmentVerification: 35, experienceConsistency: 18, skillEvidence: 17, profileCompleteness: 10, recentActivity: 5 },
-          employmentHistory: [
-            { company: "Registered Employer", role: "General Worker", duration: "2023 - Present", epfoMatched: true, esicMatched: true }
-          ]
-        });
       }
       prof = {name: displayName, loc: "Indore, MP", role: "Electrician", qual: "10th pass", exp: 0, skills: [], resume: "", fileName: ""};
       applied = new Set();
@@ -2573,6 +2655,7 @@ function sync(){
 function rmS(i){prof.skills.splice(i,1);rs()}
 function ap(t){ applyVacancy(t); }
 function rs(){
+  renderOwnVerificationStatus();
   $("#ptags").innerHTML=prof.skills.map((s,i)=>`<span class="chip y">${esc(s)} <a href="#" onclick="rmS(${i});return false" style="text-decoration:none;color:inherit">✕</a></span>`).join("")||"<small>No skills added yet.</small>";
   const sc=prof.skills.map(s=>s.toLowerCase());
   const rec=J.map(j=>{const f=fit(j,prof.exp),ov=(R[j[0]]||[]).filter(k=>sc.some(s=>s.includes(k)||k.includes(s))).length;return{j,d:f.d,s:Math.min(99,f.s+(j[0]==prof.role?10:0)+Math.min(10,ov*3))}}).sort((a,b)=>b.s-a.s).slice(0,5);
