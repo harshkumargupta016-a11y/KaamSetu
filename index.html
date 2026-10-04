@@ -117,6 +117,7 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <body>
 <header><div class="nav" role="navigation" aria-label="Main">
 <a class="logo" onclick="showPage('home')">Kaam<span>Setu</span> ✦</a>
+<div id="netStatusBadge" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:0.78rem;font-weight:700;background:#d1fae5;color:#065f46;flex-shrink:0" title="Network Synchronization Status">🟢 Online (Synced)</div>
 <div id="userHeaderBanner" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:4px 12px;border-radius:99px;font-size:0.85rem;font-weight:700;align-items:center;gap:6px">
   <span id="userHeaderIcon">🏢</span> <span id="userHeaderName">Hi, Company Name</span>
   <button onclick="logoutUser()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-weight:bold;margin-left:6px" title="Logout">✕</button>
@@ -1322,6 +1323,20 @@ function submitJobApplication(e) {
 
   applied.add(currentApplyingJob);
 
+  const appRecord = {
+    job_title: currentApplyingJob,
+    applicant_name: name,
+    phone_or_email: phone,
+    skills: skills,
+    experience_years: exp,
+    qualification: edu,
+    interview_slot: slot,
+    feedback: feedback,
+    submitted_at: new Date().toISOString()
+  };
+
+  queueOfflineAction("application_add", { application: appRecord });
+
   const confirmMessage = `You are applied for ${currentApplyingJob} and you'll be notified soon by the company. Scheduled Slot: ${slot}.`;
 
   $("#applySuccessText").innerHTML = `<b>You are applied and you'll be notified soon by the company.</b><br><small style="margin-top:4px;display:block"><b>Interview Slot:</b> ${slot}<br><b>Candidate Note:</b> ${feedback || "None"}</small>`;
@@ -1764,8 +1779,10 @@ Reasoning: [1-2 sentences]`;
     aiRes = `Risk Level: High Risk Fraud\nConfidence Score: 94% Fraud Likelihood\nReasoning: Detailed analysis indicates suspicious job registration fee demand violating Ministry guidelines.`;
   }
   
-  CMP.unshift([name, desc.slice(0,60), "Open (High Risk)"]);
+  const newCmp = [name, desc.slice(0,60), "Open (High Risk)"];
+  CMP.unshift(newCmp);
   saveDB();
+  queueOfflineAction("complaint_add", { complaint: newCmp });
   ra();
   $("#c_result").innerHTML = `
     <div class="card" style="border:2px solid var(--acc);background:#fff7ed">
@@ -1917,6 +1934,105 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 
 // FastAPI Backend Integration Base URL
 const API_URL = "http://localhost:8000/api";
+
+// Offline Synchronization Engine
+function updateNetStatusUI(isOnline, pendingCount = 0) {
+  const badge = $("#netStatusBadge");
+  if (!badge) return;
+  if (isOnline) {
+    if (pendingCount > 0) {
+      badge.style.background = "#fef3c7";
+      badge.style.color = "#92400e";
+      badge.innerHTML = `⏳ Syncing (${pendingCount} queued)`;
+    } else {
+      badge.style.background = "#d1fae5";
+      badge.style.color = "#065f46";
+      badge.innerHTML = `🟢 Online (Synced)`;
+    }
+  } else {
+    badge.style.background = "#fee2e2";
+    badge.style.color = "#991b1b";
+    badge.innerHTML = `🟡 Offline (${pendingCount} cached)`;
+  }
+}
+
+function getOfflineQueue() {
+  try {
+    const q = localStorage.getItem('kaamsetu_offline_queue');
+    return q ? JSON.parse(q) : [];
+  } catch(e) { return []; }
+}
+
+function saveOfflineQueue(queue) {
+  try {
+    localStorage.setItem('kaamsetu_offline_queue', JSON.stringify(queue));
+  } catch(e) {}
+}
+
+function queueOfflineAction(type, payload) {
+  const queue = getOfflineQueue();
+  queue.push({ id: Date.now() + "_" + Math.random().toString(36).substr(2,4), type, payload, timestamp: new Date().toISOString() });
+  saveOfflineQueue(queue);
+  updateNetStatusUI(navigator.onLine, queue.length);
+  syncOfflineQueue();
+}
+
+async function syncOfflineQueue() {
+  const queue = getOfflineQueue();
+  updateNetStatusUI(navigator.onLine, queue.length);
+
+  if (!navigator.onLine) return;
+
+  if (queue.length > 0) {
+    try {
+      const res = await fetch(`${API_URL}/offline-sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actions: queue })
+      });
+      if (res.ok) {
+        saveOfflineQueue([]);
+      }
+    } catch(e) {
+      console.warn("Backend sync pending, keeping offline queue cached:", e);
+      return;
+    }
+  }
+
+  // Fetch updated global data from backend
+  try {
+    const res = await fetch(`${API_URL}/data`);
+    if (res.ok) {
+      const gData = await res.json();
+      if (gData.companies && gData.companies.length) {
+        CO = gData.companies;
+        DB.set('companies', CO);
+      }
+      if (gData.jobseekers && gData.jobseekers.length) {
+        SK = gData.jobseekers;
+        DB.set('jobseekers', SK);
+      }
+      if (gData.complaints && gData.complaints.length) {
+        CMP = gData.complaints;
+        DB.set('complaints', CMP);
+      }
+      if (gData.jobs && gData.jobs.length) {
+        J.length = 0;
+        gData.jobs.forEach(j => J.push(j));
+      }
+      updateNetStatusUI(true, 0);
+      if (typeof ra === 'function') ra();
+      if (typeof render === 'function') render();
+      if (typeof renderVacancies === 'function') renderVacancies();
+    }
+  } catch(e) {
+    updateNetStatusUI(false, getOfflineQueue().length);
+  }
+}
+
+window.addEventListener('online', syncOfflineQueue);
+window.addEventListener('offline', () => updateNetStatusUI(false, getOfflineQueue().length));
+setTimeout(syncOfflineQueue, 500);
 
 async function apiLoginOrFetchUser(phoneOrEmail, name, role) {
   try {
@@ -2450,6 +2566,7 @@ function rc(){
 
     J.push(newJob);
     mine.unshift(newJob);
+    queueOfflineAction("job_add", { job: newJob });
 
     $("#cj").value = "";
     $("#cdesc").value = "";
@@ -2470,6 +2587,7 @@ function adminSetStatus(target, idx, status) {
     J.forEach(j => { if (j[1] === compName) j[8] = status; });
     mine.forEach(m => { if (m[1] === compName) m[8] = status; });
     saveDB();
+    queueOfflineAction("company_status", { index: idx, status: status });
     ra();
     if (typeof render === 'function') render();
     speakText(`Company ${compName} status set to ${status}.`);
@@ -2511,6 +2629,7 @@ function adminResolveComplaint(idx) {
   if (CMP[idx]) {
     CMP[idx][2] = "Resolved";
     saveDB();
+    queueOfflineAction("complaint_status", { index: idx, status: "Resolved" });
     ra();
     speakText(`Complaint against ${CMP[idx][0]} marked as Resolved.`);
   }
