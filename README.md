@@ -77,14 +77,10 @@ python main.py
 ```bash
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
-The API server will run at `http://localhost:8000`.
+The application and API will run together at `http://localhost:8000`.
 
-### 3. Open the Frontend Application
-Simply open `index.html` in any modern web browser (Chrome, Edge, Firefox, Safari), or serve it via Python's built-in HTTP server:
-```bash
-python -m http.server 8080
-```
-Then visit `http://localhost:8080`.
+### 3. Open the Application
+Visit `http://localhost:8000` in any modern web browser. The frontend uses the same origin for API requests.
 
 ---
 
@@ -92,7 +88,7 @@ Then visit `http://localhost:8080`.
 
 | Endpoint | Method | Description |
 | :--- | :--- | :--- |
-| `GET /` | `GET` | Health check & service info |
+| `/` | `GET` | KaamSetu web application |
 | `GET /api/data` | `GET` | Get full global state (companies, jobseekers, complaints, jobs, applications) |
 | `POST /api/login` | `POST` | User authentication & registration |
 | `POST /api/sync` | `POST` | User profile & dashboard data synchronization |
