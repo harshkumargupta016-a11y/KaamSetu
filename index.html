@@ -117,8 +117,12 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <body>
 <header><div class="nav" role="navigation" aria-label="Main">
 <a class="logo" onclick="showPage('home')">Kaam<span>Setu</span> ✦</a>
-<button class="n" onclick="openM('Company Login','Company email')">🏢 <span data-t="n1">Company Login</span></button>
-<button class="n" onclick="openM('Job Seeker Login','Mobile number')">👷 <span data-t="n2">Job Seeker Login</span></button>
+<div id="userHeaderBanner" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:4px 12px;border-radius:99px;font-size:0.85rem;font-weight:700;align-items:center;gap:6px">
+  <span id="userHeaderIcon">🏢</span> <span id="userHeaderName">Hi, Company Name</span>
+  <button onclick="logoutUser()" style="background:none;border:none;color:#dc2626;cursor:pointer;font-weight:bold;margin-left:6px" title="Logout">✕</button>
+</div>
+<button class="n" id="navCompLogin" onclick="openM('Company Login','Company email')">🏢 <span data-t="n1">Company Login</span></button>
+<button class="n" id="navSeekLogin" onclick="openM('Job Seeker Login','Mobile number')">👷 <span data-t="n2">Job Seeker Login</span></button>
 <button class="n" onclick="showPage('vacancies')">🔥 <span>Vacancies</span></button>
 <button class="n" onclick="showPage('verification')">🛡️ <span>EPFO/ESIC Verification</span> <span style="background:#10b981;color:#fff;font-size:0.65rem;padding:2px 6px;border-radius:99px;margin-left:4px;font-weight:700">Demo</span></button>
 <button class="n" onclick="showPage('schemes')">🏛️ <span>Schemes</span></button>
@@ -245,6 +249,22 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <button class="btn sm o" onclick="toggleSpeak(this, 'Report a scam or fake company page. Upload file or capture camera evidence for Gemini AI analysis.')">🔊 Listen Page</button>
 </div>
 <section style="padding:10px 0"><div class="sec-h"><h2>🚨 Report a Scam or Fraud</h2><p>Choose entity type, provide location &amp; details, attach files or capture camera evidence for <b>Gemini AI Confidence Analysis</b>.</p></div>
+
+<!-- Hands-free Voice Complaint & Auto Location Detection Widget -->
+<div class="card" style="margin-bottom:16px;background:linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);border:2px solid #3b82f6">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <div>
+      <span class="chip" style="background:#2563eb;color:#fff;font-weight:bold">🎙️ Voice Complaint &amp; Auto-Location</span>
+      <h3 style="margin:4px 0;color:#1e40af">Speak to File Complaint &amp; Detect Location</h3>
+      <p style="margin:0;font-size:0.85rem;color:#1e3a8a">Click below to auto-detect your location and dictate your complaint hands-free.</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn sm" style="background:#16a34a;border-color:#16a34a;color:#fff" onclick="autoDetectComplaintLoc()">📍 Auto-Detect Location</button>
+      <button class="btn sm a" id="btnVoiceComplaint" onclick="startVoiceComplaintDictation()">🎙️ Speak Complaint</button>
+    </div>
+  </div>
+</div>
+
 <div class="card">
 <label for="c_target"><b>Reporting against</b></label>
 <select id="c_target"><option value="Company / Employer">🏢 Company / Fake Employer</option><option value="Job Seeker / Fake Candidate">👷 Job Seeker / Fake Candidate</option></select>
@@ -582,7 +602,21 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div id="seeker-alerts"></div>
 </div>
 
-<div class="card" style="margin-top:18px"><h3>Applied Jobs &amp; Status</h3><div id="papplied"></div></div>
+  <!-- Verification Access Card in Job Seeker Dashboard -->
+  <div class="card" style="margin-top:18px;background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);color:#fff">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <div>
+        <span style="background:rgba(59,130,246,0.3);color:#93c5fd;padding:2px 8px;border-radius:6px;font-size:0.75rem;font-weight:bold">Verified Talent Network</span>
+        <h3 style="margin:4px 0;color:#fff">🛡️ EPFO / ESIC Employment Verification Status</h3>
+        <p style="margin:0;font-size:0.85rem;opacity:0.85">Check candidate boolean match signals and trust score index across employers.</p>
+      </div>
+      <button class="btn" style="background:#2563eb;border-color:#2563eb;color:#fff" onclick="showPage('verification')">
+        Open Verification Directory ↗
+      </button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px"><h3>Applied Jobs &amp; Status</h3><div id="papplied"></div></div>
 <div class="card" style="margin-top:18px"><h3>Recommended jobs</h3><div id="prec"></div></div>
 </div></div></div>
 <div id="v-company" hidden>
@@ -900,9 +934,77 @@ const T={en:{n1:"Company Login",n2:"Job Seeker Login",n3:"Jobs",n4:"Complain",n5
 hi:{n1:"कंपनी लॉगिन",n2:"जॉब सीकर लॉगिन",n3:"नौकरियां",n4:"शिकायत",n5:"सहायता / प्रश्न",n6:"एडमिन लॉगिन",n7:"AI स्कैनर",h1:"सत्यापित काम खोजें। भरोसेमंद लोग रखें।",hp:"AI आपको पास की नौकरियों से Fit Score के साथ मिलाता है, कंपनियों की जांच करता है और कम इंटरनेट पर भी चलता है।",b1:"🔎 काम खोजें",b2:"कर्मचारी रखें",b3:"🤖 कौशल-अंतर स्कैनर"}};
 let lg="en";$("#lang").onclick=()=>{lg=lg=="en"?"hi":"en";document.documentElement.lang=lg;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=T[lg][e.dataset.t]);$("#lang").textContent=lg=="en"?"हिन्दी":"English"};
 
-let currentModalRole = "company";
-let isSignUpMode = false;
-let loggedInUser = "";
+let currentRole = "";
+
+function updateNavHeaderState() {
+  const banner = $("#userHeaderBanner");
+  const nameEl = $("#userHeaderName");
+  const iconEl = $("#userHeaderIcon");
+  const compBtn = $("#navCompLogin");
+  const seekBtn = $("#navSeekLogin");
+
+  if (loggedInUser && currentRole) {
+    if (banner) banner.style.display = "flex";
+    if (nameEl) nameEl.textContent = "Hi, " + loggedInUser;
+    if (iconEl) iconEl.textContent = (currentRole === 'company') ? "🏢" : "👷";
+    if (compBtn) compBtn.hidden = true;
+    if (seekBtn) seekBtn.hidden = true;
+  } else {
+    if (banner) banner.style.display = "none";
+    if (compBtn) compBtn.hidden = false;
+    if (seekBtn) seekBtn.hidden = false;
+  }
+}
+
+function logoutUser() {
+  loggedInUser = "";
+  currentRole = "";
+  updateNavHeaderState();
+  showPage('home');
+  speakText("You have been logged out successfully.");
+}
+
+// Auto Detect Location for Complaints
+function autoDetectComplaintLoc() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const lat = pos.coords.latitude.toFixed(4);
+      const lon = pos.coords.longitude.toFixed(4);
+      const locStr = `Lat ${lat}, Lon ${lon} (Auto Detected)`;
+      if ($("#c_loc")) $("#c_loc").value = locStr;
+      speakText("Location auto detected successfully.");
+    }, () => {
+      if ($("#c_loc")) $("#c_loc").value = "Indore, MP (Default Detected)";
+      speakText("Using default location Indore.");
+    });
+  }
+}
+
+// Voice Dictation for Complaints
+function startVoiceComplaintDictation() {
+  const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Speech) {
+    alert("Voice dictation is not supported on this browser.");
+    return;
+  }
+  const rec = new Speech();
+  rec.lang = lg === "hi" ? "hi-IN" : "en-US";
+  const btn = $("#btnVoiceComplaint");
+  if (btn) btn.textContent = "🎙️ Listening...";
+  speakText("Listening to your complaint description...");
+
+  rec.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    if ($("#ct")) $("#ct").value = text;
+    if (btn) btn.textContent = "🎙️ Speak Complaint";
+    speakText("Complaint recorded. Auto-detecting location now.");
+    autoDetectComplaintLoc();
+  };
+  rec.onerror = () => {
+    if (btn) btn.textContent = "🎙️ Speak Complaint";
+  };
+  rec.start();
+}
 
 function updateModalUI() {
   if (currentModalRole === "admin") {
@@ -1662,7 +1764,9 @@ Reasoning: [1-2 sentences]`;
     aiRes = `Risk Level: High Risk Fraud\nConfidence Score: 94% Fraud Likelihood\nReasoning: Detailed analysis indicates suspicious job registration fee demand violating Ministry guidelines.`;
   }
   
-  CMP.unshift([name, desc.slice(0,60), "Open (Gemini Verified 94%)"]);
+  CMP.unshift([name, desc.slice(0,60), "Open (High Risk)"]);
+  saveDB();
+  ra();
   $("#c_result").innerHTML = `
     <div class="card" style="border:2px solid var(--acc);background:#fff7ed">
       <h3 style="color:#c2410c">🚨 Gemini AI Fraud Analysis Result</h3>
@@ -1930,6 +2034,8 @@ function login(){
 
   let displayName = nameVal.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   loggedInUser = displayName;
+  currentRole = currentModalRole;
+  updateNavHeaderState();
 
   if (isSignUpMode) {
     if (currentModalRole === 'company') {
@@ -1944,6 +2050,25 @@ function login(){
       if (!existingSk) {
         SK.unshift([displayName, "General Work", "Indore", 0, "10th pass", "Active"]);
         saveDB();
+      }
+      // Sync candidate entry with EPFO/ESIC Verification directory
+      const existingVerif = VERIF_CANDIDATES.find(v => v.name.toLowerCase() === displayName.toLowerCase());
+      if (!existingVerif) {
+        VERIF_CANDIDATES.unshift({
+          id: "cand-" + Date.now(),
+          name: displayName,
+          role: "Electrician / General",
+          experienceYears: 1,
+          location: "Indore, MP",
+          readinessScore: 88,
+          immediatelyAvailable: true,
+          verification: { epfoStatus: "Verified", esicStatus: "Verified", continuity: "Consistent", overallStatus: "Verified Employment Signal" },
+          trustScore: 85,
+          trustBreakdown: { employmentVerification: 35, experienceConsistency: 18, skillEvidence: 17, profileCompleteness: 10, recentActivity: 5 },
+          employmentHistory: [
+            { company: "Registered Employer", role: "General Worker", duration: "2023 - Present", epfoMatched: true, esicMatched: true }
+          ]
+        });
       }
       prof = {name: displayName, loc: "Indore, MP", role: "Electrician", qual: "10th pass", exp: 0, skills: [], resume: "", fileName: ""};
       applied = new Set();
@@ -2361,6 +2486,13 @@ function exportAdminCSV() {
 }
 
 function ra(){
+  // Priority sorting: Open High Risk complaints first
+  CMP.sort((a, b) => {
+    const aOpen = a[2].includes("Open") ? 1 : 0;
+    const bOpen = b[2].includes("Open") ? 1 : 0;
+    return bOpen - aOpen;
+  });
+
   const A={
     co:[["Company","City","Industry","Jobs","Trust","Status","Actions"],CO],
     se:[["Name","Skills","City","Exp (yrs)","Qualification","Status","Actions"],SK],
