@@ -2722,6 +2722,7 @@ function adminSetStatus(target, idx, status) {
 }
 
 let adminExpandedCo = new Set();
+let adminExpandedSe = new Set();
 
 function toggleAdminRowActions(idx) {
   if (adminExpandedCo.has(idx)) {
@@ -2730,6 +2731,20 @@ function toggleAdminRowActions(idx) {
     adminExpandedCo.add(idx);
   }
   ra();
+}
+
+function toggleAdminSeRowActions(idx) {
+  if (adminExpandedSe.has(idx)) {
+    adminExpandedSe.delete(idx);
+  } else {
+    adminExpandedSe.add(idx);
+  }
+  ra();
+}
+
+function adminSetJobseekerStatus(idx, status) {
+  adminExpandedSe.delete(idx);
+  adminSetStatus("se", idx, status);
 }
 
 function adminVerifyCompany(idx) {
@@ -2841,13 +2856,32 @@ function ra(){
           ? `<span style="color:#16a34a;font-weight:bold">✓ Resolved</span>`
           : `<button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminResolveComplaint(${idx})">✅ Resolve</button>`;
       } else if (tab === "se") {
-        actionBtn = `
-          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
-            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminSetStatus('se', ${idx}, 'Active')">Active</button>
-            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#f59e0b;border-color:#f59e0b" onclick="adminSetStatus('se', ${idx}, 'Inactive')">Inactive</button>
-            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#dc2626;border-color:#dc2626" onclick="adminSetStatus('se', ${idx}, 'Deleted')">Delete</button>
-          </div>
-        `;
+        const st = r[5] || "Active";
+        const isExpanded = adminExpandedSe.has(idx);
+
+        if (!isExpanded) {
+          let selectedLabel = "Active";
+          let bg = "#16a34a";
+          if (st === "Inactive") { selectedLabel = "Inactive"; bg = "#f59e0b"; }
+          else if (st === "Hired") { selectedLabel = "Hired"; bg = "#2563eb"; }
+          else if (st === "Deleted") { selectedLabel = "Deleted"; bg = "#dc2626"; }
+
+          actionBtn = `
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="chip" style="background:${bg};color:#fff;font-weight:700;padding:4px 10px">${selectedLabel}</span>
+              <button class="btn sm o" style="padding:2px 8px;font-size:0.85rem;min-height:30px;font-weight:bold" onclick="toggleAdminSeRowActions(${idx})" title="Change status">❯</button>
+            </div>
+          `;
+        } else {
+          actionBtn = `
+            <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminSetJobseekerStatus(${idx}, 'Active')">Active</button>
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#f59e0b;border-color:#f59e0b" onclick="adminSetJobseekerStatus(${idx}, 'Inactive')">Inactive</button>
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#2563eb;border-color:#2563eb" onclick="adminSetJobseekerStatus(${idx}, 'Hired')">Hired</button>
+              <button class="btn sm o" style="padding:2px 8px;font-size:0.85rem;min-height:30px" onclick="toggleAdminSeRowActions(${idx})" title="Close">❮</button>
+            </div>
+          `;
+        }
       } else {
         actionBtn = `<span style="color:var(--mut);font-size:0.8rem">Active</span>`;
       }
