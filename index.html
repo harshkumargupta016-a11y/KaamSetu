@@ -309,6 +309,22 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 </div>
 </div>
 
+<!-- Detailed Scheme Modal / Page -->
+<div class="modal" id="schemeDetailModal" role="dialog" aria-modal="true">
+  <div class="box" style="max-width:680px;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px">
+      <h3 id="sdTitle" style="margin:0;color:var(--pri)">Scheme Details</h3>
+      <button onclick="$('#schemeDetailModal').classList.remove('on')" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--mut)">✕</button>
+    </div>
+    <div id="sdBody" style="margin-top:16px;line-height:1.6"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--line);padding-top:12px">
+      <button class="btn sm" id="sdListenBtn">🔊 Listen Details</button>
+      <a id="sdLinkBtn" target="_blank" rel="noopener" class="btn sm a" style="text-decoration:none">Visit Official Govt Portal ↗</a>
+      <button class="btn sm o" onclick="$('#schemeDetailModal').classList.remove('on')">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Dedicated Help & FAQs Page -->
 <div id="page-help" class="page-view" hidden>
 <div class="wrap" style="max-width:960px">
@@ -1079,58 +1095,82 @@ function submitJobApplication(e) {
 // Schemes Portal Data & Logic
 const SCHEMES_DATA = [
   {
+    id: "pm-sym",
     title: "Pradhan Mantri Shram Yogi Maandhan (PM-SYM)",
     cat: "pension",
     catLabel: "Pension",
     desc: "Voluntary & contributory pension scheme providing ₹3,000 monthly pension after reaching 60 years of age.",
     target: "Unorganised workers aged 18 to 40 with monthly income ≤ ₹15,000",
     benefit: "₹3,000 / month guaranteed pension",
-    link: "https://maandhan.in/"
+    link: "https://maandhan.in/",
+    eligibility: "Unorganised workers (e.g. street vendors, rickshaw pullers, construction workers, domestic workers) between 18-40 years with income ≤ ₹15,000/month.",
+    documents: "Aadhaar Card, Savings Bank Account / Jan Dhan Account with IFSC, Mobile Number.",
+    howToApply: "Visit nearest Common Services Centre (CSC) or self-enroll on the Maandhan portal. Initial contribution is debited auto-monthly."
   },
   {
+    id: "pm-jay",
     title: "Ayushman Bharat PM-JAY",
     cat: "health",
     catLabel: "Health",
     desc: "World's largest health insurance scheme providing health cover of ₹5 Lakh per family per year for secondary & tertiary care hospitalization.",
     target: "Low-income migrant worker families and unorganised workers",
     benefit: "Cashless health cover up to ₹5 Lakh/year",
-    link: "https://pmjay.gov.in/"
+    link: "https://pmjay.gov.in/",
+    eligibility: "Deprived rural families and identified occupational categories of urban workers' families as per SECC 2011 data / Ayushman Vaya Vandana.",
+    documents: "Aadhaar Card, Ration Card, eShram Card, Mobile Number.",
+    howToApply: "Check eligibility online at beneficiary.nha.gov.in or visit any empaneled hospital or Ayushman Mitra at CSC."
   },
   {
+    id: "arhc",
     title: "Affordable Rental Housing Complexes (ARHCs / PMAY)",
     cat: "housing",
     catLabel: "Housing",
     desc: "Dignified and affordable rental housing near workplace sites for urban migrants and industrial labor.",
     target: "Urban migrants, construction workers, and factory labor",
     benefit: "Affordable rental housing near work hubs",
-    link: "https://pmay-urban.gov.in/"
+    link: "https://pmay-urban.gov.in/",
+    eligibility: "Urban migrants/poor, industrial workers, street vendors, rickshaw pullers, and market association workers.",
+    documents: "Aadhaar Card, Identity Proof, Worker ID / eShram Card.",
+    howToApply: "Apply through local urban local bodies (ULBs), industrial concessionaires, or PMAY-Urban portal."
   },
   {
+    id: "eshram-cover",
     title: "eShram Accidental Death & Disability Cover",
     cat: "financial",
     catLabel: "Financial Support",
     desc: "Free accidental death and disability coverage for active eShram registered unorganised workers under PMSBY.",
     target: "Unorganised workers registered on eShram portal",
     benefit: "₹2 Lakh for death/permanent disability, ₹1 Lakh for partial disability",
-    link: "https://eshram.gov.in/"
+    link: "https://eshram.gov.in/",
+    eligibility: "Any unorganised worker aged 16-59 registered on the eShram portal with UAN.",
+    documents: "eShram Card (UAN Number), Aadhaar, Bank account linked to Aadhaar.",
+    howToApply: "Automatically covered upon registration on eshram.gov.in or CSC centers."
   },
   {
+    id: "ncs-portal",
     title: "National Career Service (NCS) Portal",
     cat: "employment",
     catLabel: "Employment",
     desc: "Nationwide job matching platform connecting migrant job seekers with verified employers across states.",
     target: "All job seekers, blue-collar workers & employers nationwide",
     benefit: "Free nationwide job search, skill counselling & job fairs",
-    link: "https://ncs.gov.in/"
+    link: "https://ncs.gov.in/",
+    eligibility: "All citizens of India looking for employment or career guidance.",
+    documents: "Aadhaar Number, Job Preference, Educational certificates/Skill details.",
+    howToApply: "Register free on ncs.gov.in or visit Model Career Centres (MCC)."
   },
   {
+    id: "pmkvy",
     title: "Pradhan Mantri Kaushal Vikas Yojana (PMKVY)",
     cat: "skill",
     catLabel: "Skill Development",
     desc: "Free industry-relevant skill training and Recognition of Prior Learning (RPL) certification.",
     target: "Unemployed youth and informal sector workers seeking skill upgrade",
     benefit: "Free certified training & monetary reward upon assessment",
-    link: "https://pmkvyofficial.org/"
+    link: "https://pmkvyofficial.org/",
+    eligibility: "Indian national unemployed youth or school/college dropouts with valid ID.",
+    documents: "Aadhaar Card, Bank Account Details, Passport size photograph.",
+    howToApply: "Enroll at nearest PMKVY Training Centre or via Skill India Digital Hub (skillindiadigital.gov.in)."
   }
 ];
 
@@ -1146,12 +1186,51 @@ function filterSchemes(cat, btnEl) {
   renderSchemes();
 }
 
+function showSchemeDetails(idx) {
+  const s = SCHEMES_DATA[idx];
+  if (!s) return;
+  $("#sdTitle").textContent = s.title;
+  $("#sdBody").innerHTML = `
+    <div style="background:#f0f9ff;padding:12px 16px;border-radius:10px;margin-bottom:14px;border:1px solid #bae6fd">
+      <span class="chip" style="background:#0284c7;color:#fff;font-weight:bold">${s.catLabel}</span>
+      <p style="margin:8px 0 0;font-size:1.02rem;color:var(--ink)"><b>Overview:</b> ${s.desc}</p>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <h4 style="margin:0 0 4px;color:var(--pri)">🎯 Target Audience & Eligibility</h4>
+      <p style="margin:0;color:var(--mut)">${s.eligibility}</p>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <h4 style="margin:0 0 4px;color:#15803d">🎁 Key Scheme Benefits</h4>
+      <p style="margin:0;color:var(--mut);font-weight:600">${s.benefit}</p>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <h4 style="margin:0 0 4px;color:var(--pri)">📄 Required Documents</h4>
+      <p style="margin:0;color:var(--mut)">${s.documents}</p>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <h4 style="margin:0 0 4px;color:#c2410c">🛠️ How to Apply Step-by-Step</h4>
+      <p style="margin:0;color:var(--mut)">${s.howToApply}</p>
+    </div>
+  `;
+
+  $("#sdLinkBtn").href = s.link;
+  $("#sdListenBtn").onclick = function() {
+    toggleSpeak(this, `${s.title}. ${s.desc}. Eligibility: ${s.eligibility}. Benefits: ${s.benefit}. Documents required: ${s.documents}. How to apply: ${s.howToApply}`);
+  };
+
+  $("#schemeDetailModal").classList.add("on");
+}
+
 function renderSchemes() {
   const container = $("#schemesGrid");
   if (!container) return;
   const filtered = currentSchemeCategory === 'all'
-    ? SCHEMES_DATA
-    : SCHEMES_DATA.filter(s => s.cat === currentSchemeCategory);
+    ? SCHEMES_DATA.map((s, originalIdx) => ({...s, originalIdx}))
+    : SCHEMES_DATA.map((s, originalIdx) => ({...s, originalIdx})).filter(s => s.cat === currentSchemeCategory);
 
   container.innerHTML = filtered.map(s => `
     <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line);border-radius:14px;padding:20px;background:#fff">
@@ -1163,7 +1242,8 @@ function renderSchemes() {
         <p style="font-size:.85rem;margin:4px 0;color:#15803d"><b>Key Benefit:</b> ${s.benefit}</p>
       </div>
       <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
-        <a href="${s.link}" target="_blank" rel="noopener" class="btn sm o" style="text-decoration:none">Visit Official Website ↗</a>
+        <button class="btn sm a" onclick="showSchemeDetails(${s.originalIdx})">📋 View Scheme Details</button>
+        <a href="${s.link}" target="_blank" rel="noopener" class="btn sm o" style="text-decoration:none">Official Site ↗</a>
         <button class="btn sm o" onclick="toggleSpeak(this, '${s.title}. ${s.desc} Target audience: ${s.target}. Key benefit: ${s.benefit}')">🔊 Listen</button>
       </div>
     </div>
