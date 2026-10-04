@@ -8,7 +8,7 @@ It connects workers with verified local job vacancies using a transparent **Gemi
 
 ## ✨ Key Features
 
-### 1. 🛡️ EPFO / ESIC Employment Verification Directory
+### 1. 🔎 Vacancies & EPFO / ESIC Employment Verification
 - Consent-driven employment history signals without storing sensitive private identifiers (UAN, Aadhaar, ESIC IP masked).
 - Evaluates employer subscription continuity, active contribution markers, and candidate trade readiness.
 - Composite **Trust Score Index (0-100)** calculated from verified government signals.

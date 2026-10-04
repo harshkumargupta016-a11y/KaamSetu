@@ -126,7 +126,6 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <button class="n" id="navCompLogin" onclick="openM('Company Login','Company email')">🏢 <span data-t="n1">Company Login</span></button>
 <button class="n" id="navSeekLogin" onclick="openM('Job Seeker Login','Mobile number')">👷 <span data-t="n2">Job Seeker Login</span></button>
 <button class="n" onclick="showPage('vacancies')">🔥 <span>Vacancies</span></button>
-<button class="n" onclick="showPage('verification')">🛡️ <span>EPFO/ESIC Verification</span> <span style="background:#0284c7;color:#fff;font-size:0.65rem;padding:2px 6px;border-radius:99px;margin-left:4px;font-weight:700">Official Signal</span></button>
 <button class="n" onclick="showPage('schemes')">🏛️ <span>Schemes</span></button>
 <button class="n" onclick="showPage('ai')">🤖 <span data-t="n7">AI Scanner</span></button>
 <button class="n" onclick="showPage('complain')">🚨 <span data-t="n4">Complain</span></button>
@@ -314,6 +313,52 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
   </div>
 </div>
 </section>
+<section id="verification-directory" style="padding:10px 0">
+<div class="card" id="verificationAccess" hidden style="margin-bottom:20px">
+  <h2>EPFO / ESIC employer verification directory</h2>
+  <p>Candidate employment signals are available to company and admin accounts. Sign in to access the directory.</p>
+  <button class="btn" onclick="openM('Company Login','Company email')">Company Login</button>
+  <button class="btn o" onclick="openM('Admin Login','Admin ID')">Admin Login</button>
+</div>
+<div id="verificationEmployerView" hidden>
+<div style="background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #1e293b 100%);color:#fff;border-radius:18px;padding:28px;margin-bottom:24px;box-shadow:0 10px 30px rgba(0,0,0,0.15);position:relative;overflow:hidden">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+    <span style="background:rgba(59,130,246,0.25);color:#93c5fd;border:1px solid rgba(147,197,253,0.3);padding:3px 12px;border-radius:99px;font-size:0.75rem;font-weight:700">⚡ EPFO / ESIC INTEGRATED</span>
+    <span style="background:rgba(16,185,129,0.25);color:#6ee7b7;border:1px solid rgba(110,231,183,0.3);padding:3px 12px;border-radius:99px;font-size:0.75rem;font-weight:700">GOVERNMENT REGISTERED SIGNALS</span>
+  </div>
+  <h2 style="font-size:2.2rem;margin:0 0 10px;color:#fff">🛡️ EPFO / ESIC Employment Verification &amp; Trust Marker</h2>
+  <p style="font-size:1.05rem;opacity:0.9;max-width:800px;margin:0 0 16px">Consent-driven employment history signals for blue-collar and trade talent discovery. Evaluates employer registration continuity and active contribution indicators without storing sensitive personal IDs.</p>
+  <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:12px 16px;font-size:0.88rem;display:flex;align-items:center;gap:10px;margin-bottom:20px">
+    <span style="font-size:1.3rem">🔒</span>
+    <div><b>Privacy First &amp; Compliance Safeguards:</b> Sensitive government identifiers (UAN, Aadhaar, ESIC IP numbers) and salary figures are strictly masked. Only candidate-authorized boolean match signals are surfaced.</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px" id="verifKpiGrid">
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center"><b style="font-size:1.8rem;display:block;color:#fff">1,284</b><span style="font-size:0.8rem;opacity:0.8">Total Candidates</span></div>
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center"><b style="font-size:1.8rem;display:block;color:#4ade80">842</b><span style="font-size:0.8rem;opacity:0.8">Employment Verified</span></div>
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center"><b style="font-size:1.8rem;display:block;color:#60a5fa">731</b><span style="font-size:0.8rem;opacity:0.8">EPFO Signals Matched</span></div>
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center"><b style="font-size:1.8rem;display:block;color:#fbbf24">318</b><span style="font-size:0.8rem;opacity:0.8">Highly Ready Talent</span></div>
+  </div>
+</div>
+<div style="background:#f0f9ff;border:2px solid #bae6fd;border-radius:16px;padding:20px;margin-bottom:24px">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+    <div><span class="chip" style="background:#2563eb;color:#fff;font-weight:bold;margin-bottom:6px">Employer Requirement Match Widget</span><h3 style="margin:4px 0 2px;color:var(--pri)">Active Job Role: Senior Industrial CNC Operator (Indore &amp; Pithampur)</h3><p style="margin:0;color:var(--mut);font-size:0.9rem">Real-time talent pool readiness matching verified employer criteria.</p></div>
+    <div style="display:flex;gap:12px;background:#fff;padding:12px 18px;border-radius:12px;border:1px solid var(--line)"><div style="text-align:center"><b>42</b><br><small style="color:var(--mut)">Matches</small></div><div style="border-left:1px solid var(--line);padding-left:12px;text-align:center"><b style="color:#2563eb">23</b><br><small style="color:var(--mut)">Verified</small></div><div style="border-left:1px solid var(--line);padding-left:12px;text-align:center"><b style="color:#16a34a">12</b><br><small style="color:var(--mut)">Immediate</small></div><div style="border-left:1px solid var(--line);padding-left:12px;text-align:center"><b style="color:#d97706">8</b><br><small style="color:var(--mut)">High Ready</small></div></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:24px">
+  <h3 style="margin-bottom:14px">🔎 Candidate Search &amp; Verification Filters</h3>
+  <div class="grid g2" style="gap:12px;margin-bottom:12px"><input id="verif_q" placeholder="Search candidate name or skill (e.g., Rahul, CNC, Electrician)..." oninput="renderVerifCandidates()"><input id="verif_loc" placeholder="Location filter (e.g., Indore, Pithampur, Bhopal)..." oninput="renderVerifCandidates()"></div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:0.88rem">
+    <label style="cursor:pointer;font-weight:600"><input type="checkbox" id="chk_epfo" onchange="renderVerifCandidates()"> EPFO Signal Available</label>
+    <label style="cursor:pointer;font-weight:600"><input type="checkbox" id="chk_esic" onchange="renderVerifCandidates()"> ESIC Signal Available</label>
+    <label style="cursor:pointer;font-weight:600"><input type="checkbox" id="chk_avail" onchange="renderVerifCandidates()"> ⚡ Immediately Available</label>
+    <select id="verif_exp" onchange="renderVerifCandidates()" style="width:auto;min-height:38px;font-size:0.85rem"><option value="all">All Experience</option><option value="1-3">1 - 3 Years</option><option value="3-5">3 - 5 Years</option><option value="5+">5+ Years</option></select>
+    <button class="btn sm o" onclick="resetVerifFilters()">Reset Filters</button>
+  </div>
+</div>
+<div class="grid g3" id="verifCandidatesGrid" style="gap:20px"></div>
+</div>
+</section>
 </div>
 </div>
 
@@ -376,91 +421,6 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <button class="btn a" style="margin-top:18px;width:100%" id="cs">🚨 Submit Complaint</button>
 <div id="c_result" style="margin-top:16px" hidden></div>
 </div></section>
-</div>
-</div>
-
-<!-- Dedicated EPFO / ESIC Verification Page -->
-<div id="page-verification" class="page-view" hidden>
-<div class="wrap" style="max-width:1180px">
-<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px">
-  <button class="btn o page-back" onclick="showPage('home')">← Back to Home</button>
-  <button class="btn sm o" onclick="toggleSpeak(this, 'EPFO and ESIC Employment Verification and Trust Marker module. Consent-based candidate employment history signals without storing private numbers.')">🔊 Listen Page</button>
-</div>
-
-<!-- Hero Banner -->
-<div style="background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #1e293b 100%);color:#fff;border-radius:18px;padding:28px;margin-bottom:24px;box-shadow:0 10px 30px rgba(0,0,0,0.15);position:relative;overflow:hidden">
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-    <span style="background:rgba(59,130,246,0.25);color:#93c5fd;border:1px solid rgba(147,197,253,0.3);padding:3px 12px;border-radius:99px;font-size:0.75rem;font-weight:700">⚡ EPFO / ESIC INTEGRATED</span>
-    <span style="background:rgba(16,185,129,0.25);color:#6ee7b7;border:1px solid rgba(110,231,183,0.3);padding:3px 12px;border-radius:99px;font-size:0.75rem;font-weight:700">GOVERNMENT REGISTERED SIGNALS</span>
-  </div>
-  <h2 style="font-size:2.2rem;margin:0 0 10px;color:#fff">🛡️ EPFO / ESIC Employment Verification &amp; Trust Marker</h2>
-  <p style="font-size:1.05rem;opacity:0.9;max-width:800px;margin:0 0 16px">Consent-driven employment history signals for blue-collar and trade talent discovery. Evaluates employer registration continuity and active contribution indicators without storing sensitive personal IDs.</p>
-
-  <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:12px 16px;font-size:0.88rem;display:flex;align-items:center;gap:10px;margin-bottom:20px">
-    <span style="font-size:1.3rem">🔒</span>
-    <div><b>Privacy First &amp; Compliance Safeguards:</b> Sensitive government identifiers (UAN, Aadhaar, ESIC IP numbers) and salary figures are strictly masked. Only candidate-authorized boolean match signals are surfaced.</div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px" id="verifKpiGrid">
-    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center">
-      <b style="font-size:1.8rem;display:block;color:#fff">1,284</b>
-      <span style="font-size:0.8rem;opacity:0.8">Total Candidates</span>
-    </div>
-    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center">
-      <b style="font-size:1.8rem;display:block;color:#4ade80">842</b>
-      <span style="font-size:0.8rem;opacity:0.8">Employment Verified</span>
-    </div>
-    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center">
-      <b style="font-size:1.8rem;display:block;color:#60a5fa">731</b>
-      <span style="font-size:0.8rem;opacity:0.8">EPFO Signals Matched</span>
-    </div>
-    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;text-align:center">
-      <b style="font-size:1.8rem;display:block;color:#fbbf24">318</b>
-      <span style="font-size:0.8rem;opacity:0.8">Highly Ready Talent</span>
-    </div>
-  </div>
-</div>
-
-<!-- Employer Job Requirement Match Summary Widget -->
-<div style="background:#f0f9ff;border:2px solid #bae6fd;border-radius:16px;padding:20px;margin-bottom:24px">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-    <div>
-      <span class="chip" style="background:#2563eb;color:#fff;font-weight:bold;margin-bottom:6px">Employer Requirement Match Widget</span>
-      <h3 style="margin:4px 0 2px;color:var(--pri)">Active Job Role: Senior Industrial CNC Operator (Indore &amp; Pithampur)</h3>
-      <p style="margin:0;color:var(--mut);font-size:0.9rem">Real-time talent pool readiness matching verified employer criteria.</p>
-    </div>
-    <div style="display:flex;gap:12px;background:#fff;padding:12px 18px;border-radius:12px;border:1px solid var(--line)">
-      <div style="text-align:center"><b>42</b><br><small style="color:var(--mut)">Matches</small></div>
-      <div style="border-left:1px solid var(--line);padding-left:12px;text-align:center"><b style="color:#2563eb">23</b><br><small style="color:var(--mut)">Verified</small></div>
-      <div style="border-left:1px solid var(--line);padding-left:12px;text-align:center"><b style="color:#16a34a">12</b><br><small style="color:var(--mut)">Immediate</small></div>
-      <div style="border-left:1px solid var(--line);padding-left:12px;text-align:center"><b style="color:#d97706">8</b><br><small style="color:var(--mut)">High Ready</small></div>
-    </div>
-  </div>
-</div>
-
-<!-- Candidate Search & Verification Filters -->
-<div class="card" style="margin-bottom:24px">
-  <h3 style="margin-bottom:14px">🔎 Candidate Search &amp; Verification Filters</h3>
-  <div class="grid g2" style="gap:12px;margin-bottom:12px">
-    <input id="verif_q" placeholder="Search candidate name or skill (e.g., Rahul, CNC, Electrician)..." oninput="renderVerifCandidates()">
-    <input id="verif_loc" placeholder="Location filter (e.g., Indore, Pithampur, Bhopal)..." oninput="renderVerifCandidates()">
-  </div>
-  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:0.88rem">
-    <label style="cursor:pointer;font-weight:600"><input type="checkbox" id="chk_epfo" onchange="renderVerifCandidates()"> EPFO Signal Available</label>
-    <label style="cursor:pointer;font-weight:600"><input type="checkbox" id="chk_esic" onchange="renderVerifCandidates()"> ESIC Signal Available</label>
-    <label style="cursor:pointer;font-weight:600"><input type="checkbox" id="chk_avail" onchange="renderVerifCandidates()"> ⚡ Immediately Available</label>
-    <select id="verif_exp" onchange="renderVerifCandidates()" style="width:auto;min-height:38px;font-size:0.85rem">
-      <option value="all">All Experience</option>
-      <option value="1-3">1 - 3 Years</option>
-      <option value="3-5">3 - 5 Years</option>
-      <option value="5+">5+ Years</option>
-    </select>
-    <button class="btn sm o" onclick="resetVerifFilters()">Reset Filters</button>
-  </div>
-</div>
-
-<!-- Candidates Grid -->
-<div class="grid g3" id="verifCandidatesGrid" style="gap:20px"></div>
 </div>
 </div>
 
@@ -1220,22 +1180,26 @@ function switchVacTab(view) {
 }
 
 function showPage(p){
-  if (p === 'verification') {
+  const isVerificationRequest = p === 'verification';
+  if (isVerificationRequest) {
     if (currentRole !== 'company' && currentRole !== 'admin') {
       alert("🔒 Access Restricted: EPFO/ESIC Employment Verification is restricted to Verified Employers & Admin officers only to protect candidate privacy under the DPDP Act.\n\nPlease log in with a Company account or Admin ID.");
       openM('Company Login', 'Company email');
       return;
     }
+    p = 'vacancies';
   }
 
   const isVacancies = (p === 'jobs' || p === 'vacancies');
+  const canViewVerification = currentRole === 'company' || currentRole === 'admin';
   $("#top").hidden = (p !== 'home');
   $("#page-vacancies").hidden = !isVacancies;
   $("#page-complain").hidden = (p !== 'complain');
   $("#page-ai").hidden = (p !== 'ai');
   $("#page-help").hidden = (p !== 'help');
   $("#page-schemes").hidden = (p !== 'schemes');
-  $("#page-verification").hidden = (p !== 'verification');
+  $("#verificationAccess").hidden = !isVacancies || canViewVerification;
+  $("#verificationEmployerView").hidden = !isVacancies || !canViewVerification;
   $("#app").hidden = true;
   $("footer").hidden = false;
   scrollTo(0,0);
@@ -1244,10 +1208,11 @@ function showPage(p){
     render();
     renderVacancies();
     renderSalaryBenchmarkChart();
+    if (canViewVerification) renderVerifCandidates();
     setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 200);
+    if (isVerificationRequest) setTimeout(() => $("#verification-directory").scrollIntoView({behavior:'smooth'}), 0);
   }
   if(p === 'schemes') renderSchemes();
-  if(p === 'verification') renderVerifCandidates();
   if(p === 'home') {
     renderCharts();
     initFlowAndCounters();
@@ -2471,7 +2436,7 @@ function show(r, name){
     admin: `🔒 Admin Control Panel` 
   };
 
-  ["top", "page-vacancies", "page-complain", "page-ai", "page-help", "page-schemes", "page-verification"].forEach(id => {
+  ["top", "page-vacancies", "page-complain", "page-ai", "page-help", "page-schemes"].forEach(id => {
     const el = $("#" + id);
     if (el) el.hidden = true;
   });
