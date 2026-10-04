@@ -1915,7 +1915,44 @@ window.addEventListener("resize", renderCharts);
 <script>
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-// LocalStorage Persistence Helpers
+// FastAPI Backend Integration Base URL
+const API_URL = "http://localhost:8000/api";
+
+async function apiLoginOrFetchUser(phoneOrEmail, name, role) {
+  try {
+    const res = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone_or_email: phoneOrEmail, name: name, role: role })
+    });
+    if (res.ok) {
+      const result = await res.json();
+      return result.data;
+    }
+  } catch (e) {
+    console.warn("FastAPI backend offline, falling back to LocalStorage:", e);
+  }
+  return null;
+}
+
+async function apiSyncUserData(phoneOrEmail, name, role, profileData, appliedJobs, postedJobs) {
+  try {
+    await fetch(`${API_URL}/sync`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone_or_email: phoneOrEmail,
+        name: name,
+        role: role,
+        profile_data: profileData,
+        applied_jobs: appliedJobs ? Array.from(appliedJobs) : [],
+        posted_jobs: postedJobs || []
+      })
+    });
+  } catch (e) {
+    console.warn("FastAPI backend sync skipped (offline):", e);
+  }
+}
 const DB = {
   get: (key, def) => {
     try {
@@ -2008,7 +2045,7 @@ function show(r, name){
   }
 }
 
-function login(){
+async function login(){
   const nameVal = $("#mname").value.trim();
   const phoneVal = $("#mphone").value.trim();
   const otpVal = $("#motp").value.trim();
@@ -2036,6 +2073,9 @@ function login(){
   loggedInUser = displayName;
   currentRole = currentModalRole;
   updateNavHeaderState();
+
+  // Fetch or sync user data with FastAPI Backend
+  const backendUserData = await apiLoginOrFetchUser(phoneVal, displayName, currentModalRole);
 
   if (isSignUpMode) {
     if (currentModalRole === 'company') {
@@ -2076,6 +2116,15 @@ function login(){
       if (pnEl) pnEl.value = displayName;
     }
   } else {
+    // Restore historical user data from FastAPI Backend if available
+    if (backendUserData) {
+      if (backendUserData.name) displayName = backendUserData.name;
+      loggedInUser = displayName;
+      if (backendUserData.profile_data) prof = backendUserData.profile_data;
+      if (backendUserData.applied_jobs) applied = new Set(backendUserData.applied_jobs);
+      if (backendUserData.posted_jobs) mine = backendUserData.posted_jobs;
+    }
+
     if (currentModalRole === 'seeker') {
       if (prof) {
         prof.name = displayName;
@@ -2084,6 +2133,9 @@ function login(){
       }
     }
   }
+
+  // Save/Sync latest state to FastAPI Backend
+  apiSyncUserData(phoneVal, displayName, currentModalRole, prof, applied, mine);
 
   closeM();
   show(currentModalRole, displayName);
