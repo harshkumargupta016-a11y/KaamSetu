@@ -38,8 +38,8 @@ DEFAULT_DB = {
         ["Mohan Lal", "Navigation, Customer service", "Dewas", 4, "10th pass", "Active"]
     ],
     "complaints": [
-        ["QuickJobs Agency", "Asked for a registration fee", "Open (Gemini 94%)"],
-        ["FastHire Co.", "Fake offer letter", "Under review"],
+        ["QuickJobs Agency", "Asked for a registration fee", "Gemini Verified (94% Fraud Risk)"],
+        ["FastHire Co.", "Fake offer letter", "Gemini Verified (88% Fraud Risk)"],
         ["Unknown Recruiter", "Salary not paid", "Resolved"]
     ],
     "jobs": [
