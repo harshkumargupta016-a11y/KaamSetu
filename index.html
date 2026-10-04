@@ -994,7 +994,23 @@ setTimeout(renderCharts, 300);
 
 <script>
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const CO=[
+
+// LocalStorage Persistence Helpers
+const DB = {
+  get: (key, def) => {
+    try {
+      const data = localStorage.getItem('kaamsetu_' + key);
+      return data ? JSON.parse(data) : def;
+    } catch(e) { return def; }
+  },
+  set: (key, val) => {
+    try {
+      localStorage.setItem('kaamsetu_' + key, JSON.stringify(val));
+    } catch(e) {}
+  }
+};
+
+const DEFAULT_CO = [
   ["Shree Power Works","Indore","Electrical",6,90,"Gemini Verified 95%"],
   ["QuickKart Logistics","Indore","Logistics",14,75,"Gemini Verified 88%"],
   ["Apex Precision Ltd","Pithampur","Manufacturing",9,88,"Gemini Verified 91%"],
@@ -1005,14 +1021,31 @@ const CO=[
   ["Sharma & Co.","Indore","Finance",2,80,"Gemini Verified 89%"],
   ["QuickJobs Agency","Bhopal","Agency",1,22,"Flagged Scam"]
 ];
-const SK=[
+
+const DEFAULT_SK = [
   ["Ramesh Kumar","Wiring, MCB, Safety","Indore",3,"ITI","Active"],
   ["Aman Patel","CNC, G-code","Bhopal",2,"Diploma","Hired"],
   ["Sunita Devi","Billing, POS","Ujjain",1,"12th pass","Active"],
   ["Mohan Lal","Navigation, Customer service","Dewas",4,"10th pass","Active"]
 ];
-const CMP=[["QuickJobs Agency","Asked for a registration fee","Open (Gemini 94%)"],["FastHire Co.","Fake offer letter","Under review"],["Unknown Recruiter","Salary not paid","Resolved"]];
-const ch=s=>`<span class="chip ${/Verified|Active|Hired|Resolved/.test(s)?"y":/Flagged|Open/.test(s)?"n":"m"}">${esc(s)}</span>`;
+
+const DEFAULT_CMP = [
+  ["QuickJobs Agency","Asked for a registration fee","Open (Gemini 94%)"],
+  ["FastHire Co.","Fake offer letter","Under review"],
+  ["Unknown Recruiter","Salary not paid","Resolved"]
+];
+
+let CO = DB.get('companies', DEFAULT_CO);
+let SK = DB.get('jobseekers', DEFAULT_SK);
+let CMP = DB.get('complaints', DEFAULT_CMP);
+
+function saveDB() {
+  DB.set('companies', CO);
+  DB.set('jobseekers', SK);
+  DB.set('complaints', CMP);
+}
+
+const ch=s=>`<span class="chip ${/Verified|Active|Hired|Resolved/.test(s)?"y":/Flagged|Rejected|Open/.test(s)?"n":"m"}">${esc(s)}</span>`;
 let prof={name:"",loc:"Indore, MP",role:"Electrician",qual:"10th pass",exp:0,skills:[],resume:"",fileName:""},applied=new Set(["Electrician"]),mine=[],sl=new Set(),tab="co";
 $("#pr").innerHTML=Object.keys(R).map(r=>`<option>${r}</option>`).join("");
 function home(k){showPage('home')}
@@ -1082,11 +1115,32 @@ function login(){
   let displayName = nameVal.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   loggedInUser = displayName;
 
-  if (currentModalRole === 'seeker') {
-    if (prof) {
-      prof.name = displayName;
+  if (isSignUpMode) {
+    if (currentModalRole === 'company') {
+      const existingCo = CO.find(c => c[0].toLowerCase() === displayName.toLowerCase());
+      if (!existingCo) {
+        CO.unshift([displayName, "Indore", "General", 0, 85, "Pending Check"]);
+        saveDB();
+      }
+      mine = [];
+    } else if (currentModalRole === 'seeker') {
+      const existingSk = SK.find(s => s[0].toLowerCase() === displayName.toLowerCase());
+      if (!existingSk) {
+        SK.unshift([displayName, "General Work", "Indore", 0, "10th pass", "Active"]);
+        saveDB();
+      }
+      prof = {name: displayName, loc: "Indore, MP", role: "Electrician", qual: "10th pass", exp: 0, skills: [], resume: "", fileName: ""};
+      applied = new Set();
       const pnEl = $("#pn");
       if (pnEl) pnEl.value = displayName;
+    }
+  } else {
+    if (currentModalRole === 'seeker') {
+      if (prof) {
+        prof.name = displayName;
+        const pnEl = $("#pn");
+        if (pnEl) pnEl.value = displayName;
+      }
     }
   }
 
@@ -1416,21 +1470,40 @@ function rc(){
 }
 
 // Admin Portal Actions
-function adminVerifyCompany(idx) {
-  if (CO[idx]) {
-    CO[idx][5] = "Admin Verified";
+function adminSetStatus(target, idx, status) {
+  if (target === "co" && CO[idx]) {
+    CO[idx][5] = status;
     const compName = CO[idx][0];
-    J.forEach(j => { if (j[1] === compName) j[8] = "Admin Verified"; });
-    mine.forEach(m => { if (m[1] === compName) m[8] = "Admin Verified"; });
+    J.forEach(j => { if (j[1] === compName) j[8] = status; });
+    mine.forEach(m => { if (m[1] === compName) m[8] = status; });
+    saveDB();
     ra();
     if (typeof render === 'function') render();
-    speakText(`Company ${compName} has been verified by Admin.`);
+    speakText(`Company ${compName} status set to ${status}.`);
+  } else if (target === "se" && SK[idx]) {
+    SK[idx][5] = status;
+    saveDB();
+    ra();
+    speakText(`Job seeker ${SK[idx][0]} status set to ${status}.`);
   }
+}
+
+function adminVerifyCompany(idx) {
+  adminSetStatus("co", idx, "Admin Verified");
+}
+
+function adminFlagCompany(idx) {
+  adminSetStatus("co", idx, "Flagged Scam");
+}
+
+function adminRejectCompany(idx) {
+  adminSetStatus("co", idx, "Rejected");
 }
 
 function adminResolveComplaint(idx) {
   if (CMP[idx]) {
     CMP[idx][2] = "Resolved";
+    saveDB();
     ra();
     speakText(`Complaint against ${CMP[idx][0]} marked as Resolved.`);
   }
@@ -1482,9 +1555,13 @@ function ra(){
     if (r.join(" ").toLowerCase().includes(q)) {
       let actionBtn = "";
       if (tab === "co") {
-        actionBtn = r[5].includes("Admin Verified") 
-          ? `<span style="color:#16a34a;font-weight:bold">✔ Verified</span>`
-          : `<button class="btn sm a" style="padding:2px 8px;font-size:0.75rem" onclick="adminVerifyCompany(${idx})">✔ Verify Company</button>`;
+        actionBtn = `
+          <div style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminVerifyCompany(${idx})">✔ Verify</button>
+            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#f59e0b;border-color:#f59e0b" onclick="adminFlagCompany(${idx})">⚠️ Flag</button>
+            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#dc2626;border-color:#dc2626" onclick="adminRejectCompany(${idx})">❌ Reject</button>
+          </div>
+        `;
       } else if (tab === "cp") {
         actionBtn = r[2] === "Resolved"
           ? `<span style="color:#16a34a;font-weight:bold">✓ Resolved</span>`
