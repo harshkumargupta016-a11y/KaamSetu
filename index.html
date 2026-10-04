@@ -521,6 +521,84 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
   </div>
 </div>
 
+<!-- 1-Click Application & Interview Booking Dedicated Modal Page -->
+<div class="modal" id="applyModal" role="dialog" aria-modal="true">
+  <div class="box" style="max-width:620px;max-height:90vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:10px">
+      <h3 id="appModalTitle" style="margin:0;color:var(--pri)">⚡ Quick Job Application</h3>
+      <button onclick="closeApplyModal()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--mut)">✕</button>
+    </div>
+
+    <form id="applyModalForm" onsubmit="submitJobApplication(event)" style="margin-top:14px">
+      <div id="applySuccessMsg" style="display:none;background:#d1fae5;border:2px solid #10b981;border-radius:12px;padding:16px;margin-bottom:16px;color:#065f46">
+        <h4 style="margin:0 0 6px;font-size:1.15rem">🎉 Application Submitted Successfully!</h4>
+        <p style="margin:0;font-size:.95rem" id="applySuccessText">You are applied and you'll be notified soon by the company.</p>
+      </div>
+
+      <div class="grid g2" style="gap:12px">
+        <div>
+          <label for="app_name"><b>Full Name *</b></label>
+          <input id="app_name" required placeholder="e.g. Ramesh Kumar">
+        </div>
+        <div>
+          <label for="app_phone"><b>Phone Number / Email *</b></label>
+          <input id="app_phone" required placeholder="e.g. 9876543210">
+        </div>
+      </div>
+
+      <div class="grid g2" style="gap:12px;margin-top:10px">
+        <div>
+          <label for="app_skills"><b>Key Skills *</b></label>
+          <input id="app_skills" required placeholder="e.g. Wiring, MCB, Panel Safety">
+        </div>
+        <div>
+          <label for="app_exp"><b>Experience (Years) *</b></label>
+          <input id="app_exp" type="number" min="0" max="40" required value="2">
+        </div>
+      </div>
+
+      <div style="margin-top:10px">
+        <label for="app_edu"><b>Education / Qualification *</b></label>
+        <select id="app_edu">
+          <option value="10th Pass">10th Pass</option>
+          <option value="12th Pass">12th Pass</option>
+          <option value="ITI / Diploma" selected>ITI / Diploma</option>
+          <option value="Graduate">Graduate</option>
+          <option value="Post Graduate">Post Graduate</option>
+        </select>
+      </div>
+
+      <div style="margin-top:10px;padding:12px;background:#f8fafc;border:1px solid var(--line);border-radius:10px">
+        <label for="app_file" style="display:block;font-weight:600">📄 Upload Resume / CV (Optional)</label>
+        <input type="file" id="app_file" accept=".pdf,.doc,.docx,.txt" style="margin-top:4px;min-height:auto">
+        <small id="app_file_status" style="color:var(--mut);display:block;margin-top:2px">Attach document or text file</small>
+      </div>
+
+      <!-- Interview Slots Selection -->
+      <div style="margin-top:14px">
+        <label style="display:block;font-weight:700;margin-bottom:6px">📅 Select Preferred Walk-in / Online Interview Slot *</label>
+        <div id="slot_chips_container" style="display:flex;gap:8px;flex-wrap:wrap">
+          <button type="button" class="chip" style="cursor:pointer;padding:8px 12px;font-size:.88rem;border:1px solid var(--pri)" onclick="selectSlot(this, 'Tomorrow 10:00 AM - 12:00 PM')">🌅 Tomorrow 10:00 AM</button>
+          <button type="button" class="chip" style="cursor:pointer;padding:8px 12px;font-size:.88rem;border:1px solid var(--pri)" onclick="selectSlot(this, 'Tomorrow 02:00 PM - 04:00 PM')">☀️ Tomorrow 02:00 PM</button>
+          <button type="button" class="chip" style="cursor:pointer;padding:8px 12px;font-size:.88rem;border:1px solid var(--pri)" onclick="selectSlot(this, 'Day After 11:00 AM - 01:00 PM')">🗓️ Day After 11:00 AM</button>
+        </div>
+        <input type="hidden" id="selected_slot" required value="Tomorrow 10:00 AM - 12:00 PM">
+      </div>
+
+      <!-- Candidate Feedback / Notes -->
+      <div style="margin-top:14px">
+        <label for="app_feedback"><b>💬 Candidate Feedback / Message to Recruiter</b></label>
+        <textarea id="app_feedback" rows="2" placeholder="e.g. Willing to relocate to Indore, available for immediate joining..."></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
+        <button type="button" class="btn o" onclick="closeApplyModal()">Cancel</button>
+        <button type="submit" class="btn a" id="btnSubmitApp">⚡ Submit Application &amp; Confirm Slot</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Chatbot Widget at RIGHT Corner with Gemini AI -->
 <div class="chat-widget">
 <div class="chat-box" id="chatbox">
@@ -891,10 +969,78 @@ function renderVacancies() {
     </div>
   `).join("");
 }
+let currentApplyingJob = "";
+let selectedInterviewSlot = "Tomorrow 10:00 AM - 12:00 PM";
+
 function applyVacancy(title) {
-  applied.add(title);
-  alert("Applied successfully for " + title + "! The company has been notified.");
-  speakText("Application submitted for " + title);
+  currentApplyingJob = title;
+  $("#appModalTitle").textContent = "⚡ Apply for: " + title;
+  $("#applySuccessMsg").style.display = "none";
+  $("#applyModalForm").style.display = "block";
+  
+  // Pre-fill profile data if logged in or saved
+  if (prof) {
+    if (prof.name) $("#app_name").value = prof.name;
+    if (prof.skills && prof.skills.length > 0) $("#app_skills").value = prof.skills.join(", ");
+    if (prof.exp) $("#app_exp").value = prof.exp;
+    if (prof.qual) $("#app_edu").value = prof.qual;
+  }
+
+  // Highlight default slot
+  const chips = document.querySelectorAll("#slot_chips_container button");
+  chips.forEach((c, idx) => {
+    if (idx === 0) {
+      c.style.background = "var(--pri)";
+      c.style.color = "#fff";
+    } else {
+      c.style.background = "#e2e8f0";
+      c.style.color = "var(--ink)";
+    }
+  });
+
+  $("#applyModal").classList.add("on");
+}
+
+function closeApplyModal() {
+  $("#applyModal").classList.remove("on");
+}
+
+function selectSlot(btnEl, slotTime) {
+  selectedInterviewSlot = slotTime;
+  $("#selected_slot").value = slotTime;
+  const chips = document.querySelectorAll("#slot_chips_container button");
+  chips.forEach(c => {
+    c.style.background = "#e2e8f0";
+    c.style.color = "var(--ink)";
+  });
+  btnEl.style.background = "var(--pri)";
+  btnEl.style.color = "#fff";
+}
+
+function submitJobApplication(e) {
+  e.preventDefault();
+  const name = $("#app_name").value.trim();
+  const phone = $("#app_phone").value.trim();
+  const skills = $("#app_skills").value.trim();
+  const exp = $("#app_exp").value;
+  const edu = $("#app_edu").value;
+  const slot = selectedInterviewSlot;
+  const feedback = $("#app_feedback").value.trim();
+
+  applied.add(currentApplyingJob);
+
+  const confirmMessage = `You are applied for ${currentApplyingJob} and you'll be notified soon by the company. Scheduled Slot: ${slot}.`;
+
+  $("#applySuccessText").innerHTML = `<b>You are applied and you'll be notified soon by the company.</b><br><small style="margin-top:4px;display:block"><b>Interview Slot:</b> ${slot}<br><b>Candidate Note:</b> ${feedback || "None"}</small>`;
+  $("#applySuccessMsg").style.display = "block";
+  
+  speakText(`Application submitted for ${currentApplyingJob}. You are applied and you will be notified soon by the company.`);
+
+  if (typeof rs === 'function') rs();
+
+  setTimeout(() => {
+    closeApplyModal();
+  }, 2800);
 }
 
 // Scanner
