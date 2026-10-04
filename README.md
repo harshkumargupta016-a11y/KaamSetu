@@ -131,4 +131,8 @@ python test_api.py
 
 ## 📄 License
 
-Independent platform; government links and references are provided for public welfare and informational purposes under Government of India open data guidelines.
+This project is licensed under the [MIT License](LICENSE).
+Government links, welfare scheme portals, and references are provided for public welfare and informational purposes under Government of India open data guidelines.
+
+
+
