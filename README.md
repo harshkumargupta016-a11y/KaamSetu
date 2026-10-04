@@ -12,6 +12,7 @@ It connects workers with verified local job vacancies using a transparent **Gemi
 - Consent-driven employment history signals without storing sensitive private identifiers (UAN, Aadhaar, ESIC IP masked).
 - Evaluates employer subscription continuity, active contribution markers, and candidate trade readiness.
 - Composite **Trust Score Index (0-100)** calculated from verified government signals.
+- Job seekers can see only their own EPFO/ESIC match signals and trust score; the searchable candidate directory remains limited to employers and admins.
 
 ### 2. ⚡ 1-Click Direct Job Application & Walk-in Slot Booking
 - 1-Click application with pre-filled candidate profile details.
