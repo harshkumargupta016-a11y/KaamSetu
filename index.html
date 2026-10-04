@@ -133,7 +133,23 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <button class="n" onclick="showPage('help')">💬 <span>Help &amp; FAQs</span></button>
 <button class="n" onclick="toggleVoiceListen()" title="Voice Assistance" id="voicewidget">🎙️ <span>Voice Nav</span></button>
 <button class="n adm" onclick="openM('Admin Login','Admin ID')">🔒 <span data-t="n6">Admin Login</span></button>
-<button class="n" id="lang" aria-label="Switch language">हिन्दी</button>
+<div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0" title="Google Language Translate API (10 Regional Languages)">
+  <span style="font-size:0.85rem">🌐</span>
+  <select id="googleLangSelect" onchange="changeGoogleLanguage(this.value)" style="min-height:38px;padding:2px 8px;border-radius:10px;border:1px solid var(--line);font-weight:700;font-size:0.85rem;background:var(--card);color:var(--ink);cursor:pointer">
+    <option value="en">🇬🇧 English</option>
+    <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+    <option value="bn">🌾 বাংলা (Bengali)</option>
+    <option value="mr">🦚 मराठी (Marathi)</option>
+    <option value="ta">🌺 தமிழ் (Tamil)</option>
+    <option value="te">🌊 తెలుగు (Telugu)</option>
+    <option value="gu">🪔 ગુજરાતી (Gujarati)</option>
+    <option value="kn">🏛️ ಕನ್ನಡ (Kannada)</option>
+    <option value="ml">🌴 മലയാളം (Malayalam)</option>
+    <option value="pa">🏔️ ਪੰਜਾਬੀ (Punjabi)</option>
+    <option value="or">📿 ଓଡ଼ିଆ (Odia)</option>
+  </select>
+  <div id="google_translate_element" style="display:none"></div>
+</div>
 </div></header>
 
 <main id="top">
@@ -943,7 +959,36 @@ function toggleVoiceListen() {
 
 const T={en:{n1:"Company Login",n2:"Job Seeker Login",n3:"Jobs",n4:"Complain",n5:"Help & Q/A",n6:"Admin Login",n7:"AI Scanner",h1:"Find verified work. Hire trusted talent.",hp:"AI matches workers to nearby jobs with a transparent Fit Score, checks employers for trust, and works even with low internet.",b1:"🔎 Find Work",b2:"Hire Talent",b3:"🤖 Skill-Gap Scanner"},
 hi:{n1:"कंपनी लॉगिन",n2:"जॉब सीकर लॉगिन",n3:"नौकरियां",n4:"शिकायत",n5:"सहायता / प्रश्न",n6:"एडमिन लॉगिन",n7:"AI स्कैनर",h1:"सत्यापित काम खोजें। भरोसेमंद लोग रखें।",hp:"AI आपको पास की नौकरियों से Fit Score के साथ मिलाता है, कंपनियों की जांच करता है और कम इंटरनेट पर भी चलता है।",b1:"🔎 काम खोजें",b2:"कर्मचारी रखें",b3:"🤖 कौशल-अंतर स्कैनर"}};
-let lg="en";$("#lang").onclick=()=>{lg=lg=="en"?"hi":"en";document.documentElement.lang=lg;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=T[lg][e.dataset.t]);$("#lang").textContent=lg=="en"?"हिन्दी":"English"};
+let lg="en";
+function googleTranslateElementInit() {
+  if (typeof google !== 'undefined' && google.translate) {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'hi,bn,mr,ta,te,gu,kn,ml,pa,or,en',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+}
+
+function changeGoogleLanguage(langCode) {
+  if (!langCode) return;
+  lg = langCode;
+  
+  // Set google translate cookie 'googtrans' e.g. '/en/hi'
+  document.cookie = "googtrans=/en/" + langCode + "; path=/;";
+  document.cookie = "googtrans=/en/" + langCode + "; domain=" + window.location.hostname + "; path=/;";
+
+  const sel = $("#googleLangSelect");
+  if (sel) sel.value = langCode;
+
+  const gtSelect = document.querySelector('.goog-te-combo');
+  if (gtSelect) {
+    gtSelect.value = langCode;
+    gtSelect.dispatchEvent(new Event('change'));
+  } else {
+    location.reload();
+  }
+}
 
 let currentRole = "";
 
@@ -2910,5 +2955,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
