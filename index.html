@@ -390,7 +390,10 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}th{background:#0f172a
 <div class="card" style="margin-top:18px">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
     <div class="tabs"><button class="btn" data-tab="co">Companies</button><button class="btn o" data-tab="se">Job seekers</button><button class="btn o" data-tab="cp">Complaints</button></div>
-    <button class="btn sm a" onclick="exportAdminCSV()">📥 Export Data (CSV)</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn sm" style="background:#dc2626;border-color:#dc2626;color:#fff" onclick="stopAllVoice()">🛑 Stop Voice</button>
+      <button class="btn sm a" onclick="exportAdminCSV()">📥 Export Data (CSV)</button>
+    </div>
   </div>
   <input id="aq" placeholder="Search records…" aria-label="Search records" style="margin:12px 0">
   <div style="overflow-x:auto" id="atab"></div>
@@ -527,6 +530,16 @@ function resetSpeakBtn(btn) {
 
 function speakText(text) {
   toggleSpeak(null, text);
+}
+
+function stopAllVoice() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  if (currentSpeakBtn) {
+    resetSpeakBtn(currentSpeakBtn);
+    currentSpeakBtn = null;
+  }
 }
 
 let voiceRecognizer = null;
@@ -1488,15 +1501,29 @@ function adminSetStatus(target, idx, status) {
   }
 }
 
+let adminExpandedCo = new Set();
+
+function toggleAdminRowActions(idx) {
+  if (adminExpandedCo.has(idx)) {
+    adminExpandedCo.delete(idx);
+  } else {
+    adminExpandedCo.add(idx);
+  }
+  ra();
+}
+
 function adminVerifyCompany(idx) {
+  adminExpandedCo.delete(idx);
   adminSetStatus("co", idx, "Admin Verified");
 }
 
 function adminFlagCompany(idx) {
+  adminExpandedCo.delete(idx);
   adminSetStatus("co", idx, "Flagged Scam");
 }
 
 function adminRejectCompany(idx) {
+  adminExpandedCo.delete(idx);
   adminSetStatus("co", idx, "Rejected");
 }
 
@@ -1555,13 +1582,32 @@ function ra(){
     if (r.join(" ").toLowerCase().includes(q)) {
       let actionBtn = "";
       if (tab === "co") {
-        actionBtn = `
-          <div style="display:flex;gap:4px;flex-wrap:wrap">
-            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminVerifyCompany(${idx})">✔ Verify</button>
-            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#f59e0b;border-color:#f59e0b" onclick="adminFlagCompany(${idx})">⚠️ Flag</button>
-            <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#dc2626;border-color:#dc2626" onclick="adminRejectCompany(${idx})">❌ Reject</button>
-          </div>
-        `;
+        const st = r[5];
+        const isSet = st === "Admin Verified" || st === "Flagged Scam" || st === "Rejected";
+        const isExpanded = adminExpandedCo.has(idx);
+
+        if (isSet && !isExpanded) {
+          let selectedLabel = "✔ Verified";
+          let bg = "#16a34a";
+          if (st === "Flagged Scam") { selectedLabel = "⚠️ Flagged"; bg = "#f59e0b"; }
+          if (st === "Rejected") { selectedLabel = "❌ Rejected"; bg = "#dc2626"; }
+
+          actionBtn = `
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="chip" style="background:${bg};color:#fff;font-weight:700;padding:4px 10px">${selectedLabel}</span>
+              <button class="btn sm o" style="padding:2px 8px;font-size:0.85rem;min-height:30px;font-weight:bold" onclick="toggleAdminRowActions(${idx})" title="Change status / Revert">❯</button>
+            </div>
+          `;
+        } else {
+          actionBtn = `
+            <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#16a34a;border-color:#16a34a" onclick="adminVerifyCompany(${idx})">✔ Verify</button>
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#f59e0b;border-color:#f59e0b" onclick="adminFlagCompany(${idx})">⚠️ Flag</button>
+              <button class="btn sm" style="padding:2px 8px;font-size:0.75rem;background:#dc2626;border-color:#dc2626" onclick="adminRejectCompany(${idx})">❌ Reject</button>
+              ${isExpanded ? `<button class="btn sm o" style="padding:2px 8px;font-size:0.85rem;min-height:30px" onclick="toggleAdminRowActions(${idx})" title="Close">❮</button>` : ''}
+            </div>
+          `;
+        }
       } else if (tab === "cp") {
         actionBtn = r[2] === "Resolved"
           ? `<span style="color:#16a34a;font-weight:bold">✓ Resolved</span>`
